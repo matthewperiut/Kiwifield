@@ -14,64 +14,78 @@ public:
 	}
 public:
 	olc::PixelGameEngine* self;
-	Sprite img = Sprite::Sprite(32, 32);
 
-	olc::Sprite* bg = nullptr;
-	olc::Decal* dec = nullptr;
-
-	const static int layerNum = 3;
-	int layers[layerNum];
+	bool collisionArray[wWidth][wHeight] = {};
 
 	bool OnUserCreate() override
 	{
-		// Called once at the start, so create things here
-		bg = new olc::Sprite("./scene.png");
-		dec = new olc::Decal(bg);
-
-		for (int i = 0; i < 32; i++)
+		for (int x = 0; x < wWidth; x++)
 		{
-			for (int j = 0; j < 32; j++)
+			for (int y = 0; y < wHeight; y++)
 			{
-				img.SetPixel(vi2d(i, j), olc::WHITE);
+				collisionArray[x][y] = 0;
+
+				if (y == 120)
+				{
+					collisionArray[x][y] = 1;
+				}
 			}
-		}
-
-		img.SetPixel(vi2d(30, 30), olc::RED);
-
-		for (int i = layerNum-1; i > -1; i--)
-		{
-			layers[i] = CreateLayer();
 		}
 
 		return true;
 	}
 
-	double elapsed = 0;
 	Player x = Player(vi2d(0, 0));
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-		
 		Clear(olc::BLANK);
+
+		x.update(fElapsedTime, collisionArray, *self);
 		
-		if (GetMouse(0).bHeld)
+		static bool editCollision = false;
+		if (GetKey(Key::TAB).bPressed)
 		{
-			bg->SetPixel(GetMousePos(), olc::BLACK);
-			dec->Update();
+			editCollision = !editCollision;
 		}
 
-		SetDrawTarget(layers[0]);
-		DrawDecal(vf2d(0, 0), dec);
-		EnableLayer(layers[0], true);
-		SetDrawTarget(nullptr);
-		
-		
-		if(x.pos.x < 256)
-			elapsed += fElapsedTime;
-		DrawString(vi2d(10, 10), std::to_string(elapsed));
-		//DrawDecal(vi2d(0, 0), dec);
+		if (editCollision)
+		{
+			if (GetMouse(0).bHeld)
+			{
+				vi2d m = GetMousePos();
+				for (int x = 0; x < 2; x++)
+				{
+					for (int y = 0; y < 2; y++)
+					{
+						collisionArray[m.x + x - 1][m.y + y - 1] = true;
+					}
+				}
+			}
+			if (GetMouse(1).bHeld)
+			{
+				vi2d m = GetMousePos();
+				for (int x = 0; x < 4; x++)
+				{
+					for (int y = 0; y < 4; y++)
+					{
+						collisionArray[m.x+x-1][m.y+y-1] = false;
+					}
+				}
+			}
 
-		x.update(fElapsedTime, *self);
+			for (int x = 0; x < wWidth; x++)
+			{
+				for (int y = 0; y < wHeight; y++)
+				{
+					if (collisionArray[x][y])
+					{
+						Draw(vi2d(x, y), olc::RED);
+					}
+				}
+			}
+		}
+		
 
 		return true;
 	}
@@ -82,7 +96,7 @@ int main()
 {
 	Game game;
 	game.self = &game;
-	if (game.Construct(256, 144, 4, 4, false, false))
+	if (game.Construct(wWidth, wHeight, 7, 7, false, false))
 		game.Start();
 
 	return 0;

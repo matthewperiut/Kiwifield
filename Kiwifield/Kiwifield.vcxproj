@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="world.cpp" />
+    <ClCompile Include="level.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="const.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
     <ClInclude Include="player.h" />
   </ItemGroup>

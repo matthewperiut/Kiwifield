@@ -1,5 +1,6 @@
 #pragma once
 #include "olcPixelGameEngine.h"
+#include "const.h"
 
 using namespace olc;
 
@@ -13,5 +14,5 @@ public:
 public:
 	Player(vf2d p);
 
-	void update(float time, PixelGameEngine& g);
+	void update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGameEngine& g);
 };
