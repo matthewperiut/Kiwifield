@@ -24,5 +24,6 @@ private:
 
 public:
 	Level(PixelGameEngine& g);
+	void CollisionEditor(PixelGameEngine& g);
 	void update(PixelGameEngine& g, Player& p, float fElapsed);
 };

@@ -28,46 +28,69 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	g.Draw(pos, olc::RED);
 #endif
 
-	static bool editCollision = false;
-	if (g.GetKey(Key::TAB).bPressed)
+	
+	bool collisionDirections[8];
+	setDirections(collisionArray, collisionDirections, pos);
+
+	static const int maximumVel = 100;
+	static bool gravity = true;
+	static vf2d velocity = { 0,0 };
+	if (collisionDirections[bottomleft] || collisionDirections[bottomright] || collisionDirections[down])
 	{
-		editCollision = !editCollision;
+		gravity = false;
+	}
+	else
+	{
+		gravity = true;
+	}
+	if (g.GetKey(Key::A).bHeld)
+	{
+		velocity.x = -50;
+	}
+	else if (g.GetKey(Key::D).bHeld)
+	{
+		velocity.x = 50;
+	}
+	else
+	{
+		velocity.x = 0;
+	}
+	
+	if (gravity)
+	{
+		if (velocity.y < maximumVel)
+		{
+			velocity.y += time*100;
+		}
+	}
+	else
+	{
+		velocity.y = 0;
 	}
 
-	if (editCollision)
+	if (g.GetKey(Key::SPACE).bPressed && gravity == false)
 	{
-		if (g.GetMouse(0).bHeld)
-		{
-			vi2d m = g.GetMousePos();
-			for (int x = 0; x < 2; x++)
-			{
-				for (int y = 0; y < 2; y++)
-				{
-					collisionArray[m.x + x - 1][m.y + y - 1] = true;
-				}
-			}
-		}
-		if (g.GetMouse(1).bHeld)
-		{
-			vi2d m = g.GetMousePos();
-			for (int x = 0; x < 4; x++)
-			{
-				for (int y = 0; y < 4; y++)
-				{
-					collisionArray[m.x + x - 1][m.y + y - 1] = false;
-				}
-			}
-		}
+		gravity = true;
+		velocity.y = -maximumVel;
+	}
 
-		for (int x = 0; x < wWidth; x++)
+	vf2d timedVelocity = velocity * time;
+	pos += timedVelocity;
+
+	// Temporary Solution to all my problems
+	static int expectedYPos = 0;
+	for (int i = pos.y; i < wHeight; i++)
+	{
+		if (collisionArray[(int)pos.x][i])
 		{
-			for (int y = 0; y < wHeight; y++)
-			{
-				if (collisionArray[x][y])
-				{
-					g.Draw(vi2d(x, y), olc::RED);
-				}
-			}
+			expectedYPos = i-1;
+			break;
+		}
+		if (i == wHeight - 1)
+		{
+			pos.y = expectedYPos;
+			velocity.y = 0;
+			std::cout << "fixed falling through world" << std::endl;
 		}
 	}
 }
