@@ -22,57 +22,52 @@ void setDirections(bool(&collisionArray)[wWidth][wHeight], bool(&cd)[8], vi2d po
 
 void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGameEngine& g)
 {
-	
 	g.DrawCircle(pos + vf2d(0, -8), 8);
 
 #ifdef _DEBUG
 	g.Draw(pos, olc::RED);
 #endif
 
-	const static int multiplier = 100;
-	float movement = time * multiplier;
-
-	bool collisionDirections[8] = {};
-	setDirections(collisionArray, collisionDirections, pos);
-
-	if (g.GetKey(olc::Key::RIGHT).bHeld)
+	static bool editCollision = false;
+	if (g.GetKey(Key::TAB).bPressed)
 	{
-		if (!collisionDirections[right])
-			pos.x += movement;
-		else if (!collisionDirections[topright])
-			pos.y -= movement;
-	}
-	else if(g.GetKey(olc::Key::LEFT).bHeld)
-	{
-		if (!collisionDirections[left])
-			pos.x -= movement;
-		else if (!collisionDirections[topleft])
-			pos.y -= movement;
+		editCollision = !editCollision;
 	}
 
-	static float verticalVelocity = 0;
-	static float verticalVelMax = 2;
-	if (!collisionDirections[down])
+	if (editCollision)
 	{
-		if(verticalVelocity < verticalVelMax)
-			verticalVelocity += time*5;	
-	}
-	if (g.GetKey(olc::Key::UP).bPressed && collisionDirections[down])
-	{
-		collisionDirections[down] = false;
-		pos.y -= 1;
-		verticalVelocity = -2;
-	}
-	if (collisionDirections[down])
-	{
-		verticalVelocity = 0;
-	}
-	if (!collisionDirections[down])
-	{
-		pos.y += movement * verticalVelocity;
-	}
-	if (collisionDirections[up] && collisionDirections[down])
-	{
-		pos.y -= movement;
+		if (g.GetMouse(0).bHeld)
+		{
+			vi2d m = g.GetMousePos();
+			for (int x = 0; x < 2; x++)
+			{
+				for (int y = 0; y < 2; y++)
+				{
+					collisionArray[m.x + x - 1][m.y + y - 1] = true;
+				}
+			}
+		}
+		if (g.GetMouse(1).bHeld)
+		{
+			vi2d m = g.GetMousePos();
+			for (int x = 0; x < 4; x++)
+			{
+				for (int y = 0; y < 4; y++)
+				{
+					collisionArray[m.x + x - 1][m.y + y - 1] = false;
+				}
+			}
+		}
+
+		for (int x = 0; x < wWidth; x++)
+		{
+			for (int y = 0; y < wHeight; y++)
+			{
+				if (collisionArray[x][y])
+				{
+					g.Draw(vi2d(x, y), olc::RED);
+				}
+			}
+		}
 	}
 }
