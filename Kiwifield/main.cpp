@@ -16,23 +16,35 @@ public:
 public:
 	olc::PixelGameEngine* self;
 
+	Player x = Player(vi2d(20, 120));
+	Level* y;
 	bool OnUserCreate() override
 	{
+		y = new Level(*self,"./levels/examplelevel/scene.pge",true);
+		y->levelid = 1;
+		y->loadCollisions("./levels/examplelevel/scene.txt");
 		
-
 		return true;
 	}
 
-	Player x = Player(vi2d(0, 0));
-	Level* y = new Level(*self);
-
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		if (GetFPS() < 45)
+		{
+			// Below 45 fps player collision still doesn't work, so I will be working on a solution
+			static float total = 0;
+			total += fElapsedTime;
+			if(total == 5)
+				return false;
+			std::cout << total << std::endl;
+		}
+
 		Clear(olc::BLANK);
 
 		y->update(*self, x, fElapsedTime);
+#ifdef _DEBUG
 		y->CollisionEditor(*self);
-
+#endif
 		return true;
 	}
 };
