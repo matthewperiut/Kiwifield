@@ -1,4 +1,5 @@
 #include "player.h"
+#define NEW
 
 Player::Player(vf2d p)
 {
@@ -62,30 +63,112 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	}
 	if (g.GetKey(Key::A).bHeld)
 	{
+#ifdef NEW
+		velocity.x = -50;
+
+		if (!collisionDirections[topleft] && collisionDirections[left] && !collisionDirections[up] && !gravity)
+			velocity.y = -30;
+#endif
+#ifdef OLD
 		if (!collisionDirections[left])
 			velocity.x = -50;
 		else if (collisionDirections[topleft])
 			velocity.x = 0;
 		else if (!collisionDirections[up] && !gravity)
 			velocity = { -50, -25 };
+#endif
 	}
 	else if (g.GetKey(Key::D).bHeld)
 	{
+#ifdef NEW
+		velocity.x = 50;
+
+		if (!collisionDirections[topright] && collisionDirections[right] && !collisionDirections[up] && !gravity)
+			velocity.y = -30;
+#endif
+#ifdef OLD
 		if (!collisionDirections[right])
 			velocity.x = 50;
 		else if (collisionDirections[topright])
 			velocity.x = 0;
 		else if (!collisionDirections[up] && !gravity)
 			velocity = { 50, -25 };
+#endif
 	}
 	else
 	{
 		velocity.x = 0;
 	}
 
+	
 	vf2d timedVelocity = velocity * time;
+#ifdef OLD
 	pos += timedVelocity;
+#endif
 
+#ifdef NEW
+	// Here I will do collision detection regardless of framerate :D
+	vf2d newpos = pos + timedVelocity;
+	
+	//Horizontal
+	if (velocity.x > 0)
+	{
+		bool canmove = true;
+		for (int x = (int)pos.x; x < ceil(newpos.x); x++)
+		{
+			if (collisionArray[x][(int)pos.y])
+			{
+				canmove = false;
+			}
+		}
+		if (canmove)
+			pos.x += timedVelocity.x;
+	}
+	if (velocity.x < 0)
+	{
+		bool canmove = true;
+		for (int x = (int)pos.x; x > floor(newpos.x)-1; x--)
+		{
+			if (collisionArray[x][(int)pos.y])
+			{
+				canmove = false;
+			}
+		}
+		if (canmove)
+			pos.x += timedVelocity.x;
+	}
+
+	//Vertical
+	if (velocity.y > 0)
+	{
+		bool canmove = true;
+		for (int y = (int)pos.y; y < ceil(newpos.y); y++)
+		{
+			if (collisionArray[(int)pos.x][y])
+			{
+				canmove = false;
+			}
+		}
+		if (canmove)
+			pos.y += timedVelocity.y;
+	}
+	if (velocity.y < 0)
+	{
+		bool canmove = true;
+		for (int y = (int)pos.y; y > floor(newpos.y) - 1; y--)
+		{
+			if (collisionArray[(int)pos.x][y])
+			{
+				//canmove = false;
+			}
+		}
+		if (canmove)
+			pos.y += timedVelocity.y;
+	}
+
+	
+#endif
+#ifdef OLD
 	// Temporary Solution to all my problems
 	static vi2d expectedPos = { 0, 0 };
 	for (int i = pos.y; i < wHeight; i++)
@@ -112,4 +195,5 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	{
 		twice = false;
 	}
+#endif
 }

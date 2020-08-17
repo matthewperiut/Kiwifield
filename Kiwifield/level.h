@@ -10,13 +10,12 @@ using namespace std;
 class Level
 {
 public:
-	int levelid = 0;
+	string levelid = "";
 
 	// Image system
-	const static int layerNum = 3;
-	olc::Sprite* spr[layerNum] = {};
-	olc::Decal* dec[layerNum] = {};
-	int layers[layerNum] = {};
+	olc::Sprite* spr;
+	olc::Decal* dec;
+	int layer;
 
 private:
 	// Level size
@@ -29,8 +28,8 @@ private:
 public:
 	void Create(PixelGameEngine& g);	
 	Level(PixelGameEngine& g);
-	Level(PixelGameEngine& g, std::string imgfilepath, bool pge);
+	Level(PixelGameEngine& g, std::string id, bool pge);
 	void CollisionEditor(PixelGameEngine& g);
-	void loadCollisions(string filepath);
+	void ImageEditor(PixelGameEngine& g);
 	void update(PixelGameEngine& g, Player& p, float fElapsed);
 };
