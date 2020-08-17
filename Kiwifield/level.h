@@ -33,3 +33,5 @@ public:
 	void ImageEditor(PixelGameEngine& g);
 	void update(PixelGameEngine& g, Player& p, float fElapsed);
 };
+
+void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& file);

@@ -1,10 +1,8 @@
 #define OLC_PGE_APPLICATION
+#include <string>
 #include "olcPixelGameEngine.h"
 #include "player.h"
 #include "level.h"
-#include <string>
-
-using namespace olc;
 
 class Game : public olc::PixelGameEngine
 {
@@ -40,7 +38,7 @@ int main()
 {
 	Game game;
 	game.self = &game;
-	if (game.Construct(wWidth, wHeight, 7, 7, false, true))
+	if (game.Construct(wWidth, wHeight, 5, 5, false, true))
 		game.Start();
 
 	return 0;

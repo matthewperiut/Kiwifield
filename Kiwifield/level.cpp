@@ -92,6 +92,7 @@ void Level::ImageEditor(PixelGameEngine& g)
 		hide = !hide;
 	}
 	vi2d m = g.GetMousePos();
+	static int radius = 0;
 	static int colorpicked[3] = { 125, 125, 125 };
 
 	if (!hide)
@@ -119,11 +120,11 @@ void Level::ImageEditor(PixelGameEngine& g)
 			g.Draw(colorpicked[y / 2], y + 1, olc::WHITE);
 		}
 
-		if (g.GetMouse(0).bPressed && (m.y == 0 || m.y == 1))
+		if (g.GetMouse(0).bHeld && (m.y == 0 || m.y == 1))
 			colorpicked[0] = m.x;
-		if (g.GetMouse(0).bPressed && (m.y == 2 || m.y == 3))
+		if (g.GetMouse(0).bHeld && (m.y == 2 || m.y == 3))
 			colorpicked[1] = m.x;
-		if (g.GetMouse(0).bPressed && (m.y == 4 || m.y == 5))
+		if (g.GetMouse(0).bHeld && (m.y == 4 || m.y == 5))
 			colorpicked[2] = m.x;
 
 		g.FillRect(vi2d(0, 6), vi2d(10, 10), olc::Pixel(colorpicked[0], colorpicked[1], colorpicked[2]));
@@ -139,7 +140,7 @@ void Level::ImageEditor(PixelGameEngine& g)
 	{
 		if (g.GetMouse(0).bHeld)
 		{
-			spr->SetPixel(m, olc::Pixel(colorpicked[0], colorpicked[1], colorpicked[2]));
+			FillCircleInSpr(m.x, m.y, radius, olc::Pixel(colorpicked[0], colorpicked[1], colorpicked[2]), *spr);
 			dec->Update();
 		}
 		if (g.GetMouse(1).bPressed)
@@ -151,6 +152,16 @@ void Level::ImageEditor(PixelGameEngine& g)
 		}
 	}
 	
+	if (g.GetMouseWheel() > 0)
+	{
+		radius++;
+	}
+	if (g.GetMouseWheel() < 0)
+	{
+		radius--;
+	}
+
+	g.DrawCircle(m, radius, olc::Pixel(colorpicked[0]-10, colorpicked[1]-10, colorpicked[2]-10));
 }
 
 void Level::CollisionEditor(PixelGameEngine& g)
