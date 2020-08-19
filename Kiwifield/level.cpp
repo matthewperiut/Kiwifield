@@ -1,5 +1,7 @@
+#include <direct.h>
+#include <string>
 #include "level.h"
-#include "collisionfiles.h"
+#include "files.h"
 
 void Level::Create(PixelGameEngine& g)
 {
@@ -9,7 +11,7 @@ void Level::Create(PixelGameEngine& g)
 		{
 			collisionArray[x][y] = 0;
 
-			if (y == 120)
+			if (y == 122)
 			{
 				collisionArray[x][y] = 1;
 			}
@@ -18,6 +20,15 @@ void Level::Create(PixelGameEngine& g)
 	layer = g.CreateLayer();
 
 	spr = new olc::Sprite(size.x, size.y);
+
+	for (int x = 0; x < wWidth; x++)
+	{
+		for (int y = 0; x < wHeight; x++)
+		{
+			spr->SetPixel(x, y, olc::BLACK);
+		}
+	}
+
 	dec = new olc::Decal(spr);
 }
 
@@ -32,13 +43,39 @@ Level::Level(PixelGameEngine& g, std::string id, bool pge = false)
 	levelid = id;
 	Create(g);
 	
-	if(!pge)
-		spr->LoadFromFile("./levels/" + id + "/" + id + ".png");
-	else
-		spr->LoadFromPGESprFile("./levels/" + id + "/" + id + ".pge");
-	dec->Update();
+	std::string temp = "./levels/" + levelid + "/";
+	if (!Files::exists(temp))
+		_mkdir(temp.c_str());
 
-	CollisionFiles::load(collisionArray, "./levels/" + id + "/" + id + ".txt");
+	if (!pge)
+	{
+		if (!Files::exists(temp + id + ".png"))
+		{
+			spr->SaveToPGESprFile("./levels/" + levelid + "/" + levelid + ".pge");
+		}
+		else
+		{
+			spr->LoadFromPGESprFile("./levels/" + levelid + "/" + levelid + ".png");
+		}
+	}
+	else
+	{
+		if (!Files::exists("./levels/" + id + "/" + id + ".pge"))
+		{
+			spr->SaveToPGESprFile("./levels/" + levelid + "/" + levelid + ".pge");
+		}
+		else
+		{
+			spr->LoadFromPGESprFile("./levels/" + levelid + "/" + levelid + ".pge");
+		}
+	}
+	
+	if (!Files::load(collisionArray, "./levels/" + id + "/" + id + ".txt"))
+	{
+		Files::save(collisionArray, ("./levels/" + levelid + "/" + levelid + ".txt"));
+	}
+
+	dec->Update();
 }
 
 void Level::update(PixelGameEngine& g, Player& p, float fElapsed)
@@ -51,7 +88,7 @@ void Level::update(PixelGameEngine& g, Player& p, float fElapsed)
 	{
 		if (g.GetKey(Key::S).bPressed)
 		{
-			CollisionFiles::save(collisionArray, ("./levels/" + levelid + "/" + levelid + ".txt"));
+			Files::save(collisionArray, ("./levels/" + levelid + "/" + levelid + ".txt"));
 			spr->SaveToPGESprFile("./levels/" + levelid + "/" + levelid + ".pge");
 		}
 	}
@@ -154,39 +191,67 @@ void Level::ImageEditor(PixelGameEngine& g)
 	
 	if (g.GetMouseWheel() > 0)
 	{
-		radius++;
+		if(radius < 30)
+			radius++;
 	}
 	if (g.GetMouseWheel() < 0)
 	{
-		radius--;
+		if(radius > 0)
+			radius--;
 	}
 
-	g.DrawCircle(m, radius, olc::Pixel(colorpicked[0]-10, colorpicked[1]-10, colorpicked[2]-10));
+	g.DrawCircle(m, radius, olc::Pixel(abs(colorpicked[0]-10), abs(colorpicked[1]-10), abs(colorpicked[2]-10)));
 }
 
 void Level::CollisionEditor(PixelGameEngine& g)
 {
-	if (g.GetMouse(0).bHeld)
+	static bool linemode = 0;
+	if (g.GetKey(Key::SHIFT).bPressed)
 	{
-		vi2d m = g.GetMousePos();
-		if (m.x > -1 && m.x < wWidth && m.y > -1 && m.y < wHeight)
-		{
-			collisionArray[m.x][m.y] = true;
-		}
+		linemode = !linemode;
 	}
-
-	if (g.GetMouse(1).bHeld)
+	if (!linemode)
 	{
-		vi2d m = g.GetMousePos();
-		if (m.x > -1 && m.x < wWidth && m.y > -1 && m.y < wHeight)
+		if (g.GetMouse(0).bHeld)
 		{
-			for (int x = 0; x < 4; x++)
+			vi2d m = g.GetMousePos();
+			if (m.x > -1 && m.x < wWidth && m.y > -1 && m.y < wHeight)
 			{
-				for (int y = 0; y < 4; y++)
+				collisionArray[m.x][m.y] = true;
+			}
+		}
+
+		if (g.GetMouse(1).bHeld)
+		{
+			vi2d m = g.GetMousePos();
+			if (m.x > -1 && m.x < wWidth && m.y > -1 && m.y < wHeight)
+			{
+				for (int x = 0; x < 4; x++)
 				{
-					collisionArray[m.x + x - 1][m.y + y - 1] = false;
+					for (int y = 0; y < 4; y++)
+					{
+						collisionArray[m.x + x - 1][m.y + y - 1] = false;
+					}
 				}
 			}
+		}
+	}
+	else
+	{
+		static vi2d start = { 0, 0 };
+		static vi2d end = { 0, 0 };
+
+		if (g.GetMouse(0).bHeld)
+		{
+			if (g.GetMouse(0).bPressed)
+				start = g.GetMousePos();
+			else
+				g.DrawLine(start, g.GetMousePos(), olc::RED);
+		}
+		else if (g.GetMouse(0).bReleased)
+		{
+			end = g.GetMousePos();
+			DrawLineIn2DBoolean(start.x, start.y, end.x, end.y, collisionArray);
 		}
 	}
 

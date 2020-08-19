@@ -1,7 +1,7 @@
-#include "collisionfiles.h"
+#include "files.h"
 #include <iostream>
 
-void CollisionFiles::save(bool(&collisionArray)[wWidth][wHeight], string filepath)
+void Files::save(bool(&collisionArray)[wWidth][wHeight], string filepath)
 {
 	ofstream file;
 	file.open(filepath);
@@ -19,9 +19,12 @@ void CollisionFiles::save(bool(&collisionArray)[wWidth][wHeight], string filepat
 	file.close();
 }
 
-void CollisionFiles::load(bool(&collisionArray)[wWidth][wHeight], string filepath)
+bool Files::load(bool(&collisionArray)[wWidth][wHeight], string filepath)
 {
 	ifstream input_file(filepath);
+	if (input_file.fail()) {
+		return false;
+	}
 	char val;
 	int x = 0;
 	int y = 0;
@@ -43,4 +46,14 @@ void CollisionFiles::load(bool(&collisionArray)[wWidth][wHeight], string filepat
 			y++;
 		}
 	}
+	return true;
+}
+
+bool Files::exists(string filepath)
+{
+	ifstream fileStream;
+	if (fileStream.fail())
+		return 0;
+	else
+		return 1;
 }

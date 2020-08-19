@@ -1,5 +1,6 @@
 #include "player.h"
 #define NEW
+#define FALLFIX
 
 Player::Player(vf2d p)
 {
@@ -67,7 +68,7 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		velocity.x = -50;
 
 		if (!collisionDirections[topleft] && collisionDirections[left] && !collisionDirections[up] && !gravity)
-			velocity.y = -30;
+			velocity.y = -50;
 #endif
 #ifdef OLD
 		if (!collisionDirections[left])
@@ -84,7 +85,7 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		velocity.x = 50;
 
 		if (!collisionDirections[topright] && collisionDirections[right] && !collisionDirections[up] && !gravity)
-			velocity.y = -30;
+			velocity.y = -50;
 #endif
 #ifdef OLD
 		if (!collisionDirections[right])
@@ -168,7 +169,7 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 
 	
 #endif
-#ifdef OLD
+#ifdef FALLFIX
 	// Temporary Solution to all my problems
 	static vi2d expectedPos = { 0, 0 };
 	for (int i = pos.y; i < wHeight; i++)

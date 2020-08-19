@@ -35,3 +35,4 @@ public:
 };
 
 void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& file);
+void DrawLineIn2DBoolean(int& x1, int& y1, int& x2, int& y2, bool(&collisionArray)[wWidth][wHeight], uint32_t pattern = 0xFFFFFFFF);

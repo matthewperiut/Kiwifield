@@ -139,14 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="collisionfiles.cpp" />
+    <ClCompile Include="files.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="spriteutil.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="collisionfiles.h" />
+    <ClInclude Include="files.h" />
     <ClInclude Include="const.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="olcPixelGameEngine.h" />

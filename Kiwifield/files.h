@@ -6,8 +6,9 @@
 
 using namespace std;
 
-struct CollisionFiles
+struct Files
 {
 	static void save(bool(&collisionArray)[wWidth][wHeight], string filepath);
-	static void load(bool(&collisionArray)[wWidth][wHeight], string filepath);
+	static bool load(bool(&collisionArray)[wWidth][wHeight], string filepath);
+	static bool exists(string filepath);
 };

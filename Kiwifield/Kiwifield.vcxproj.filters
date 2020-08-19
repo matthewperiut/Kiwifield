@@ -24,10 +24,10 @@
     <ClCompile Include="level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="collisionfiles.cpp">
+    <ClCompile Include="spriteutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spriteutil.cpp">
+    <ClCompile Include="files.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClInclude Include="const.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="collisionfiles.h">
+    <ClInclude Include="files.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
