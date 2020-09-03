@@ -24,102 +24,70 @@ void setDirections(bool(&collisionArray)[wWidth][wHeight], bool(&cd)[8], vi2d po
 
 void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGameEngine& g)
 {
-	g.DrawCircle(pos + vf2d(0, -8), 8);
+	
+	g.DrawRect(pos.x-4,pos.y-8,8,8,Pixel(100,100,100));
+	//g.Draw(pos, olc::GREEN);
 
-#ifdef _DEBUG
-	g.Draw(pos, olc::GREEN);
-#endif
 	bool collisionDirections[8];
 	setDirections(collisionArray, collisionDirections, pos);
 
-	static const int maximumVel = 150;
 	static bool gravity = true;
-	static vf2d velocity = { 0,0 };
-	if (collisionDirections[down] && velocity.y >= 0)
-	{
-		gravity = false;
-	}
+
+	constexpr int maximumVel = 150;
+	constexpr int speed = 50;
+	static vf2d velocity = { 0, 0 };
+
+	//Firstly the player can move sideways
+	if (g.GetKey(Key::A).bHeld)
+		//Left
+		velocity.x = -speed;
+	else if (g.GetKey(Key::D).bHeld)
+		//Right
+		velocity.x = speed;
 	else
-	{
+		//Still in horizontal
+		velocity.x = 0;
+
+	//Vertical movement
+	if (collisionDirections[down] && velocity.y >= 0)
+		gravity = false;
+	else
 		gravity = true;
-	}
-	
-	
+
+	if (!gravity)
+		velocity.y < maximumVel;
+
 	if (gravity)
 	{
 		if (velocity.y < maximumVel)
-		{
-			velocity.y += time*400;
-		}
+			velocity.y += time * 400;
 	}
 	else
-	{
 		velocity.y = 0;
-	}
-
-	if (g.GetKey(Key::SPACE).bPressed && gravity == false)
+	
+	if (!false && g.GetKey(Key::SPACE).bPressed)
 	{
 		gravity = true;
 		velocity.y = -maximumVel;
 	}
-	if (g.GetKey(Key::A).bHeld)
-	{
-#ifdef NEW
-		velocity.x = -50;
 
-		if (!collisionDirections[topleft] && collisionDirections[left] && !collisionDirections[up] && !gravity)
-			velocity.y = -50;
-#endif
-#ifdef OLD
-		if (!collisionDirections[left])
-			velocity.x = -50;
-		else if (collisionDirections[topleft])
-			velocity.x = 0;
-		else if (!collisionDirections[up] && !gravity)
-			velocity = { -50, -25 };
-#endif
-	}
-	else if (g.GetKey(Key::D).bHeld)
-	{
-#ifdef NEW
-		velocity.x = 50;
 
-		if (!collisionDirections[topright] && collisionDirections[right] && !collisionDirections[up] && !gravity)
-			velocity.y = -50;
-#endif
-#ifdef OLD
-		if (!collisionDirections[right])
-			velocity.x = 50;
-		else if (collisionDirections[topright])
-			velocity.x = 0;
-		else if (!collisionDirections[up] && !gravity)
-			velocity = { 50, -25 };
-#endif
-	}
-	else
-	{
-		velocity.x = 0;
-	}
-
-	
 	vf2d timedVelocity = velocity * time;
-#ifdef OLD
-	pos += timedVelocity;
-#endif
 
-#ifdef NEW
-	// Here I will do collision detection regardless of framerate :D
 	vf2d newpos = pos + timedVelocity;
-	
+	g.SetPixelMode(Pixel::Mode::ALPHA);
 	//Horizontal
 	if (velocity.x > 0)
 	{
 		bool canmove = true;
-		for (int x = (int)pos.x; x < ceil(newpos.x); x++)
+		for (int x = (int)pos.x; x < ceil(newpos.x) + 1; x++)
 		{
+			
+			//g.Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
 			if (collisionArray[x][(int)pos.y])
 			{
 				canmove = false;
+				pos.x = x - 1;
 			}
 		}
 		if (canmove)
@@ -128,11 +96,13 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	if (velocity.x < 0)
 	{
 		bool canmove = true;
-		for (int x = (int)pos.x; x > floor(newpos.x)-1; x--)
+		for (int x = (int)pos.x; x > floor(newpos.x) - 1; x--)
 		{
+			//g.Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
 			if (collisionArray[x][(int)pos.y])
 			{
 				canmove = false;
+				pos.x = x+1;
 			}
 		}
 		if (canmove)
@@ -143,11 +113,13 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	if (velocity.y > 0)
 	{
 		bool canmove = true;
-		for (int y = (int)pos.y; y < ceil(newpos.y); y++)
+		for (int y = (int)pos.y; y < ceil(newpos.y) + 1; y++)
 		{
+			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
 			if (collisionArray[(int)pos.x][y])
 			{
 				canmove = false;
+				pos.y = y - 1;
 			}
 		}
 		if (canmove)
@@ -158,6 +130,7 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		bool canmove = true;
 		for (int y = (int)pos.y; y > floor(newpos.y) - 1; y--)
 		{
+			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
 			if (collisionArray[(int)pos.x][y])
 			{
 				//canmove = false;
@@ -166,35 +139,5 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		if (canmove)
 			pos.y += timedVelocity.y;
 	}
-
-	
-#endif
-#ifdef FALLFIX
-	// Temporary Solution to all my problems
-	static vi2d expectedPos = { 0, 0 };
-	for (int i = pos.y; i < wHeight; i++)
-	{
-		if (collisionArray[(int)pos.x][i])
-		{
-			expectedPos.y = i - 1;
-			expectedPos.x = pos.x;
-			break;
-		}
-	}
-	static bool twice = false;
-	if (expectedPos.y - pos.y < 1 && velocity.y > 0)
-	{
-		if (twice)
-		{
-			//No ground below
-		}
-		pos.y = expectedPos.y;
-		
-		twice = true;
-	}
-	else
-	{
-		twice = false;
-	}
-#endif
+	g.SetPixelMode(Pixel::Mode::NORMAL);
 }

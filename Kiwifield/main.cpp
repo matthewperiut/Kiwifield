@@ -14,11 +14,11 @@ public:
 public:
 	olc::PixelGameEngine* self;
 
-	Player x = Player(vi2d(20, 110));
+	Player x = Player(vi2d(20, 0));
 	Level* y;
 	bool OnUserCreate() override
 	{
-		y = new Level(*self, "new", true);
+		y = new Level(*self, "examplelevel", true);
 		return true;
 	}
 
@@ -38,7 +38,7 @@ int main()
 {
 	Game game;
 	game.self = &game;
-	if (game.Construct(wWidth, wHeight, 5, 5, false, true))
+	if (game.Construct(wWidth, wHeight, 5, 5, false, false))
 		game.Start();
 
 	return 0;
