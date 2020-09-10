@@ -24,8 +24,7 @@ void setDirections(bool(&collisionArray)[wWidth][wHeight], bool(&cd)[8], vi2d po
 
 void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGameEngine& g)
 {
-	
-	g.DrawRect(pos.x-4,pos.y-8,8,8,Pixel(100,100,100));
+	g.DrawRect(pos.x-4+g.cam.getX(),pos.y-8+g.cam.getY(),8,8,Pixel(100,100,100));
 	//g.Draw(pos, olc::GREEN);
 
 	bool collisionDirections[8];

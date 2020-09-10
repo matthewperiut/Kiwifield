@@ -23,6 +23,8 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		cam.x = int(player.pos.x) - ScreenWidth()/2;
+		//cam.y = int(player.pos.y) - ScreenHeight()/2;
 
 		Clear(olc::BLANK);
 		level->update(*this, player, fElapsedTime);
@@ -35,7 +37,7 @@ public:
 int main()
 {
 	Game game;
-	if (game.Construct(wWidth, wHeight, 5, 5, false, false))
+	if (game.Construct(wWidth, wHeight, 5, 5, false, true))
 		game.Start();
 
 	return 0;

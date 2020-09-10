@@ -9,9 +9,11 @@ Camera::Camera(int x, int y)
 	this->x = x;
 	this->y = y;
 }
-
-void Camera::u(int& x, int& y)
+int Camera::getX()
 {
-	x = x - this->x;
-	y = y - this->y;
+	return -x;
+}
+int Camera::getY()
+{
+	return -y;
 }

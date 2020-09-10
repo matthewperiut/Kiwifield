@@ -45,7 +45,7 @@ Level::Level(PixelGameEngine& g, std::string id, bool pge = false)
 	
 	std::string temp = "./levels/" + levelid + "/";
 	if (!Files::exists(temp))
-		_mkdir(temp.c_str());
+		int result = _mkdir(temp.c_str());
 
 	if (!pge)
 	{
@@ -94,7 +94,7 @@ void Level::update(PixelGameEngine& g, Player& p, float fElapsed)
 	}
 
 	g.SetDrawTarget(layer);
-	g.DrawDecal(vf2d(0, 0), dec);
+	g.DrawDecal(vf2d(0+g.cam.getX(), 0 + g.cam.getY()), dec);
 	g.EnableLayer(layer, true);
 	g.SetDrawTarget(nullptr);
 
