@@ -12,13 +12,12 @@ public:
 		sAppName = "Kiwifield";
 	}
 public:
-	olc::PixelGameEngine* self;
-
-	Player x = Player(vi2d(20, 0));
-	Level* y;
+	Player player = Player(vi2d(20, 0));
+	Level* level;
 	bool OnUserCreate() override
 	{
-		y = new Level(*self, "examplelevel", true);
+		level = new Level(*this, "examplelevel", true);
+
 		return true;
 	}
 
@@ -26,8 +25,7 @@ public:
 	{
 
 		Clear(olc::BLANK);
-
-		y->update(*self, x, fElapsedTime);
+		level->update(*this, player, fElapsedTime);
 
 		return true;
 	}
@@ -37,7 +35,6 @@ public:
 int main()
 {
 	Game game;
-	game.self = &game;
 	if (game.Construct(wWidth, wHeight, 5, 5, false, false))
 		game.Start();
 

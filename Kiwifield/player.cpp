@@ -65,12 +65,29 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	else
 		velocity.y = 0;
 	
-	if (!false && g.GetKey(Key::SPACE).bPressed)
+	static float elapsedSkip = 0;
+	if (collisionDirections[right] && !collisionDirections[topright] && velocity.x > 0 && elapsedSkip > 0.05)
+	{
+		pos.y -= 1;
+		gravity = false;
+		elapsedSkip = 0;
+	}
+	else if (collisionDirections[left] && !collisionDirections[topleft] && velocity.x < 0 && elapsedSkip > 0.05)
+	{
+		pos.y -= 1;
+		gravity = false;
+		elapsedSkip = 0;
+	}
+	else
+	{
+		elapsedSkip += time;
+	}
+
+	if (!gravity && g.GetKey(Key::SPACE).bPressed)
 	{
 		gravity = true;
 		velocity.y = -maximumVel;
 	}
-
 
 	vf2d timedVelocity = velocity * time;
 
@@ -133,7 +150,9 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
 			if (collisionArray[(int)pos.x][y])
 			{
-				//canmove = false;
+				canmove = false;
+				pos.y = y + 1;
+				velocity.y = 0;
 			}
 		}
 		if (canmove)
