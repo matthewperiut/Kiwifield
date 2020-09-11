@@ -15,7 +15,7 @@ public:
 	// Image system
 	olc::Sprite* spr;
 	olc::Decal* dec;
-	int layer;
+	int drawLayer;
 
 private:
 	// Level size

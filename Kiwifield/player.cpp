@@ -2,33 +2,21 @@
 #define NEW
 #define FALLFIX
 
+
+
 Player::Player(vf2d p)
 {
 	pos = p;
+	sprite = new olc::Sprite("./player.png");
+	decal = new olc::Decal(sprite);
 }
 
-enum { up, down, left, right, topleft, topright, bottomleft, bottomright };
-
-void setDirections(bool(&collisionArray)[wWidth][wHeight], bool(&cd)[8], vi2d pos)
+void Player::update(float time, Stage& stage, PixelGameEngine& g)
 {
-	cd[up] =			collisionArray[pos.x][pos.y-1];
-	cd[down] =			collisionArray[pos.x][pos.y+1];
-	cd[left] =			collisionArray[pos.x-1][pos.y];
-	cd[right] =			collisionArray[pos.x+1][pos.y];
-
-	cd[topleft] =		collisionArray[pos.x - 1][pos.y - 1];
-	cd[topright] =		collisionArray[pos.x + 1][pos.y - 1];
-	cd[bottomleft] =	collisionArray[pos.x - 1][pos.y + 1];
-	cd[bottomright] =	collisionArray[pos.x + 1][pos.y + 1];
-}
-
-void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGameEngine& g)
-{
-	g.DrawRect(pos.x-4+g.cam.getX(),pos.y-8+g.cam.getY(),8,8,Pixel(100,100,100));
+	g.DrawDecal(vi2d(pos.x - 4 + g.cam.getX(), pos.y - 8 + g.cam.getY()), decal);
 	//g.Draw(pos, olc::GREEN);
 
 	bool collisionDirections[8];
-	setDirections(collisionArray, collisionDirections, pos);
 
 	static bool gravity = true;
 
@@ -36,19 +24,21 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	constexpr int speed = 50;
 	static vf2d velocity = { 0, 0 };
 
+	std::cout << pos << std::endl;
+
 	//Firstly the player can move sideways
 	if (g.GetKey(Key::A).bHeld)
-		//Left
+		//l
 		velocity.x = -speed;
 	else if (g.GetKey(Key::D).bHeld)
-		//Right
+		//r
 		velocity.x = speed;
 	else
 		//Still in horizontal
 		velocity.x = 0;
 
 	//Vertical movement
-	if (collisionDirections[down] && velocity.y >= 0)
+	if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && velocity.y >= 0)
 		gravity = false;
 	else
 		gravity = true;
@@ -63,15 +53,15 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 	}
 	else
 		velocity.y = 0;
-	
+
 	static float elapsedSkip = 0;
-	if (collisionDirections[right] && !collisionDirections[topright] && velocity.x > 0 && elapsedSkip > 0.05)
+	if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && velocity.x > 0 && elapsedSkip > 0.05)
 	{
 		pos.y -= 1;
 		gravity = false;
 		elapsedSkip = 0;
 	}
-	else if (collisionDirections[left] && !collisionDirections[topleft] && velocity.x < 0 && elapsedSkip > 0.05)
+	else if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && velocity.x < 0 && elapsedSkip > 0.05)
 	{
 		pos.y -= 1;
 		gravity = false;
@@ -98,9 +88,9 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		bool canmove = true;
 		for (int x = (int)pos.x; x < ceil(newpos.x) + 1; x++)
 		{
-			
+
 			//g.Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
-			if (collisionArray[x][(int)pos.y])
+			if (stage.getCollision(vi2d(x, (int)pos.y)))
 			{
 				canmove = false;
 				pos.x = x - 1;
@@ -115,10 +105,10 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		for (int x = (int)pos.x; x > floor(newpos.x) - 1; x--)
 		{
 			//g.Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
-			if (collisionArray[x][(int)pos.y])
+			if (stage.getCollision(vi2d(x, (int)pos.y)))
 			{
 				canmove = false;
-				pos.x = x+1;
+				pos.x = x + 1;
 			}
 		}
 		if (canmove)
@@ -132,7 +122,7 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		for (int y = (int)pos.y; y < ceil(newpos.y) + 1; y++)
 		{
 			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
-			if (collisionArray[(int)pos.x][y])
+			if (stage.getCollision(vi2d((int)pos.x, y)))
 			{
 				canmove = false;
 				pos.y = y - 1;
@@ -147,7 +137,7 @@ void Player::update(float time, bool(&collisionArray)[wWidth][wHeight], PixelGam
 		for (int y = (int)pos.y; y > floor(newpos.y) - 1; y--)
 		{
 			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
-			if (collisionArray[(int)pos.x][y])
+			if (stage.getCollision(vi2d((int)pos.x, y)))
 			{
 				canmove = false;
 				pos.y = y + 1;

@@ -3,12 +3,13 @@
 #include <ostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 struct Files
 {
-	static void save(bool(&collisionArray)[wWidth][wHeight], string filepath);
-	static bool load(bool(&collisionArray)[wWidth][wHeight], string filepath);
+	static void save(vector<vector<bool>>& collision, string filepath);
+	static bool load(vector<vector<bool>>& collision, string filepath);
 	static bool exists(string filepath);
 };

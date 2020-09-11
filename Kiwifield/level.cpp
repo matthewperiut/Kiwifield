@@ -1,4 +1,4 @@
-#include <direct.h>
+/*#include <direct.h>
 #include <string>
 #include "level.h"
 #include "files.h"
@@ -265,4 +265,4 @@ void Level::CollisionEditor(PixelGameEngine& g)
 			}
 		}
 	}
-}
+}*/
