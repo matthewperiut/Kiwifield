@@ -59,6 +59,75 @@ int Stage::getHeight()
 	return collision[0].size();
 }
 
+void Stage::cameraFollow(vi2d player, PixelGameEngine& g)
+{
+	static bool init = false;
+	static bool tooSmall[2] = { false, false };
+
+	if (!init)
+	{
+		if (getWidth() < g.ScreenWidth())
+		{
+			tooSmall[0] = true;
+		}
+
+		if (getHeight() < g.ScreenHeight())
+		{
+			tooSmall[1] = true;
+		}
+
+		init = true;
+	}
+
+	if (!tooSmall[0])
+	{
+		int expectedCamXLeft = player.x - (g.ScreenWidth() / 2);
+		int expectedCamXRight = expectedCamXLeft + g.ScreenWidth();
+		if (expectedCamXLeft >= 0 && expectedCamXRight < getWidth() + 1)
+		{
+			g.cam.x = expectedCamXLeft;
+		}
+		else
+		{
+			if (expectedCamXLeft < 0)
+				g.cam.x = 0;
+			if (expectedCamXRight > getWidth())
+				g.cam.x = getWidth() - g.ScreenWidth();
+		}
+	}
+	else
+	{
+		int midstage = getWidth() / 2;
+		int differenceToCamera = g.ScreenWidth() / 2;
+
+		g.cam.x = midstage - differenceToCamera;
+	}
+
+	if (!tooSmall[1])
+	{
+		int expectedCamYTop = player.y - (g.ScreenHeight() / 2);
+		int expectedCamYBottom = expectedCamYTop + g.ScreenHeight();
+		if (expectedCamYTop >= 0 && expectedCamYBottom < getHeight() + 1)
+		{
+			g.cam.y = expectedCamYTop;
+		}
+		else
+		{
+			if (expectedCamYTop < 0)
+				g.cam.y = 0;
+			if (expectedCamYBottom > getHeight())
+				g.cam.y = getHeight() - g.ScreenHeight();
+		}
+	}
+	else
+	{
+		int midstage = getHeight() / 2;
+		int differenceToCamera = g.ScreenHeight() / 2;
+
+		g.cam.y = midstage - differenceToCamera;
+	}
+}
+
 void Stage::drawImages(PixelGameEngine& g)
 {
 	for (int i = 0; i < images.size(); i++)

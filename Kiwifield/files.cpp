@@ -66,7 +66,6 @@ void Files::save(vector<vector<bool>>& collision, string filepath)
 	file.open(filepath);
 
 	int width = collision.size();
-	std::cout << width << std::endl;
 	int height = collision[0].size();
 
 	for (int a = 0; a < width; a++)

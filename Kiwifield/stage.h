@@ -28,5 +28,6 @@ public:
 	bool getCollision(vi2d pos);
 	int getWidth();
 	int getHeight();
+	void cameraFollow(vi2d player, PixelGameEngine& g);
 	void drawImages(PixelGameEngine& g);
 };

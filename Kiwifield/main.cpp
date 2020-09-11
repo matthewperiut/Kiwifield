@@ -19,8 +19,11 @@ public:
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage(vi2d(260, 144), *this);
-		stage->images.push_back(Image("./image.png", vi2d(0, 100)));
+		stage = new Stage(vi2d(100, 200), *this);
+		stage->images.push_back(Image("./image.png", vi2d(260-64, 180 -64)));
+
+
+
 		player = new Player(vi2d(20, 20));
 		return true;
 	}
@@ -33,20 +36,8 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-		
-		
-		int expectedCamXLeft = player->pos.x - (ScreenWidth() / 2);
-		int expectedCamXRight = expectedCamXLeft + ScreenWidth();
-		if (expectedCamXLeft >= 0 && expectedCamXRight < stage->getWidth()+1)
-		{
-			cam.x = expectedCamXLeft;
-		}
-		int expectedCamYTop = player->pos.y - (ScreenHeight() / 2);
-		int expectedCamYBottom = expectedCamYTop + ScreenHeight();
-		if (expectedCamYTop >= 0 && expectedCamYBottom < stage->getHeight()+1)
-		{
-			cam.y = expectedCamYTop;
-		}
+
+		stage->cameraFollow(player->pos, *this);
 
 		if (GetKey(Key::LEFT).bPressed)
 		{
