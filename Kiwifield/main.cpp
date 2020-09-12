@@ -19,10 +19,13 @@ public:
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage(vi2d(100, 200), *this);
-		stage->images.push_back(Image("./image.png", vi2d(260-64, 180 -64)));
+		//stage = new Stage(vi2d(256, 144), *this);
+		//stage->images.push_back(Image("./image.png", vi2d(260-64, 180 -64)));
+		//stage->save("gamer");
+		stage = new Stage("gamer", *this);
 
-
+		cout << stage->collision.size() << " " << stage->collision[0].size();
+		//cout << stage->images.size();
 
 		player = new Player(vi2d(20, 20));
 		return true;

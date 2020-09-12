@@ -24,8 +24,6 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 	constexpr int speed = 50;
 	static vf2d velocity = { 0, 0 };
 
-	std::cout << pos << std::endl;
-
 	//Firstly the player can move sideways
 	if (g.GetKey(Key::A).bHeld)
 		//l

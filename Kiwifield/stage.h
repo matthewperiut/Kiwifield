@@ -1,6 +1,9 @@
 #pragma once
 #include "olcPixelGameEngine.h"
 #include "image.h"
+#include "files.h"
+#include <ostream>
+#include <fstream>
 #include <Vector>
 #include <string>
 
@@ -15,12 +18,14 @@ public:
 	//vector<NPC>
 	//vector<Enemy>
 
-	vi2d stageSize;
+	vi2d stageSize = vi2d(0,0);
 
 public:
 	void inline createCollisionVector();
 	Stage(vi2d size, PixelGameEngine& g);
 	Stage(string file, PixelGameEngine& g);
+	void save(string file);
+	void load(string file);
 	bool inbound(vi2d pos);
 	void drawCollider(PixelGameEngine& g);
 

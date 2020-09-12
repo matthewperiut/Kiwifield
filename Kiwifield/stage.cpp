@@ -1,4 +1,5 @@
 #include "stage.h"
+#include <direct.h>
 
 void inline Stage::createCollisionVector()
 {
@@ -26,9 +27,118 @@ Stage::Stage(vi2d size, PixelGameEngine& g)
 	stageSize = vi2d(size.y,size.x);
 	createCollisionVector();
 }
+
+
 Stage::Stage(string file, PixelGameEngine& g)
 {
+	load(file);
 }
+
+void Stage::save(string filename)
+{
+	string mkdir = ("./" + filename + "/");
+	_mkdir(mkdir.c_str());
+
+	ofstream myfile;
+	myfile.open("./" + filename + "/" + filename + ".scn");
+
+	//s for size
+	myfile << 's' << ' ';
+	myfile << getWidth() << ' ';
+	myfile << getHeight() << ' ';
+
+	for (int i = 0; i < images.size(); i++)
+	{
+		// i = image
+		myfile << 'i' << ' ';
+		myfile << images[i].position.x << " ";
+		myfile << images[i].position.y << " ";
+		myfile << images[i].filepath << " ";
+	}
+	myfile.close();
+
+	ofstream file;
+
+	file.open("./" + filename + "/" + filename + ".col");
+
+	int width = collision.size();
+	int height = collision[0].size();
+
+	for (int a = 0; a < width; a++)
+	{
+		for (int b = 0; b < height; b++)
+		{
+			file << collision[a][b];
+		}
+		file << "e\n";
+	}
+	file.close();
+}
+
+void Stage::load(string filename)
+{
+	fstream myfile;
+	
+	char code;
+	myfile.open("./" + filename + "/" + filename + ".scn");
+
+	while (myfile >> code)
+	{
+		string path;
+		switch (code)
+		{
+		case 'i':
+			int ix, iy;
+			myfile >> ix;
+			myfile >> iy;
+			myfile >> path;
+			images.push_back( Image( path, vi2d(ix,iy) ) );
+			break;
+		case 's':
+			int sx, sy;
+
+			myfile >> sx;
+			myfile >> sy;
+			stageSize.x = sy;
+			stageSize.y = sx; 
+			break;
+		}
+	}
+	myfile.close();
+
+	ifstream input_file("./" + filename + "/" + filename + ".col");
+	if (!input_file.fail())
+	{
+		char val;
+		int x = 0;
+		int y = 0;
+		collision.push_back({});
+		while (input_file >> val)
+		{
+			if (val == '0')
+			{
+				collision[y].push_back(false);
+				std::cout << 0;
+				x++;
+			}
+			else if (val == '1')
+			{
+				collision[y].push_back(true);
+				std::cout << 1;
+				x++;
+			}
+			else if (val == 'e')
+			{
+				x = 0;
+				y++;
+				std::cout << '\n';
+				collision.push_back({});
+			}
+		}
+	}
+	input_file.close();
+}
+
 bool Stage::inbound(vi2d pos)
 {
 	if (pos.x >= 0 && pos.x < getWidth())
@@ -52,14 +162,14 @@ bool Stage::getCollision(vi2d pos)
 }
 int Stage::getWidth()
 {
-	return collision.size();
+	return stageSize.y;
 }
 int Stage::getHeight()
 {
-	return collision[0].size();
+	return stageSize.x;
 }
 
-void Stage::cameraFollow(vi2d player, PixelGameEngine& g)
+void Stage::cameraFollow(vi2d pos, PixelGameEngine& g)
 {
 	static bool init = false;
 	static bool tooSmall[2] = { false, false };
@@ -79,9 +189,13 @@ void Stage::cameraFollow(vi2d player, PixelGameEngine& g)
 		init = true;
 	}
 
+
+	const vi2d boundingSize = { 100, 50 };
+	vi2d middle = { pos.x - (g.ScreenWidth() / 2), pos.y - (g.ScreenHeight() / 2) };
+
 	if (!tooSmall[0])
 	{
-		int expectedCamXLeft = player.x - (g.ScreenWidth() / 2);
+		int expectedCamXLeft = pos.x - (g.ScreenWidth() / 2);
 		int expectedCamXRight = expectedCamXLeft + g.ScreenWidth();
 		if (expectedCamXLeft >= 0 && expectedCamXRight < getWidth() + 1)
 		{
@@ -105,7 +219,7 @@ void Stage::cameraFollow(vi2d player, PixelGameEngine& g)
 
 	if (!tooSmall[1])
 	{
-		int expectedCamYTop = player.y - (g.ScreenHeight() / 2);
+		int expectedCamYTop = pos.y - (g.ScreenHeight() / 2);
 		int expectedCamYBottom = expectedCamYTop + g.ScreenHeight();
 		if (expectedCamYTop >= 0 && expectedCamYBottom < getHeight() + 1)
 		{

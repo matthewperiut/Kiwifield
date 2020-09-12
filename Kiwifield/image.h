@@ -9,6 +9,7 @@ using namespace std;
 class Image
 {
 public:
+	string filepath;
 	Sprite* sprite;
 	Decal* decal;
 	vi2d position;
