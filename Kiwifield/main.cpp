@@ -19,13 +19,13 @@ public:
 
 	bool OnUserCreate() override
 	{
-		//stage = new Stage(vi2d(300, 144), *this);
+		stage = new Stage(vi2d(300, 144), *this);
         //stage->images.push_back(Image("./scene.png", vi2d(0,0)));
         //stage->save("wack");
 		//stage->images.push_back(Image("./image.png", vi2d(260-64, 180 -64)));
 		//stage->save("gamer");
 		//stage = new Stage("gamer", *this);
-        stage = new Stage("wack", *this);
+        //stage = new Stage("wack", *this);
 		//cout << stage->collision.size() << " " << stage->collision[0].size();
 		//cout << stage->images.size();
 
@@ -37,6 +37,7 @@ public:
 	{
 		delete stage;
 		delete player;
+		return true;
 	}
 
 	bool OnUserUpdate(float fElapsedTime) override

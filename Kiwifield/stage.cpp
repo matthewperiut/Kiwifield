@@ -1,7 +1,12 @@
 #include "stage.h"
 #include <filesystem>
 
+#if defined (_MSC_VER)
+namespace fs = std::experimental::filesystem::v1;
+#elif defined (__clang__)
 namespace fs = std::filesystem;
+#endif
+
 
 void inline Stage::createCollisionVector()
 {
