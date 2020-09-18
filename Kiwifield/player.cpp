@@ -13,8 +13,7 @@ Player::Player(vf2d p)
 
 void Player::update(float time, Stage& stage, PixelGameEngine& g)
 {
-	g.DrawDecal(vi2d(pos.x - 4 + g.cam.getX(), pos.y - 8 + g.cam.getY()), decal);
-	//g.Draw(pos, olc::GREEN);
+	g.DrawRect(pos.x - 4 + g.cam.getX(), pos.y - 8 + g.cam.getY(), 8, 8);
 
 	bool collisionDirections[8];
 

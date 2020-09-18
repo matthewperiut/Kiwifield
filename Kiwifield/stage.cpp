@@ -1,12 +1,4 @@
 #include "stage.h"
-#include <filesystem>
-
-#if defined (_MSC_VER)
-namespace fs = std::experimental::filesystem::v1;
-#elif defined (__clang__)
-namespace fs = std::filesystem;
-#endif
-
 
 void inline Stage::createCollisionVector()
 {
@@ -29,16 +21,19 @@ void inline Stage::createCollisionVector()
 		setCollision(vi2d(0, y), true);
 	}
 }
+
 Stage::Stage(vi2d size, PixelGameEngine& g)
 {
 	stageSize = vi2d(size.y,size.x);
 	createCollisionVector();
+	this->g = &g;
 }
 
 
 Stage::Stage(string file, PixelGameEngine& g)
 {
 	load(file);
+	this->g = &g;
 }
 
 void Stage::save(string filename)
@@ -177,19 +172,19 @@ int Stage::getHeight()
 	return stageSize.x;
 }
 
-void Stage::cameraFollow(vi2d pos, PixelGameEngine& g)
+void Stage::cameraFollow(vi2d pos)
 {
 	static bool init = false;
 	static bool tooSmall[2] = { false, false };
 
 	if (!init)
 	{
-		if (getWidth() < g.ScreenWidth())
+		if (getWidth() < g->ScreenWidth())
 		{
 			tooSmall[0] = true;
 		}
 
-		if (getHeight() < g.ScreenHeight())
+		if (getHeight() < g->ScreenHeight())
 		{
 			tooSmall[1] = true;
 		}
@@ -199,72 +194,96 @@ void Stage::cameraFollow(vi2d pos, PixelGameEngine& g)
 
 
 	const vi2d boundingSize = { 100, 50 };
-	vi2d middle = { pos.x - (g.ScreenWidth() / 2), pos.y - (g.ScreenHeight() / 2) };
+	vi2d middle = { pos.x - (g->ScreenWidth() / 2), pos.y - (g->ScreenHeight() / 2) };
 
 	if (!tooSmall[0])
 	{
-		int expectedCamXLeft = pos.x - (g.ScreenWidth() / 2);
-		int expectedCamXRight = expectedCamXLeft + g.ScreenWidth();
+		int expectedCamXLeft = pos.x - (g->ScreenWidth() / 2);
+		int expectedCamXRight = expectedCamXLeft + g->ScreenWidth();
 		if (expectedCamXLeft >= 0 && expectedCamXRight < getWidth() + 1)
 		{
-			g.cam.x = expectedCamXLeft;
+			g->cam.x = expectedCamXLeft;
 		}
 		else
 		{
 			if (expectedCamXLeft < 0)
-				g.cam.x = 0;
+				g->cam.x = 0;
 			if (expectedCamXRight > getWidth())
-				g.cam.x = getWidth() - g.ScreenWidth();
+				g->cam.x = getWidth() - g->ScreenWidth();
 		}
 	}
 	else
 	{
 		int midstage = getWidth() / 2;
-		int differenceToCamera = g.ScreenWidth() / 2;
+		int differenceToCamera = g->ScreenWidth() / 2;
 
-		g.cam.x = midstage - differenceToCamera;
+		g->cam.x = midstage - differenceToCamera;
 	}
 
 	if (!tooSmall[1])
 	{
-		int expectedCamYTop = pos.y - (g.ScreenHeight() / 2);
-		int expectedCamYBottom = expectedCamYTop + g.ScreenHeight();
+		int expectedCamYTop = pos.y - (g->ScreenHeight() / 2);
+		int expectedCamYBottom = expectedCamYTop + g->ScreenHeight();
 		if (expectedCamYTop >= 0 && expectedCamYBottom < getHeight() + 1)
 		{
-			g.cam.y = expectedCamYTop;
+			g->cam.y = expectedCamYTop;
 		}
 		else
 		{
 			if (expectedCamYTop < 0)
-				g.cam.y = 0;
+				g->cam.y = 0;
 			if (expectedCamYBottom > getHeight())
-				g.cam.y = getHeight() - g.ScreenHeight();
+				g->cam.y = getHeight() - g->ScreenHeight();
 		}
 	}
 	else
 	{
 		int midstage = getHeight() / 2;
-		int differenceToCamera = g.ScreenHeight() / 2;
+		int differenceToCamera = g->ScreenHeight() / 2;
 
-		g.cam.y = midstage - differenceToCamera;
+		g->cam.y = midstage - differenceToCamera;
 	}
 }
-
-void Stage::drawImages(PixelGameEngine& g)
+void Stage::drawBackground(string img)
 {
+	static Image bg = Image(img, vi2d(0, 0));
+
+	g->EnableLayer(2, true);
+	g->SetDrawTarget(2);
+	
+	g->SetPixelMode(Pixel::ALPHA);
+	g->Clear(olc::BLANK);
+
+	g->DrawDecal(vi2d((bg.position.x + g->cam.getX()) / 1.25, (bg.position.y + g->cam.getY()) / 1.25), bg.decal);
+
+	g->EnableLayer(2, true);
+	g->SetDrawTarget(nullptr);
+}
+void Stage::drawImages()
+{
+	g->EnableLayer(1, true);
+	g->SetDrawTarget(1);
+	
+	//DrawDecal(vi2d(0, 0), d.decal);
+	g->SetPixelMode(Pixel::ALPHA);
+	g->Clear(olc::BLANK);
+
 	for (int i = 0; i < images.size(); i++)
 	{
-		g.DrawDecal(vi2d(images[i].position.x + g.cam.getX(), images[i].position.y + g.cam.getY()), images[i].decal);
+		g->DrawDecal(vi2d(images[i].position.x + g->cam.getX(), images[i].position.y + g->cam.getY()), images[i].decal);
 	}
+	g->EnableLayer(1, true);
+	g->SetDrawTarget(nullptr);
 }
 
-void Stage::drawCollider(PixelGameEngine& g)
+void Stage::drawCollider()
 {
 	for (int y = 0; y < collision.size(); y++)
 	{
 		for (int x = 0; x < collision[y].size(); x++)
 		{
-			g.Draw(vi2d(y + g.cam.getX(), x + g.cam.getY()), Pixel(255 * collision[y][x], 0, 0));
+			if(collision[y][x])
+				g->Draw(vi2d(y + g->cam.getX(), x + g->cam.getY()), Pixel(255, 0, 0));
 		}
 	}
 }
