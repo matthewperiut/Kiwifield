@@ -19,12 +19,14 @@ public:
 
 	bool OnUserCreate() override
 	{
-		//stage = new Stage(vi2d(256, 144), *this);
+		//stage = new Stage(vi2d(300, 144), *this);
+        //stage->images.push_back(Image("./scene.png", vi2d(0,0)));
+        //stage->save("wack");
 		//stage->images.push_back(Image("./image.png", vi2d(260-64, 180 -64)));
 		//stage->save("gamer");
-		stage = new Stage("gamer", *this);
-
-		cout << stage->collision.size() << " " << stage->collision[0].size();
+		//stage = new Stage("gamer", *this);
+        stage = new Stage("wack", *this);
+		//cout << stage->collision.size() << " " << stage->collision[0].size();
 		//cout << stage->images.size();
 
 		player = new Player(vi2d(20, 20));
@@ -39,31 +41,20 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-
-		stage->cameraFollow(player->pos, *this);
-
-		if (GetKey(Key::LEFT).bPressed)
-		{
-			cam.x -= 1;
-		}
-		if (GetKey(Key::RIGHT).bPressed)
-		{
-			cam.x += 1;
-		}
-		if (GetKey(Key::UP).bPressed)
-		{
-			cam.y -= 1;
-		}
-		if (GetKey(Key::DOWN).bPressed)
-		{
-			cam.y += 1;
-		}
-
-		
-		stage->drawImages(*this);
-
 		Clear(olc::BLANK);
+        
+        if(GetMouse(0).bPressed)
+        {
+            std::cout << vi2d(0,144) - GetMousePos() << std::endl;
+        }
+        
+        stage->cameraFollow(player->pos, *this);
+        if(!GetKey(Key::SPACE).bHeld)
+        {
+            stage->drawImages(*this);
+        }
 		stage->drawCollider(*this);
+        
 		player->update(fElapsedTime, *stage, *this);
 
 		return true;

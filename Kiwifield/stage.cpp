@@ -1,5 +1,7 @@
 #include "stage.h"
-#include <direct.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 void inline Stage::createCollisionVector()
 {
@@ -37,7 +39,8 @@ Stage::Stage(string file, PixelGameEngine& g)
 void Stage::save(string filename)
 {
 	string mkdir = ("./" + filename + "/");
-	_mkdir(mkdir.c_str());
+	//_mkdir(mkdir.c_str());
+	fs::create_directory(mkdir);
 
 	ofstream myfile;
 	myfile.open("./" + filename + "/" + filename + ".scn");
