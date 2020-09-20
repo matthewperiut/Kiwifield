@@ -33,7 +33,7 @@ public:
 		stage->images.push_back(Image("./image.png", vi2d(0, 0) ));
 		
 
-		player = new Player(vi2d(20, 20));
+		player = new Player(vi2d(20, 20), *this);
 		return true;
 	}
 
@@ -54,7 +54,7 @@ public:
 		stage->drawImages();
 		stage->drawCollider();
         
-		player->update(fElapsedTime, *stage, *this);
+		player->keyboardInput(fElapsedTime, *stage);
 		
 		return true;
 	}

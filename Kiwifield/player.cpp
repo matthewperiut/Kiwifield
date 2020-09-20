@@ -4,30 +4,28 @@
 
 
 
-Player::Player(vf2d p)
+Player::Player(vf2d p, PixelGameEngine& g)
 {
 	pos = p;
+	this->g = &g;
 	sprite = new olc::Sprite("./player.png");
 	decal = new olc::Decal(sprite);
 }
 
-void Player::update(float time, Stage& stage, PixelGameEngine& g)
+void Player::keyboardInput(float time, Stage& stage)
 {
-	g.DrawRect(pos.x - 4 + g.cam.getX(), pos.y - 8 + g.cam.getY(), 8, 8);
-
-	bool collisionDirections[8];
+	g->DrawRect(pos.x - 4 + g->cam.getX(), pos.y - 8 + g->cam.getY(), 8, 8);
 
 	static bool gravity = true;
 
 	constexpr int maximumVel = 150;
 	constexpr int speed = 50;
-	static vf2d velocity = { 0, 0 };
 
 	//Firstly the player can move sideways
-	if (g.GetKey(Key::A).bHeld)
+	if (g->GetKey(Key::A).bHeld)
 		//l
 		velocity.x = -speed;
-	else if (g.GetKey(Key::D).bHeld)
+	else if (g->GetKey(Key::D).bHeld)
 		//r
 		velocity.x = speed;
 	else
@@ -69,16 +67,19 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 		elapsedSkip += time;
 	}
 
-	if (!gravity && g.GetKey(Key::SPACE).bPressed)
+	if (!gravity && g->GetKey(Key::SPACE).bPressed)
 	{
 		gravity = true;
 		velocity.y = -maximumVel;
 	}
+	move(time, stage);
+}
 
+void Player::move(float time, Stage& stage)
+{
 	vf2d timedVelocity = velocity * time;
 
 	vf2d newpos = pos + timedVelocity;
-	g.SetPixelMode(Pixel::Mode::ALPHA);
 	//Horizontal
 	if (velocity.x > 0)
 	{
@@ -86,7 +87,7 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 		for (int x = (int)pos.x; x < ceil(newpos.x) + 1; x++)
 		{
 
-			//g.Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
+			//g->Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
 			if (stage.getCollision(vi2d(x, (int)pos.y)))
 			{
 				canmove = false;
@@ -101,7 +102,7 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 		bool canmove = true;
 		for (int x = (int)pos.x; x > floor(newpos.x) - 1; x--)
 		{
-			//g.Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
+			//g->Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
 			if (stage.getCollision(vi2d(x, (int)pos.y)))
 			{
 				canmove = false;
@@ -118,7 +119,7 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 		bool canmove = true;
 		for (int y = (int)pos.y; y < ceil(newpos.y) + 1; y++)
 		{
-			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
+			//g->Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
 			if (stage.getCollision(vi2d((int)pos.x, y)))
 			{
 				canmove = false;
@@ -133,7 +134,7 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 		bool canmove = true;
 		for (int y = (int)pos.y; y > floor(newpos.y) - 1; y--)
 		{
-			//g.Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
+			//g->Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
 			if (stage.getCollision(vi2d((int)pos.x, y)))
 			{
 				canmove = false;
@@ -144,5 +145,5 @@ void Player::update(float time, Stage& stage, PixelGameEngine& g)
 		if (canmove)
 			pos.y += timedVelocity.y;
 	}
-	g.SetPixelMode(Pixel::Mode::NORMAL);
+
 }
