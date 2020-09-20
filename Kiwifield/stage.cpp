@@ -254,7 +254,17 @@ void Stage::drawBackground(string img)
 	g->SetPixelMode(Pixel::ALPHA);
 	g->Clear(olc::BLANK);
 
-	g->DrawDecal(vi2d((bg.position.x + g->cam.getX()) / 1.25, (bg.position.y + g->cam.getY()) / 1.25), bg.decal);
+	const static double changeRate = 1.25;
+	int x = bg.position.x + (g->cam.getX() / changeRate);
+	//int y = bg.position.y + (g->cam.getY() / changeRate);
+
+	int reps = int(getWidth() / bg.sprite->width) + 1;
+	
+	// Drawing decals aren't expensive so I found this as the best method
+	for (int i = 0; i < reps; i += 1)
+	{
+		g->DrawDecal(vi2d(x + (bg.sprite->width)*i, 0), bg.decal);
+	}
 
 	g->EnableLayer(2, true);
 	g->SetDrawTarget(nullptr);

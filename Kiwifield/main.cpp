@@ -50,7 +50,7 @@ public:
         
 		
 		stage->cameraFollow(player->pos);
-		stage->drawBackground("./assets/skies/day1.png");
+		stage->drawBackground("./assets/skies/skiesrepeating1.png");
 		stage->drawImages();
 		stage->drawCollider();
         
