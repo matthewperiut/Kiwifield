@@ -154,7 +154,7 @@
 
 	Author
 	~~~~~~
-	David Barr, aka javidx9, ©OneLoneCoder 2018, 2019, 2020
+	David Barr, aka javidx9, ï¿½OneLoneCoder 2018, 2019, 2020
 
 	2.01: Made renderer and platform static for multifile projects
 	2.02: Added Decal destructor, optimised Pixel constructor
@@ -853,7 +853,7 @@ namespace olc
 		int			nFrameCount = 0;
 		Sprite*     fontSprite = nullptr;
 		Decal*      fontDecal = nullptr;
-		Sprite*     pDefaultDrawTarget = nullptr;
+		//Sprite*     pDefaultDrawTarget = nullptr;
 		std::vector<LayerDesc> vLayers;
 		uint8_t		nTargetLayer = 0;
 		uint32_t	nLastFPS = 0;
@@ -2764,8 +2764,8 @@ namespace olc
 		glDeviceContext_t glDeviceContext = 0;
 		glRenderContext_t glRenderContext = 0;
 #endif
-
-		bool bSync = false;
+        //not used
+		//bool bSync = false;
 
 #if defined(__linux__) || defined(__FreeBSD__)
 		X11::Display* olc_Display = nullptr;

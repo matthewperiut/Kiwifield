@@ -19,9 +19,7 @@ public:
 	
 	Sprite* sprite;
 	Decal* decal;
-
-private:
-	int csize = 8;
+    
 public:
 	Player(vf2d p, PixelGameEngine& g);
 

@@ -36,10 +36,7 @@ void Player::keyboardInput(float time, Stage& stage)
 	if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && velocity.y >= 0)
 		gravity = false;
 	else
-		gravity = true;
-
-	if (!gravity)
-		velocity.y < maximumVel;
+        gravity = true;
 
 	if (gravity)
 	{
