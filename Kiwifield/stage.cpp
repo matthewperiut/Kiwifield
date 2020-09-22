@@ -175,19 +175,15 @@ int Stage::getHeight()
 void Stage::cameraFollow(vi2d pos)
 {
 	static bool init = false;
-	static bool tooSmall[2] = { false, false };
+	static bool small[2] = { false, false };
 
 	if (!init)
 	{
 		if (getWidth() < g->ScreenWidth())
-		{
-			tooSmall[0] = true;
-		}
+			small[0] = true;
 
 		if (getHeight() < g->ScreenHeight())
-		{
-			tooSmall[1] = true;
-		}
+			small[1] = true;
 
 		init = true;
 	}
@@ -196,7 +192,7 @@ void Stage::cameraFollow(vi2d pos)
 	const vi2d boundingSize = { 100, 50 };
 	vi2d middle = { pos.x - (g->ScreenWidth() / 2), pos.y - (g->ScreenHeight() / 2) };
 
-	if (!tooSmall[0])
+	if (!small[0])
 	{
 		int expectedCamXLeft = pos.x - (g->ScreenWidth() / 2);
 		int expectedCamXRight = expectedCamXLeft + g->ScreenWidth();
@@ -220,7 +216,7 @@ void Stage::cameraFollow(vi2d pos)
 		g->cam.x = midstage - differenceToCamera;
 	}
 
-	if (!tooSmall[1])
+	if (!small[1])
 	{
 		int expectedCamYTop = pos.y - (g->ScreenHeight() / 2);
 		int expectedCamYBottom = expectedCamYTop + g->ScreenHeight();
@@ -247,27 +243,56 @@ void Stage::cameraFollow(vi2d pos)
 void Stage::drawBackground(string img)
 {
 	static Image bg = Image(img, vi2d(0, 0));
+	static bool init = false;
+	static bool small[2] = { false, false };
+	if (!init)
+	{
+		if (getWidth() < g->ScreenWidth())
+			small[0] = true;
 
+		if (getHeight() < g->ScreenHeight())
+			small[1] = true;
+		init = true;
+	}
 	g->EnableLayer(2, true);
 	g->SetDrawTarget(2);
-	
+
 	g->SetPixelMode(Pixel::ALPHA);
 	g->Clear(olc::BLANK);
 
-	const static double changeRate = 1.25;
-	int x = bg.position.x + (g->cam.getX() / changeRate);
-	//int y = bg.position.y + (g->cam.getY() / changeRate);
-
-	int reps = int(getWidth() / bg.sprite->width) + 1;
 	
-	// Drawing decals aren't expensive so I found this as the best method
-	for (int i = 0; i < reps; i += 1)
+	
+	if (small[0])
 	{
-		g->DrawDecal(vi2d(x + (bg.sprite->width)*i, 0), bg.decal);
+		
 	}
+	if (small[1])
+	{
 
+	}
+	if(!small[0] && !small[1])
+	{
+		const static double changeRate = 1.25;
+		int x = bg.position.x + (g->cam.getX() / changeRate);
+		//int y = bg.position.y + (g->cam.getY() / changeRate);
+
+		int reps = int(getWidth() / bg.sprite->width) + 1;
+
+		// Drawing decals aren't expensive so I found this as the best method
+		for (int i = 0; i < reps; i += 1)
+		{
+			g->DrawDecal(vi2d(x + (bg.sprite->width) * i, 0), bg.decal);
+		}
+	}
 	g->EnableLayer(2, true);
 	g->SetDrawTarget(nullptr);
+	
+	
+
+	
+	
+
+	
 }
 void Stage::drawImages()
 {

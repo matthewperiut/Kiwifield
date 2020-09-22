@@ -23,14 +23,9 @@ public:
 	{
 		stage = new Stage(vi2d(300, 200), *this);
         
-		CreateLayer();
-		CreateLayer();
-
-		std::vector<LayerDesc>& gamer = GetLayers();
-		for (int i = 0; i < gamer.size(); i++)
-		{
-			std::cout << gamer[i].nResID - 2 << std::endl;
-		}
+		// Layer 0 is default starting
+		CreateLayer(); // Layer 1
+		CreateLayer(); // Layer 2
 
 		stage->images.push_back(Image("./image.png", vi2d(0, 0) ));
 		stage->images.push_back(Image("./image.png", vi2d(50, 20) ));
@@ -58,7 +53,6 @@ public:
 		stage->cameraFollow(player->pos);
 		stage->drawBackground("./assets/skies/skiesrepeating1.png");
 		stage->drawImages();
-		stage->drawCollider();
         
         editor->manager();
         

@@ -19,3 +19,5 @@ public:
     void chooseSprite();
     void editSprite();
 };
+
+void DrawLineIn2DBoolean(int& x1, int& y1, int& x2, int& y2, std::vector<std::vector<bool>>& collisionArray, uint32_t pattern = 0xFFFFFFFF);

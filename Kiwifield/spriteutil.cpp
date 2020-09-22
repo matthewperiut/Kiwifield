@@ -1,5 +1,6 @@
 #include "olcPixelGameEngine.h"
 #include "const.h"
+#include <vector>
 
 using namespace olc;
 
@@ -9,7 +10,7 @@ void DrawLineInSpr(int& sx, int& ex, int& sy, int& ey, Pixel p, Sprite& file)
 		file.SetPixel(x, sy-ey, p);
 };
 //void DrawLineInSpr(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Sprite& file, Pixel p, uint32_t pattern)
-void DrawLineIn2DBoolean(int& x1, int& y1, int& x2, int& y2, bool(&collisionArray)[wWidth][wHeight], uint32_t pattern = 0xFFFFFFFF)
+void DrawLineIn2DBoolean(int& x1, int& y1, int& x2, int& y2, std::vector<std::vector<bool>>& collisionArray, uint32_t pattern = 0xFFFFFFFF)
 {
 	auto Draw = [&](int x, int y, bool p)
 	{

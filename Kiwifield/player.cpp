@@ -47,18 +47,23 @@ void Player::keyboardInput(float time, Stage& stage)
 		velocity.y = 0;
 
 	static float elapsedSkip = 0;
-	if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && velocity.x > 0 && elapsedSkip > 0.05)
+	if (velocity.y <= 0)// && elapsedSkip > 0.05)
 	{
-		pos.y -= 1;
-		gravity = false;
-		elapsedSkip = 0;
+		if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && velocity.x > 0)
+		{
+			pos.y -= 1;
+			gravity = false;
+			elapsedSkip = 0;
+		}
+		if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && velocity.x < 0)
+		{
+			pos.y -= 1;
+			gravity = false;
+			elapsedSkip = 0;
+		}
 	}
-	else if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && velocity.x < 0 && elapsedSkip > 0.05)
-	{
-		pos.y -= 1;
-		gravity = false;
-		elapsedSkip = 0;
-	}
+	
+	
 	else
 	{
 		elapsedSkip += time;
