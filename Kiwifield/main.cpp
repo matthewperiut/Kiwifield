@@ -21,7 +21,7 @@ public:
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage(vi2d(256, 144), *this);
+		stage = new Stage(vi2d(300, 144), *this);
         
 		// Layer 0 is default starting
 		CreateLayer(); // Layer 1

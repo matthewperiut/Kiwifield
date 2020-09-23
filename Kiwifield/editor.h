@@ -19,6 +19,7 @@ public:
     void chooseSprite();
     void drawSelected();
     void editSprite();
+    void SaveAllSprites();
     void Create();
     void Remove();
     void Edit();
