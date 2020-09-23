@@ -21,16 +21,16 @@ public:
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage(vi2d(300, 200), *this);
+		stage = new Stage(vi2d(256, 144), *this);
         
 		// Layer 0 is default starting
 		CreateLayer(); // Layer 1
 		CreateLayer(); // Layer 2
 
-		stage->images.push_back(Image("./image.png", vi2d(0, 0) ));
-		stage->images.push_back(Image("./image.png", vi2d(50, 20) ));
-        stage->images.push_back(Image("./image.png", vi2d(100, 30) ));
-        stage->images.push_back(Image("./image.png", vi2d(30, 100) ));
+		stage->images.push_back(Image("./assets/mario.png", vi2d(100, 0) ));
+		stage->images.push_back(Image("./assets/mario.png", vi2d(100, 10) ));
+        stage->images.push_back(Image("./assets/mario.png", vi2d(100, 20) ));
+        stage->images.push_back(Image("./assets/mario.png", vi2d(100, 30) ));
         
         editor = new Editor(*stage, *this);
 
@@ -48,13 +48,14 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
 		Clear(olc::BLANK);
-        
+
+		editor->manager();
 		
 		stage->cameraFollow(player->pos);
 		stage->drawBackground("./assets/skies/skiesrepeating1.png");
 		stage->drawImages();
         
-        editor->manager();
+        
         
 		player->keyboardInput(fElapsedTime, *stage);
 		

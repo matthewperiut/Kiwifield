@@ -1,8 +1,4 @@
 #include "player.h"
-#define NEW
-#define FALLFIX
-
-
 
 Player::Player(vf2d p, PixelGameEngine& g)
 {

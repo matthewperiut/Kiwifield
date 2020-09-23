@@ -17,7 +17,16 @@ public:
     void manager();
     void editCollision();
     void chooseSprite();
+    void drawSelected();
     void editSprite();
+    void Create();
+    void Remove();
+    void Edit();
+    void Rename();
+    bool Move();
 };
 
+void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& sprite);
 void DrawLineIn2DBoolean(int& x1, int& y1, int& x2, int& y2, std::vector<std::vector<bool>>& collisionArray, uint32_t pattern = 0xFFFFFFFF);
+void saveSprite(Sprite spr, std::string filepath);
+void saveSprite(Sprite* spr, std::string filepath);
