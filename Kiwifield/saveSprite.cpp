@@ -14,7 +14,6 @@ void compress(std::string filepath) {
 
     lodepng::load_file(buffer, filepath);
     lodepng::decode(image, w, h, buffer);
-    size_t origsize = buffer.size();
     buffer.clear();
 
     //Now encode as hard as possible with several filter types and window sizes

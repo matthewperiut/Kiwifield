@@ -28,10 +28,12 @@ The manual and changelog are in the header file "lodepng.h"
 Rename this file to lodepng.cpp to use it for C++, or to lodepng.c to use it for C.
 */
 
+#ifdef _MSVC_LANG
 //This is garbage, thanks lodepng
 #pragma warning(disable: 4083)
 #pragma warning(suppress: c4267)
 #pragma warning(suppress: c4334)
+#endif
 
 // Your function
 //#pragma warning( pop ) 
