@@ -22,28 +22,41 @@ void inline Stage::createCollisionVector()
 	}
 }
 
-Stage::Stage(vi2d size, PixelGameEngine& g)
+Stage::Stage(string name, vi2d size, PixelGameEngine& g)
 {
+	this->name = name;
 	stageSize = vi2d(size.y,size.x);
 	createCollisionVector();
 	this->g = &g;
 }
 
 
-Stage::Stage(string file, PixelGameEngine& g)
+Stage::Stage(string name, PixelGameEngine& g)
 {
-	load(file);
+	this->name = name;
+	load(name);
 	this->g = &g;
 }
 
-void Stage::save(string filename)
+void Stage::save()
 {
-	string mkdir = ("./" + filename + "/");
-	//_mkdir(mkdir.c_str());
-	fs::create_directory(mkdir);
+	string filename = name;
+	const static string folder = "./stages/";
+	string mkdir = (folder + filename + "/");
+
+	if(!fs::exists(folder))
+		fs::create_directory(folder);
+	if (!fs::exists(mkdir))
+		fs::create_directory(mkdir);
+	string col = mkdir + filename + ".col";
+	if (!fs::exists(col))
+		fs::remove(col);
+	string scn = mkdir + filename + ".scn";
+	if (!fs::exists(scn))
+		fs::remove(scn);
 
 	ofstream myfile;
-	myfile.open("./" + filename + "/" + filename + ".scn");
+	myfile.open(scn);
 
 	//s for size
 	myfile << 's' << ' ';
@@ -61,17 +74,14 @@ void Stage::save(string filename)
 	myfile.close();
 
 	ofstream file;
-
-	file.open("./" + filename + "/" + filename + ".col");
-
-	int width = collision.size();
-	int height = collision[0].size();
-
-	for (int a = 0; a < width; a++)
+	
+	file.open(col);
+	
+	for (int y = 0; y < stageSize.y; y++)
 	{
-		for (int b = 0; b < height; b++)
+		for (int x = 0; x < stageSize.x; x++)
 		{
-			file << collision[a][b];
+			file << collision.at(y).at(x);
 		}
 		file << "e\n";
 	}
@@ -83,7 +93,7 @@ void Stage::load(string filename)
 	fstream myfile;
 	
 	char code;
-	myfile.open("./" + filename + "/" + filename + ".scn");
+	myfile.open("./stages/" + filename + "/" + filename + ".scn");
 
 	while (myfile >> code)
 	{
@@ -109,7 +119,7 @@ void Stage::load(string filename)
 	}
 	myfile.close();
 
-	ifstream input_file("./" + filename + "/" + filename + ".col");
+	ifstream input_file("./stages/" + filename + "/" + filename + ".col");
 	if (!input_file.fail())
 	{
 		char val;
@@ -121,20 +131,20 @@ void Stage::load(string filename)
 			if (val == '0')
 			{
 				collision[y].push_back(false);
-				std::cout << 0;
+				//std::cout << 0;
 				x++;
 			}
 			else if (val == '1')
 			{
 				collision[y].push_back(true);
-				std::cout << 1;
+				//std::cout << 1;
 				x++;
 			}
 			else if (val == 'e')
 			{
 				x = 0;
 				y++;
-				std::cout << '\n';
+				//std::cout << '\n';
 				collision.push_back({});
 			}
 		}
@@ -313,12 +323,19 @@ void Stage::drawImages()
 
 void Stage::drawCollider()
 {
-	for (int y = 0; y < collision.size(); y++)
+	vi2d ic = { -g->cam.getY(),-g->cam.getX() };
+	for (int x = 0; x < g->ScreenHeight(); x++)
 	{
-		for (int x = 0; x < collision[y].size(); x++)
+		for (int y = 0; y < g->ScreenWidth(); y++)
 		{
-			if(collision[y][x])
-				g->Draw(vi2d(y + g->cam.getX(), x + g->cam.getY()), Pixel(255, 0, 0));
+			int first = y + ic.y;
+			int second = x + ic.x;
+			if ((first > -1 && first < collision.size()) && (second > -1 && second < collision[y].size()))
+				if (collision[first][second])
+					g->Draw(vi2d(y, x), Pixel(255, 0, 0));
+			
 		}
 	}
+	
+		
 }

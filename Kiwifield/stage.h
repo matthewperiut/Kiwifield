@@ -17,6 +17,8 @@ using namespace olc;
 class Stage
 {
 public:
+	string name;
+
 	vector<vector<bool>> collision;
 	vector<Image> images;
 
@@ -29,9 +31,9 @@ public:
 
 public:
 	void inline createCollisionVector();
-	Stage(vi2d size, PixelGameEngine& g);
-	Stage(string file, PixelGameEngine& g);
-	void save(string file);
+	Stage(string name, vi2d size, PixelGameEngine& g);
+	Stage(string name, PixelGameEngine& g);
+	void save();
 	void load(string file);
 	bool inbound(vi2d pos);
 	void drawCollider();

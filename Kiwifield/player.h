@@ -13,6 +13,7 @@ public:
 	vf2d pos = { 0, 0 };
 	vf2d velocity = { 0, 0 };
 	vi2d size = vi2d(16, 16);
+	vf2d scale = { 1, 1 };
 
 	vi2d collisionPixel;
 	PixelGameEngine* g;
@@ -22,6 +23,7 @@ public:
     
 public:
 	Player(vf2d p, PixelGameEngine& g);
+	~Player();
 
 	void keyboardInput(float time, Stage& stage);
 

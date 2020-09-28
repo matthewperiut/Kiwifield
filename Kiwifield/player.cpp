@@ -4,13 +4,28 @@ Player::Player(vf2d p, PixelGameEngine& g)
 {
 	pos = p;
 	this->g = &g;
-	sprite = new olc::Sprite("./player.png");
+	sprite = new olc::Sprite("./assets/player.png");
 	decal = new olc::Decal(sprite);
+}
+
+Player::~Player()
+{
+	delete sprite;
+	delete decal;
 }
 
 void Player::keyboardInput(float time, Stage& stage)
 {
-	g->DrawRect(pos.x - 4 + g->cam.getX(), pos.y - 8 + g->cam.getY(), 8, 8);
+	//g->DrawRect(pos.x - 4 + g->cam.getX(), pos.y - 8 + g->cam.getY(), 8, 8);
+	if (scale.x > 0)
+	{
+		g->DrawDecal(vi2d(pos.x - 4 + g->cam.getX(), pos.y - 7 + g->cam.getY()), decal, scale);
+	}
+	else
+	{
+		g->DrawDecal(vi2d(pos.x + 4 + g->cam.getX(), pos.y - 7 + g->cam.getY()), decal, scale);
+	}
+	
 
 	static bool gravity = true;
 
@@ -20,10 +35,17 @@ void Player::keyboardInput(float time, Stage& stage)
 	//Firstly the player can move sideways
 	if (g->GetKey(Key::A).bHeld)
 		//l
+	{
 		velocity.x = -speed;
+		scale.x = -1;
+	}
+		
 	else if (g->GetKey(Key::D).bHeld)
 		//r
+	{
 		velocity.x = speed;
+		scale.x = 1;
+	}
 	else
 		//Still in horizontal
 		velocity.x = 0;
@@ -57,12 +79,6 @@ void Player::keyboardInput(float time, Stage& stage)
 			gravity = false;
 			elapsedSkip = 0;
 		}
-	}
-	
-	
-	else
-	{
-		elapsedSkip += time;
 	}
 
 	if (!gravity && g->GetKey(Key::SPACE).bPressed)
@@ -135,9 +151,9 @@ void Player::move(float time, Stage& stage)
 			//g->Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
 			if (stage.getCollision(vi2d((int)pos.x, y)))
 			{
-				canmove = false;
-				pos.y = y + 1;
-				velocity.y = 0;
+				//canmove = false;
+				//pos.y = y + 1;
+				//velocity.y = 0;
 			}
 		}
 		if (canmove)

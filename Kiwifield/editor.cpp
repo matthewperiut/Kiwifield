@@ -8,11 +8,11 @@ Editor::Editor(Stage& s, PixelGameEngine& g)
 
 void Editor::manager()
 {
-    static int mode = 1;
+    static int mode = 0;
     if (g->GetKey(Key::TAB).bPressed)
     {
         mode++;
-        if(mode > 3)
+        if(mode > 2)
         {
             mode = 0;
         }
@@ -55,7 +55,9 @@ void Editor::editCollision()
     else if (g->GetMouse(0).bReleased)
     {
         end = g->GetMousePos()+invcam;
-        DrawLineIn2DBoolean(start.x, start.y, end.x, end.y, stage->collision);
+        if (start.x > -1 && start.x < stage->getWidth() && start.y > -1 && start.y < stage->getHeight())
+            if (end.x > -1 && end.x < stage->getWidth() && end.y > -1 && end.y < stage->getHeight())
+                DrawLineIn2DBoolean(start.x, start.y, end.x, end.y, stage->collision);
     }
 
     if (g->GetMouse(1).bHeld)
@@ -67,8 +69,8 @@ void Editor::editCollision()
             for (int y = 0; y < size; y++)
                 for (int x = 0; x < size; x++)
                 {
-                    int colx = m.x + x - int(size/2);
-                    int coly = m.y + y - int(size/2);
+                    int colx = m.x + x;// - int(size/2);
+                    int coly = m.y + y;// - int(size/2);
                     if (colx > -1 && colx < stage->getWidth() && coly > -1 && coly < stage->getHeight())
                         if(stage->collision[colx][coly])
                             stage->collision[colx][coly] = false;
@@ -172,7 +174,7 @@ void Editor::editSprite()
     if (usingConsole)
     {
         usingConsole = false;
-        g->DrawString(vf2d(0, g->ScreenHeight()-8), "CHECK CONSOLE");
+        g->DrawString(vf2d(0, int(g->ScreenHeight()-8)), "CHECK CONSOLE");
     }
     else
         switch (mode)

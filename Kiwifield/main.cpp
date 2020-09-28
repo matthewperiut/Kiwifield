@@ -21,16 +21,13 @@ public:
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage(vi2d(300, 144), *this);
+		
+		
+		stage = new Stage("examplelevel", *this);
         
 		// Layer 0 is default starting
 		CreateLayer(); // Layer 1
 		CreateLayer(); // Layer 2
-
-		stage->images.push_back(Image("./assets/mario.png", vi2d(100, 0) ));
-		stage->images.push_back(Image("./assets/mario.png", vi2d(100, 10) ));
-        stage->images.push_back(Image("./assets/mario.png", vi2d(100, 20) ));
-        stage->images.push_back(Image("./assets/mario.png", vi2d(100, 30) ));
         
         editor = new Editor(*stage, *this);
 
@@ -50,12 +47,47 @@ public:
 		Clear(olc::BLANK);
 
 		editor->manager();
+
+		if (GetKey(Key::CTRL).bHeld)
+		{
+			if (GetKey(Key::S).bPressed)
+			{
+				stage->save();
+			}
+			if (GetKey(Key::N).bPressed)
+			{
+				string stagename;
+				std::cout << "Stage name:\n";
+				std::cin >> stagename;
+				if (fs::exists("./stages/" + stagename + "/"))
+				{
+					delete stage;
+					stage = new Stage(stagename, *this);
+					delete editor;
+					editor = new Editor(*stage, *this);
+					delete player;
+					player = new Player(vi2d(20, 20), *this);
+				}
+				else
+				{
+					int x, y;
+					std::cout << "Width:\n";
+					std::cin >> x;
+					std::cout << "Height:\n";
+					std::cin >> y;
+					delete stage;
+					stage = new Stage(stagename, vi2d(x, y), *this);
+					delete editor;
+					editor = new Editor(*stage, *this);
+					delete player;
+					player = new Player(vi2d(20, 20), *this);
+				}
+			}
+		}
 		
 		stage->cameraFollow(player->pos);
 		stage->drawBackground("./assets/skies/skiesrepeating1.png");
 		stage->drawImages();
-        
-        
         
 		player->keyboardInput(fElapsedTime, *stage);
 		

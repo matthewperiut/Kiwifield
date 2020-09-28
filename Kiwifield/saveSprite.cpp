@@ -2,6 +2,7 @@
 #include "svpng.h"
 #include "lodepng.h"
 #include <iostream>
+#include <thread>
 #include <string>
 
 using namespace olc;
@@ -71,44 +72,9 @@ void compress(std::string filepath) {
     lodepng::save_file(buffer, filepath);
 }
 
-void saveSprite(Sprite spr, std::string filepath) {
-    std::vector<unsigned char>* v = new std::vector<unsigned char>;
-    v->reserve(double(spr.width) * double(spr.height) * 4);
-    
-    FILE* fp = fopen(filepath.c_str(), "wb");
-    for (int y = 0; y < spr.height; y++)
-        for (int x = 0; x < spr.width; x++)
-        {
-            Pixel color = spr.GetPixel(vi2d(x, y));
-            for (int c = 0; c < 4; c++)
-            {
-                switch (c)
-                {
-                case 0: //r
-                    v->push_back(color.r);
-                    break;
-                case 1: //g
-                    v->push_back(color.g);
-                    break;
-                case 2: //b
-                    v->push_back(color.b);
-                    break;
-                case 3: //a
-                    v->push_back(color.a);
-                    break;
-                }
-            }
-        }
-    
-    unsigned char* a = &(*v)[0];
-    svpng(fp, spr.width, spr.height, a, 1);
-    fclose(fp);
-    compress(filepath);
-    delete v;
-}
 void saveSprite(Sprite* spr, std::string filepath) {
     std::vector<unsigned char>* v = new std::vector<unsigned char>;
-    v->reserve(double(spr->width) * double(spr->height) * 4);
+    v->reserve(unsigned __int64(spr->width) * spr->height * 4);
 
     FILE* fp = fopen(filepath.c_str(), "wb");
     for (int y = 0; y < spr->height; y++)
@@ -138,6 +104,7 @@ void saveSprite(Sprite* spr, std::string filepath) {
     unsigned char* a = &(*v)[0];
     svpng(fp, spr->width, spr->height, a, 1);
     fclose(fp);
-    compress(filepath);
+    std::thread task(compress, filepath);
+    task.detach();
     delete v;
 }
