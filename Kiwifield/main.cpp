@@ -1,6 +1,4 @@
 #define OLC_PGE_APPLICATION
-#include <string>
-#include <iostream>
 #include "olcPixelGameEngine.h"
 #include "player.h"
 #include "stage.h"
@@ -21,8 +19,6 @@ public:
 
 	bool OnUserCreate() override
 	{
-		
-		
 		stage = new Stage("examplelevel", *this);
         
 		// Layer 0 is default starting

@@ -154,8 +154,6 @@
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="level.cpp" />
-    <ClCompile Include="saveSprite.cpp" />
     <ClCompile Include="spriteutil.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="stage.cpp" />
@@ -166,7 +164,6 @@
     <ClInclude Include="files.h" />
     <ClInclude Include="const.h" />
     <ClInclude Include="image.h" />
-    <ClInclude Include="level.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
     <ClInclude Include="player.h" />

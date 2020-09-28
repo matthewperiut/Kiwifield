@@ -11,5 +11,4 @@ struct Files
 {
 	static void save(vector<vector<bool>>& collision, string filepath);
 	static bool load(vector<vector<bool>>& collision, string filepath);
-	static bool exists(string filepath);
 };

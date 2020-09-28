@@ -296,14 +296,8 @@ void Stage::drawBackground(string img)
 	}
 	g->EnableLayer(2, true);
 	g->SetDrawTarget(nullptr);
-	
-	
-
-	
-	
-
-	
 }
+
 void Stage::drawImages()
 {
 	g->EnableLayer(1, true);
