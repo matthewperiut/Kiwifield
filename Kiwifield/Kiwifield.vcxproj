@@ -148,7 +148,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="character.cpp" />
     <ClCompile Include="editor.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="image.cpp" />
@@ -161,7 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
-    <ClInclude Include="character.h" />
     <ClInclude Include="editor.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="const.h" />

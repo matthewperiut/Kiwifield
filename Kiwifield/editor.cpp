@@ -1,7 +1,10 @@
 #include "editor.h"
 #include <iostream>
-
-Editor::Editor(Stage& s, PixelGameEngine& g) : stage{ &s }, g{ &g } { }
+Editor::Editor(Stage& s, PixelGameEngine& g)
+{
+    this->stage = &s;
+    this->g = &g;
+}
 
 void Editor::manager()
 {

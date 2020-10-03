@@ -22,10 +22,12 @@ void inline Stage::createCollisionVector()
 	}
 }
 
-Stage::Stage(string name, vi2d size, PixelGameEngine& g) :
-	name{ name }, stageSize{ vi2d(size.y,size.x) },  g{ &g }
+Stage::Stage(string name, vi2d size, PixelGameEngine& g)
 {
+	this->name = name;
+	stageSize = vi2d(size.y,size.x);
 	createCollisionVector();
+	this->g = &g;
 }
 
 
