@@ -52,10 +52,10 @@ void Editor::editSprite()
 {
     drawSelectedSprite();
 
-    const static int size = 7;
+    const static int size = 8;
     static int prevmode = 0;
     static int mode = 0;
-    enum { ESC, C, X, E, R, M };
+    enum { ESC, C, X, E, R, M, Left, Right };
 
     if (mode != M && mode != E)
     {
@@ -63,7 +63,7 @@ void Editor::editSprite()
     }
 
     string instructions[size] =
-    { "EditSprite", "ESC-stop", "C-create", "X-delete", "E-edit", "R-rename", "M-move" };
+    { "EditSprite", "ESC-stop", "C-create", "X-delete", "E-edit", "R-rename", "M-move", "<>-layer" };
 
     for (int i = 0; i < size; i++)
     {
@@ -90,6 +90,10 @@ void Editor::editSprite()
     }
     else if (g->GetKey(olc::M).bPressed)
         mode = M;
+    else if (g->GetKey(olc::LEFT).bPressed)
+        mode = Left;
+    else if (g->GetKey(olc::RIGHT).bPressed)
+        mode = Right;
 
     // For mode A
 
@@ -123,6 +127,14 @@ void Editor::editSprite()
             if (MoveSprite())
                 mode = ESC;
             break;
+        case Left:
+            LayerSprite(0);
+            mode = ESC;
+            break;
+        case Right:
+            LayerSprite(1);
+            mode = ESC;
+            break;
         }
     if (mode != E && prevmode == E)
     {
@@ -140,6 +152,43 @@ void Editor::editSprite()
 
     prevmode = mode;
 }
+
+void Editor::LayerSprite(bool up)
+{
+    if (!(chosenSprite < stage->images.size() && chosenSprite > -1))
+        return;
+
+    std::cout << chosenSprite << '\n';
+
+    Image current = stage->images[chosenSprite];
+    Image flipper;
+    if (up)
+    {
+        if (double(chosenSprite) + 1 < stage->images.size())
+        {
+            flipper = stage->images[double(chosenSprite) + 1];
+
+            stage->images[chosenSprite] = flipper;
+            stage->images[double(chosenSprite) + 1] = current;
+
+            chosenSprite++;
+        }
+    }
+    else
+    {
+        if (double(chosenSprite) - 1 > -1)
+        {
+            flipper = stage->images[double(chosenSprite) - 1];
+
+            stage->images[chosenSprite] = flipper;
+            stage->images[double(chosenSprite) - 1] = current;
+
+            chosenSprite--;
+        }
+    }
+    std::cout << chosenSprite << '\n';
+}
+
 
 void Editor::SaveAllSprites()
 {
@@ -254,7 +303,7 @@ void Editor::EditSprite()
     if (g->GetMouse(1).bPressed)
         if (m.x + ic.x > pos.x - 1 && m.y + ic.y > pos.y - 1 && m.x + ic.x < pos.x + size.x && m.y + ic.y < pos.y + size.y)
         {
-            Pixel buffer = stage->images[chosenSprite].sprite->GetPixel(m.x - pos.x, m.y - pos.y);
+            Pixel buffer = stage->images[chosenSprite].sprite->GetPixel(m.x - pos.x + ic.x, m.y - pos.y + ic.y);
             if (buffer.a == WHITE.a)
                 color = buffer;
         }

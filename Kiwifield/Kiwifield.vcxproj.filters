@@ -75,6 +75,9 @@
     <ClCompile Include="editorCollision.cpp">
       <Filter>Source Files\Utilities\editor</Filter>
     </ClCompile>
+    <ClCompile Include="portal.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">

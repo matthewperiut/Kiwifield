@@ -16,6 +16,8 @@ public:
     
     void manager();
     void editCollision();
+
+    // Sprites
     void chooseSprite();
     void drawSelectedSprite();
     void editSprite();
@@ -25,6 +27,7 @@ public:
     void EditSprite();
     void RenameSprite();
     bool MoveSprite();
+    void LayerSprite(bool up);
 };
 
 void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& sprite);
