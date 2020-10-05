@@ -149,13 +149,15 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="editor.cpp" />
+    <ClCompile Include="editorCollision.cpp" />
+    <ClCompile Include="editorSprite.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="spriteutil.cpp" />
-    <ClCompile Include="manager.cpp" />
+    <ClCompile Include="world.cpp" />
     <ClCompile Include="stage.cpp" />
   </ItemGroup>
   <ItemGroup>

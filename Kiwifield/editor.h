@@ -17,14 +17,14 @@ public:
     void manager();
     void editCollision();
     void chooseSprite();
-    void drawSelected();
+    void drawSelectedSprite();
     void editSprite();
     void SaveAllSprites();
-    void Create();
-    void Remove();
-    void Edit();
-    void Rename();
-    bool Move();
+    void CreateSprite();
+    void RemoveSprite();
+    void EditSprite();
+    void RenameSprite();
+    bool MoveSprite();
 };
 
 void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& sprite);

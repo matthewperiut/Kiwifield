@@ -34,6 +34,9 @@
     <Filter Include="Header Files\bases">
       <UniqueIdentifier>{a08baa8f-aa28-4867-86d9-635c5866a94e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utilities\editor">
+      <UniqueIdentifier>{1bb570d5-6a87-4a80-8fd1-1bf02d5bf88f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,23 +51,29 @@
     <ClCompile Include="spriteutil.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="manager.cpp">
-      <Filter>Source Files\Stages</Filter>
-    </ClCompile>
     <ClCompile Include="stage.cpp">
       <Filter>Source Files\Stages</Filter>
     </ClCompile>
     <ClCompile Include="image.cpp">
       <Filter>Source Files\Stages\Components</Filter>
     </ClCompile>
-    <ClCompile Include="editor.cpp">
-      <Filter>Source Files\Utilities</Filter>
-    </ClCompile>
     <ClCompile Include="files.cpp">
       <Filter>Source Files\Utilities\filesystem</Filter>
     </ClCompile>
     <ClCompile Include="lodepng.cpp">
       <Filter>Source Files\Utilities\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="editor.cpp">
+      <Filter>Source Files\Utilities\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="editorSprite.cpp">
+      <Filter>Source Files\Utilities\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="world.cpp">
+      <Filter>Source Files\Stages</Filter>
+    </ClCompile>
+    <ClCompile Include="editorCollision.cpp">
+      <Filter>Source Files\Utilities\editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

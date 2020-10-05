@@ -2,7 +2,8 @@
 
 Image::Image()
 {
-
+	sprite = new olc::Sprite();
+	decal = new olc::Decal(sprite);
 }
 
 Image::Image(string file, vi2d pos)
