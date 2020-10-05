@@ -96,7 +96,7 @@ void Editor::editSprite()
     if (usingConsole)
     {
         usingConsole = false;
-        g->DrawString(vf2d(0, int(g->ScreenHeight() - 8)), "CHECK CONSOLE");
+        g->DrawStringDecal(vf2d(0, float(g->ScreenHeight()) - 8), "CHECK CONSOLE");
     }
     else
         switch (mode)

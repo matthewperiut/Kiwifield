@@ -1,4 +1,4 @@
-#include "files.h"=
+#include "files.h"
 #include "olcPixelGameEngine.h"
 #include "svpng.h"
 #include "lodepng.h"
@@ -77,7 +77,7 @@ void compress(std::string filepath) {
 
 void saveSprite(Sprite* spr, std::string filepath) {
     std::vector<unsigned char>* v = new std::vector<unsigned char>;
-    v->reserve(unsigned __int64(spr->width) * spr->height * 4);
+    v->reserve(spr->width * spr->height * 4);
 
     FILE* fp = fopen(filepath.c_str(), "wb");
     for (int y = 0; y < spr->height; y++)
