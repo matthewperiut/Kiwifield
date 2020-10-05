@@ -63,19 +63,16 @@ void Editor::editCollision()
     if (g->GetMouse(1).bHeld)
     {
         vi2d m = g->GetMousePos()+invcam;
-        if (g->GetMouse(1).bHeld)
-        {
-            int size = 5;
-            for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
-                {
-                    int colx = m.x + x;// - int(size/2);
-                    int coly = m.y + y;// - int(size/2);
-                    if (colx > -1 && colx < stage->getWidth() && coly > -1 && coly < stage->getHeight())
-                        if(stage->collision[colx][coly])
-                            stage->collision[colx][coly] = false;
-                }
-        }
+        int size = 5;
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                int colx = m.x + x;// - int(size/2);
+                int coly = m.y + y;// - int(size/2);
+                if (colx > -1 && colx < stage->getWidth() && coly > -1 && coly < stage->getHeight())
+                    if(stage->collision[colx][coly])
+                        stage->collision[colx][coly] = false;
+            }
     }
 }
 void Editor::chooseSprite()
@@ -332,7 +329,9 @@ void Editor::Edit()
     if (g->GetMouse(1).bPressed)
         if (m.x + ic.x > pos.x - 1 && m.y + ic.y > pos.y - 1 && m.x + ic.x < pos.x + size.x && m.y + ic.y < pos.y + size.y)
         {
-            color = stage->images[chosenSprite].sprite->GetPixel(m.x - pos.x, m.y - pos.y);
+            Pixel buffer = stage->images[chosenSprite].sprite->GetPixel(m.x - pos.x, m.y - pos.y);
+            if (buffer.a == WHITE.a)
+                color = buffer;
         }
 
     // Draw color
