@@ -78,6 +78,9 @@
     <ClCompile Include="portal.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="editorPortal.cpp">
+      <Filter>Source Files\Utilities\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="files.h">
       <Filter>Header Files\bases</Filter>
+    </ClInclude>
+    <ClInclude Include="portal.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

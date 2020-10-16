@@ -45,6 +45,7 @@ void Editor::drawSelectedSprite()
         g->SetPixelMode(olc::Pixel::ALPHA);
         g->DrawRect(pos - vi2d(1, 1), size + vi2d(1, 1), Pixel(255, 255, 255, 128));
         g->SetPixelMode(olc::Pixel::NORMAL);
+        g->DrawStringDecal(pos + vf2d(0,-8), to_string(chosenSprite));
     }
 }
 

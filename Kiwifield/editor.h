@@ -28,6 +28,9 @@ public:
     void RenameSprite();
     bool MoveSprite();
     void LayerSprite(bool up);
+
+    // Portal
+    void editPortal();
 };
 
 void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& sprite);

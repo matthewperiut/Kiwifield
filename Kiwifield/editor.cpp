@@ -12,7 +12,7 @@ void Editor::manager()
     if (g->GetKey(Key::TAB).bPressed)
     {
         mode++;
-        if(mode > 2)
+        if(mode > 3)
         {
             mode = 0;
         }
@@ -31,5 +31,8 @@ void Editor::manager()
             //Choose Sprite mode
             editSprite();
             break;
+        case 3:
+            //Place portal
+            editPortal();
     }
 }
