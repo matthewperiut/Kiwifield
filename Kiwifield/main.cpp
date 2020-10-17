@@ -40,6 +40,13 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		static bool init = false;
+		if (!init)
+		{
+			fElapsedTime = 0;
+			init = true;
+		}
+
 		Clear(olc::BLANK);
 
 		editor->manager();
@@ -82,6 +89,10 @@ public:
 		}
 		
 		stage->cameraFollow(player->pos);
+		for (int i = 0; i < stage->images.size(); i++)
+		{
+			stage->images.at(i).animate(fElapsedTime);
+		}
 		stage->drawBackground("./assets/skies/skiesrepeating1.png");
 		stage->drawImages();
         
