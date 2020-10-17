@@ -259,9 +259,9 @@ void Editor::EditSprite()
 
     // Change brush size
     static int radius = 0;
-    if (g->GetMouseWheel() > 0 || g->GetKey(Key::UP).bPressed)
+    if (g->GetMouseWheel() > 0)
         radius++;
-    if (g->GetMouseWheel() < 0 || g->GetKey(Key::DOWN).bPressed)
+    if (g->GetMouseWheel() < 0)
         radius--;
 
     // Draw brush
