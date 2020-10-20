@@ -27,6 +27,7 @@ public:
     void EditSprite();
     void RenameSprite();
     bool MoveSprite();
+    void DuplicateSprite();
     void LayerSprite(bool up);
 
     // Portal

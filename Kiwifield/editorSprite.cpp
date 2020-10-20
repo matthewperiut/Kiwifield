@@ -53,10 +53,10 @@ void Editor::editSprite()
 {
     drawSelectedSprite();
 
-    const static int size = 8;
+    const static int size = 9;
     static int prevmode = 0;
     static int mode = 0;
-    enum { ESC, C, X, E, R, M, Left, Right };
+    enum { ESC, C, X, E, R, M, Left, Right, Q };
 
     if (mode != M && mode != E)
     {
@@ -64,7 +64,7 @@ void Editor::editSprite()
     }
 
     string instructions[size] =
-    { "EditSprite", "ESC-stop", "C-create", "X-delete", "E-edit", "R-rename", "M-move", "<>-layer" };
+    { "EditSprite", "ESC-stop", "C-create", "X-delete", "E-edit", "R-rename", "M-move", "<>-layer", "Q-Duplicate" };
 
     for (int i = 0; i < size; i++)
     {
@@ -95,6 +95,8 @@ void Editor::editSprite()
         mode = Left;
     else if (g->GetKey(olc::RIGHT).bPressed)
         mode = Right;
+    else if (g->GetKey(olc::Q).bPressed)
+        mode = Q;
 
     // For mode A
 
@@ -135,6 +137,10 @@ void Editor::editSprite()
         case Right:
             LayerSprite(1);
             mode = ESC;
+            break;
+        case Q:
+            DuplicateSprite();
+            mode = M;
             break;
         }
     if (mode != E && prevmode == E)
@@ -241,7 +247,10 @@ void Editor::RemoveSprite()
     if (stage->images.size() > 0 && chosenSprite <= stage->images.size() - 1)
     {
         stage->images.erase(stage->images.begin() + (chosenSprite));
-        chosenSprite = 0;
+        if (chosenSprite > 1 && chosenSprite < stage->images.size())
+            chosenSprite--;
+        else
+            chosenSprite = 0;
     }
 }
 void Editor::EditSprite()
@@ -407,4 +416,18 @@ bool Editor::MoveSprite()
     }
 
     return false;
+}
+
+void Editor::DuplicateSprite()
+{
+    if (stage->images.size() > 0 && chosenSprite <= stage->images.size() - 1)
+    {
+        stage->images.push_back(Image());
+        for (int i = stage->images.size() - 1; i > chosenSprite; i--)
+        {
+            stage->images[i] = stage->images[i - 1];
+        }
+        stage->images[chosenSprite] = stage->images[chosenSprite + 1];
+        LayerSprite(1);
+    }
 }
