@@ -1,6 +1,5 @@
 #pragma once
 #include "olcPixelGameEngine.h"
-#include "fileCollision.h"
 #include "image.h"
 #include "files.h"
 #include <ostream>

@@ -37,9 +37,7 @@ Stage::Stage(string name, PixelGameEngine& g)
 	load(name);
 	this->g = &g;
 }
-#define OLDCOL
-#define OLDCOLSAVE
-//#define OLDCOLSAVE
+
 void Stage::save()
 {
 	string filename = name;
@@ -76,7 +74,6 @@ void Stage::save()
 	myfile.close();
 
 	ofstream file;
-#ifdef OLDCOLSAVE
 	file.open(col);
 	for (int y = 0; y < stageSize.y; y++)
 	{
@@ -86,11 +83,6 @@ void Stage::save()
 		}
 	}
 	file.close();
-#endif
-#ifdef NEWCOLSAVE
-	FileCollision::SaveVector(collision, col + "1");
-	std::cout << stageSize.x;
-#endif
 }
 
 void Stage::load(string filename)
@@ -124,7 +116,6 @@ void Stage::load(string filename)
 	}
 	myfile.close();
 
-#ifdef OLDCOL
 	ifstream input_file("./stages/" + filename + "/" + filename + ".col");
 	if (!input_file.fail())
 	{
@@ -155,12 +146,6 @@ void Stage::load(string filename)
 		}
 	}
 	input_file.close();
-#endif
-#ifdef NEWCOL
-	collision = FileCollision::LoadVector(stageSize.x, stageSize.y, "./stages/" + filename + "/" + filename + ".col1");
-	cout << collision.size() << '\n';
-	cout << collision[0].size() << '\n';
-#endif
 }
 
 bool Stage::inbound(vi2d pos)
@@ -328,6 +313,7 @@ void Stage::drawImages()
 
 void Stage::drawCollider()
 {
+	/*
 	vi2d ic = { -g->cam.getY(),-g->cam.getX() };
 	for (int x = 0; x < g->ScreenHeight(); x++)
 	{
@@ -341,6 +327,12 @@ void Stage::drawCollider()
 			
 		}
 	}
-	
-		
+	*/
+	for (int y = 0; y < collision.size(); y++)
+	{
+		for (int x = 0; x < collision[y].size(); x++)
+		{
+			g->Draw(vi2d(y + g->cam.getX(), x + g->cam.getY()), Pixel(255 * collision[y][x], 0, 0));
+		}
+	}
 }

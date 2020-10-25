@@ -27,7 +27,7 @@ public:
         
         editor = new Editor(*stage, *this);
 
-		player = new Player(vi2d(20, 20), *this);
+		player = new Player(vi2d(1, 1), *this);
 		return true;
 	}
 
@@ -88,12 +88,12 @@ public:
 			}
 		}
 		
-		stage->cameraFollow(player->pos);
+		//stage->cameraFollow(player->pos);
 		for (int i = 0; i < stage->images.size(); i++)
 		{
 			stage->images.at(i).animate(fElapsedTime);
 		}
-		stage->drawBackground("./assets/skies/skiesrepeating1.png");
+		//stage->drawBackground("./assets/skies/skiesrepeating1.png");
 		stage->drawImages();
         
 		player->keyboardInput(fElapsedTime, *stage);

@@ -158,7 +158,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="portal.cpp" />
-    <ClCompile Include="fileCollision.cpp" />
     <ClCompile Include="spriteutil.cpp" />
     <ClCompile Include="world.cpp" />
     <ClCompile Include="stage.cpp" />
@@ -166,7 +165,6 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="editor.h" />
-    <ClInclude Include="fileCollision.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="const.h" />
     <ClInclude Include="image.h" />

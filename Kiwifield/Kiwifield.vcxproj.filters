@@ -84,9 +84,6 @@
     <ClCompile Include="editorPortal.cpp">
       <Filter>Source Files\Utilities\editor</Filter>
     </ClCompile>
-    <ClCompile Include="fileCollision.cpp">
-      <Filter>Source Files\Stages\Components</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">
@@ -120,9 +117,6 @@
       <Filter>Header Files\stage</Filter>
     </ClInclude>
     <ClInclude Include="stage.h">
-      <Filter>Header Files\stage</Filter>
-    </ClInclude>
-    <ClInclude Include="fileCollision.h">
       <Filter>Header Files\stage</Filter>
     </ClInclude>
   </ItemGroup>
