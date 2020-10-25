@@ -37,7 +37,9 @@ Stage::Stage(string name, PixelGameEngine& g)
 	load(name);
 	this->g = &g;
 }
-
+#define OLDCOL
+#define OLDCOLSAVE
+//#define OLDCOLSAVE
 void Stage::save()
 {
 	string filename = name;
@@ -74,18 +76,21 @@ void Stage::save()
 	myfile.close();
 
 	ofstream file;
-	
+#ifdef OLDCOLSAVE
 	file.open(col);
-	
 	for (int y = 0; y < stageSize.y; y++)
 	{
 		for (int x = 0; x < stageSize.x; x++)
 		{
 			file << collision.at(y).at(x);
 		}
-		file << "e\n";
 	}
 	file.close();
+#endif
+#ifdef NEWCOLSAVE
+	FileCollision::SaveVector(collision, col + "1");
+	std::cout << stageSize.x;
+#endif
 }
 
 void Stage::load(string filename)
@@ -119,6 +124,7 @@ void Stage::load(string filename)
 	}
 	myfile.close();
 
+#ifdef OLDCOL
 	ifstream input_file("./stages/" + filename + "/" + filename + ".col");
 	if (!input_file.fail())
 	{
@@ -140,16 +146,21 @@ void Stage::load(string filename)
 				//std::cout << 1;
 				x++;
 			}
-			else if (val == 'e')
+			if (x == stageSize.x)
 			{
 				x = 0;
 				y++;
-				//std::cout << '\n';
 				collision.push_back({});
 			}
 		}
 	}
 	input_file.close();
+#endif
+#ifdef NEWCOL
+	collision = FileCollision::LoadVector(stageSize.x, stageSize.y, "./stages/" + filename + "/" + filename + ".col1");
+	cout << collision.size() << '\n';
+	cout << collision[0].size() << '\n';
+#endif
 }
 
 bool Stage::inbound(vi2d pos)

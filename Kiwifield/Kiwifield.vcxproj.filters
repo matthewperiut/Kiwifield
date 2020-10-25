@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Utilities\editor">
       <UniqueIdentifier>{1bb570d5-6a87-4a80-8fd1-1bf02d5bf88f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\stage">
+      <UniqueIdentifier>{f3f9ff6e-adfb-43d8-ba4a-98648ecd9406}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -81,12 +84,12 @@
     <ClCompile Include="editorPortal.cpp">
       <Filter>Source Files\Utilities\editor</Filter>
     </ClCompile>
+    <ClCompile Include="fileCollision.cpp">
+      <Filter>Source Files\Stages\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="editor.h">
@@ -114,7 +117,13 @@
       <Filter>Header Files\bases</Filter>
     </ClInclude>
     <ClInclude Include="portal.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\stage</Filter>
+    </ClInclude>
+    <ClInclude Include="stage.h">
+      <Filter>Header Files\stage</Filter>
+    </ClInclude>
+    <ClInclude Include="fileCollision.h">
+      <Filter>Header Files\stage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
