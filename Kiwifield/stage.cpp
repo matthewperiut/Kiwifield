@@ -330,14 +330,6 @@ void Stage::Update(float fElapsedTime, vf2d& p)
 	cameraFollow(p);
 	drawBackground(backgroundpath);
 
-	for (int i = 0; i < portals.size(); i++)
-	{
-		if (portals[i].Update(fElapsedTime, p, *g))
-		{
-
-		}
-	}
-
 	g->EnableLayer(1, true);
 	g->SetDrawTarget(1);
 	

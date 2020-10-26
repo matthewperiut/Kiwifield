@@ -1,9 +1,7 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-#include "player.h"
-#include "stage.h"
-#include "files.h"
-#include "editor.h"
+#include "world.h"
+#include "const.h"
 
 class Game : public olc::PixelGameEngine
 {
@@ -13,87 +11,26 @@ public:
 		sAppName = "Kiwifield";
 	}
 public:
-	Player* player;
-	Stage* stage;
-    Editor* editor;
+	World world;
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage("tp", *this);
-        
+		world.g = this;
+		world.Construct(); 
 		// Layer 0 is default starting
 		CreateLayer(); // Layer 1
 		CreateLayer(); // Layer 2
-        
-        editor = new Editor(*stage, *this);
-
-		player = new Player(vi2d(1, 1), *this);
 		return true;
 	}
 
 	bool OnUserDestroy() override
 	{
-		delete stage;
-		delete player;
 		return true;
 	}
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-		static bool init = false;
-		if (!init)
-		{
-			fElapsedTime = 0;
-			init = true;
-		}
-
-		Clear(olc::BLANK);
-
-		editor->manager();
-
-		if (GetKey(Key::CTRL).bHeld)
-		{
-			if (GetKey(Key::S).bPressed)
-			{
-				stage->save();
-			}
-			if (GetKey(Key::N).bPressed)
-			{
-				string stagename;
-				std::cout << "Stage name:\n";
-				std::cin >> stagename;
-				if (fs::exists("./stages/" + stagename + "/"))
-				{
-					delete stage;
-					stage = new Stage(stagename, *this);
-					delete editor;
-					editor = new Editor(*stage, *this);
-					delete player;
-					player = new Player(vi2d(20, 20), *this);
-				}
-				else
-				{
-					int x, y;
-					std::cout << "Width:\n";
-					std::cin >> x;
-					std::cout << "Height:\n";
-					std::cin >> y;
-					delete stage;
-					stage = new Stage(stagename, vi2d(x, y), *this);
-					delete editor;
-					editor = new Editor(*stage, *this);
-					delete player;
-					player = new Player(vi2d(1, 1), *this);
-					player->velocity = vi2d(0, 0);
-					fElapsedTime = 0;
-				}
-			}
-		}
-		
-		stage->Update(fElapsedTime, player->pos);
-        
-		player->keyboardInput(fElapsedTime, *stage);
-		
+		world.Update(fElapsedTime);
 		return true;
 	}
 };

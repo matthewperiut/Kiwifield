@@ -22,8 +22,8 @@ public:
 	string backgroundpath{ "" };
 
 	vector<vector<bool>> collision;
-	vector<Image> images;
-	vector<Portal> portals;
+	vector<Image> images{};
+	vector<Portal> portals{};
 
 	//Game Reference
 	PixelGameEngine* g;

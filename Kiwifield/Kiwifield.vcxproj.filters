@@ -119,5 +119,8 @@
     <ClInclude Include="stage.h">
       <Filter>Header Files\stage</Filter>
     </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

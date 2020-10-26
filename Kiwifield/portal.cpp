@@ -16,9 +16,11 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 	elapsed += time;
 
 	int topy = pos.y - size.y;
-	int boty = pos.y;
+	int boty = pos.y - g.cam.y;
 	int leftx = pos.x - (size.x / 2);
 	int rightx = leftx + size.x;
+
+	std::cout << leftx << ',' << boty << "-" << rightx << "," << topy << '\n';
 
 	
 	for (int x = leftx; x < rightx; x++)
@@ -34,13 +36,13 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 		color /= 2;
 
 
-		g.DrawLine(x, boty, x, newy, Pixel(70+(10*sin(elapsed + x)), 90 - (30 * sin(elapsed + x)), 240));
+		g.DrawLine(x + g.cam.getX(), boty + g.cam.getY(), x + g.cam.getX(), newy + g.cam.getY(), Pixel(70+(10*sin(elapsed + x)), 90 - (30 * sin(elapsed + x)), 240));
 		for (int y = boty; y > newy; y--)
 		{
 			int truy = y-newy;
 			float opacity = 255 / (y*y);
 			g.SetPixelMode(Pixel::ALPHA);
-			g.Draw(vi2d(x, y), Pixel(80, 60, 240, opacity));
+			g.Draw(vi2d(x + g.cam.getX(), y + g.cam.getY()), Pixel(80, 60, 240, opacity));
 			g.SetPixelMode(Pixel::NORMAL);
 		}
 	}
