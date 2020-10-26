@@ -2,6 +2,7 @@
 #include "olcPixelGameEngine.h"
 #include "image.h"
 #include "files.h"
+#include "portal.h"
 #include <ostream>
 #include <fstream>
 #include <Vector>
@@ -17,10 +18,12 @@ using namespace olc;
 class Stage
 {
 public:
-	string name;
+	string name{ "" };
+	string backgroundpath{ "" };
 
 	vector<vector<bool>> collision;
 	vector<Image> images;
+	vector<Portal> portals;
 
 	//Game Reference
 	PixelGameEngine* g;
@@ -44,5 +47,5 @@ public:
 	int getHeight();
 	void cameraFollow(vi2d pos);
 	void drawBackground(string img);
-	void drawImages();
+	void Update(float fElapsedTime, vf2d& p);
 };

@@ -19,7 +19,7 @@ public:
 
 	bool OnUserCreate() override
 	{
-		stage = new Stage("examplelevel", *this);
+		stage = new Stage("tp", *this);
         
 		// Layer 0 is default starting
 		CreateLayer(); // Layer 1
@@ -83,18 +83,14 @@ public:
 					delete editor;
 					editor = new Editor(*stage, *this);
 					delete player;
-					player = new Player(vi2d(20, 20), *this);
+					player = new Player(vi2d(1, 1), *this);
+					player->velocity = vi2d(0, 0);
+					fElapsedTime = 0;
 				}
 			}
 		}
 		
-		//stage->cameraFollow(player->pos);
-		for (int i = 0; i < stage->images.size(); i++)
-		{
-			stage->images.at(i).animate(fElapsedTime);
-		}
-		//stage->drawBackground("./assets/skies/skiesrepeating1.png");
-		stage->drawImages();
+		stage->Update(fElapsedTime, player->pos);
         
 		player->keyboardInput(fElapsedTime, *stage);
 		

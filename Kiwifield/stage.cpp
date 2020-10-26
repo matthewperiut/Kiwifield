@@ -63,6 +63,13 @@ void Stage::save()
 	myfile << getWidth() << ' ';
 	myfile << getHeight() << ' ';
 
+	//b for background
+	if (backgroundpath != "")
+	{
+		myfile << 'b' << ' ';
+		myfile << backgroundpath;
+	}
+
 	for (int i = 0; i < images.size(); i++)
 	{
 		// i = image
@@ -111,6 +118,21 @@ void Stage::load(string filename)
 			myfile >> sy;
 			stageSize.x = sy;
 			stageSize.y = sx; 
+			break;
+		case 'b':
+			myfile >> backgroundpath;
+			break;
+		case 'p':
+			int desx, desy;;
+			int locx, locy;
+			myfile >> locx;
+			myfile >> locy;
+			myfile >> path;
+			myfile >> desx;
+			myfile >> desy;
+			Portal p(vi2d(locx, locy));
+			p.Destination(path, vi2d(desx, desy));
+			portals.push_back(p);
 			break;
 		}
 	}
@@ -248,7 +270,16 @@ void Stage::cameraFollow(vi2d pos)
 }
 void Stage::drawBackground(string img)
 {
-	static Image bg = Image(img, vi2d(0, 0));
+	static string imgpath;
+	static Image bg;
+
+	if (img != imgpath)
+	{
+		imgpath = img;
+		bg = Image(img, vi2d(0, 0));
+	}
+		
+
 	static bool init = false;
 	static bool small[2] = { false, false };
 	if (!init)
@@ -294,8 +325,19 @@ void Stage::drawBackground(string img)
 	g->SetDrawTarget(nullptr);
 }
 
-void Stage::drawImages()
+void Stage::Update(float fElapsedTime, vf2d& p)
 {
+	cameraFollow(p);
+	drawBackground(backgroundpath);
+
+	for (int i = 0; i < portals.size(); i++)
+	{
+		if (portals[i].Update(fElapsedTime, p, *g))
+		{
+
+		}
+	}
+
 	g->EnableLayer(1, true);
 	g->SetDrawTarget(1);
 	
@@ -313,7 +355,6 @@ void Stage::drawImages()
 
 void Stage::drawCollider()
 {
-	/*
 	vi2d ic = { -g->cam.getY(),-g->cam.getX() };
 	for (int x = 0; x < g->ScreenHeight(); x++)
 	{
@@ -327,7 +368,7 @@ void Stage::drawCollider()
 			
 		}
 	}
-	*/
+	/*
 	for (int y = 0; y < collision.size(); y++)
 	{
 		for (int x = 0; x < collision[y].size(); x++)
@@ -335,4 +376,5 @@ void Stage::drawCollider()
 			g->Draw(vi2d(y + g->cam.getX(), x + g->cam.getY()), Pixel(255 * collision[y][x], 0, 0));
 		}
 	}
+	*/
 }

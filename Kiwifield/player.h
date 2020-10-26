@@ -1,7 +1,5 @@
 #pragma once
-#include "olcPixelGameEngine.h"
 #include "stage.h"
-#include "const.h"
 #include <vector>
 
 using namespace olc;
