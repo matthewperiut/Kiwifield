@@ -20,7 +20,7 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 	int leftx = pos.x - (size.x / 2);
 	int rightx = leftx + size.x;
 
-	std::cout << leftx << ',' << boty << "-" << rightx << "," << topy << '\n';
+	//std::cout << leftx << ',' << boty << "-" << rightx << "," << topy << '\n';
 
 	
 	for (int x = leftx; x < rightx; x++)
