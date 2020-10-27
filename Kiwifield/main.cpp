@@ -30,6 +30,16 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		static bool showfps = false;
+		if (GetKey(Key::F3).bPressed)
+		{
+			showfps = !showfps;
+		}
+		if (showfps)
+		{
+			DrawStringDecal(vf2d(ScreenWidth()-30,8), to_string(GetFPS()));
+		}
+
 		world.Update(fElapsedTime);
 		return true;
 	}

@@ -16,7 +16,7 @@ void Editor::editCollision()
         if (g->GetMouse(0).bPressed)
             start = g->GetMousePos() + invcam;
         else
-            g->DrawLine(start - invcam, g->GetMousePos(), olc::ORANGE);
+            g->DrawLine(start - invcam, g->GetMousePos(), Pixel(255, 128, 0));
     }
     else if (g->GetMouse(0).bReleased)
     {
