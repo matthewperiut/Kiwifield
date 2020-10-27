@@ -22,21 +22,21 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 
 	//std::cout << leftx << ',' << boty << "-" << rightx << "," << topy << '\n';
 
-	
+	const static int speed = 20;
 	for (int x = leftx; x < rightx; x++)
 	{
 		float timeNormalized = ((1 + sin(elapsed)) / 2);
 		int color = 128*timeNormalized;
 		Pixel maxColor = Pixel(80, 60, 240);
 
-		int newy = topy;
-		newy -= 3*sin(elapsed + (1 * x));
+		int newy = boty;
+		newy -= size.y/8 * (sin((elapsed + x)* speed)+1);
 
 		color *= (sin(x)+1)/2;
 		color /= 2;
 
 
-		g.DrawLine(x + g.cam.getX(), boty + g.cam.getY(), x + g.cam.getX(), newy + g.cam.getY(), Pixel(70+(10*sin(elapsed + x)), 90 - (30 * sin(elapsed + x)), 240));
+		g.DrawLine(x + g.cam.getX(), boty + g.cam.getY(), x + g.cam.getX(), newy + g.cam.getY(), Pixel( 80 + (20*sin((elapsed + x) * speed) ), 80 + (20 * sin((elapsed + x) * speed)), 200));
 		for (int y = boty; y > newy; y--)
 		{
 			int truy = y-newy;
