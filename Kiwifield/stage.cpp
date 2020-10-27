@@ -313,12 +313,12 @@ void Stage::drawBackground(string img)
 		int x = bg.position.x + (g->cam.getX() / changeRate);
 		//int y = bg.position.y + (g->cam.getY() / changeRate);
 
-		int reps = int(getWidth() / bg.getSprite()->width) + 1;
+		int reps = int(getWidth() / bg.sprite->width) + 1;
 
 		// Drawing decals aren't expensive so I found this as the best method
 		for (int i = 0; i < reps; i += 1)
 		{
-			g->DrawDecal(vi2d(x + (bg.getSprite()->width) * i, 0), bg.getDecal());
+			g->DrawDecal(vi2d(x + (bg.sprite->width) * i, 0), bg.decal);
 		}
 	}
 	g->EnableLayer(2, true);
@@ -339,7 +339,7 @@ void Stage::Update(float fElapsedTime, vf2d& p)
 
 	for (int i = 0; i < images.size(); i++)
 	{
-		g->DrawDecal(vi2d(images[i].position.x + g->cam.getX(), images[i].position.y + g->cam.getY()), images[i].getDecal());
+		g->DrawDecal(vi2d(images[i].position.x + g->cam.getX(), images[i].position.y + g->cam.getY()), images[i].decal);
 	}
 	g->EnableLayer(1, true);
 	g->SetDrawTarget(nullptr);

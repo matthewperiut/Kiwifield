@@ -30,11 +30,10 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 		Pixel maxColor = Pixel(80, 60, 240);
 
 		int newy = boty;
-		newy -= size.y/8 * (sin((elapsed + x)* speed)+1);
+		newy -= size.y/8 * (cos((elapsed + x)* speed)+1);
 
 		color *= (sin(x)+1)/2;
 		color /= 2;
-
 
 		g.DrawLine(x + g.cam.getX(), boty + g.cam.getY(), x + g.cam.getX(), newy + g.cam.getY(), Pixel( 80 + (20*sin((elapsed + x) * speed) ), 80 + (20 * sin((elapsed + x) * speed)), 200));
 		for (int y = boty; y > newy; y--)
