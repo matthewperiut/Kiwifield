@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="dynamicPoint.cpp" />
     <ClCompile Include="editor.cpp" />
     <ClCompile Include="editorCollision.cpp" />
     <ClCompile Include="editorPortal.cpp" />
@@ -164,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="dynamicPoint.h" />
     <ClInclude Include="editor.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="const.h" />

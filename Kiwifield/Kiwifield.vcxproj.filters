@@ -84,6 +84,9 @@
     <ClCompile Include="img.cpp">
       <Filter>Source Files\Stages\Components</Filter>
     </ClCompile>
+    <ClCompile Include="dynamicPoint.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="img.h">
       <Filter>Header Files\bases</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamicPoint.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

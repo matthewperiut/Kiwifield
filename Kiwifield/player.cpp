@@ -27,6 +27,28 @@ void Player::keyboardInput(float time, Stage& stage)
 {
 	constexpr int speed = 50;
 
+	if (g->GetKey(Key::SHIFT).bHeld)
+	{
+		/* Future slope work
+		
+		vi2d localplayer = pos + vi2d(g->cam.getX(), g->cam.getY() - size.y / 2);
+		vi2d localmouse = g->GetMousePos();
+		g->DrawLine(localplayer, localmouse);
+		if ((localplayer.x - localmouse.x) != 0)
+		{
+			double slope = (double)(localplayer.y - localmouse.y) / (double)(localplayer.x - localmouse.x) * -1;
+			if (slope > 0)
+				cout << "pos" << '\n';
+			else
+				cout << "neg" << '\n';
+			
+		}
+			
+		else
+			cout << "infinity" << '\n';
+			*/
+	}
+
 	//Firstly the player can move sideways
 	if (g->GetKey(Key::A).bHeld)
 		velocity.x = -speed;
