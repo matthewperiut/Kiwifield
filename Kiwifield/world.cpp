@@ -62,6 +62,10 @@ void World::Keyboard()
 				player->velocity = vi2d(0, 0);
 			}
 		}
+		if (g->GetKey(Key::R).bPressed)
+		{
+			player->pos = { 1, 1 };
+		}
 	}
 }
 
@@ -97,8 +101,6 @@ void World::Portals(float fElapsedTime)
 void World::Update(float fElapsedTime)
 {
 	g->Clear(olc::BLANK);
-
-	//std::cout << player->pos << std::endl;
 
 	if (ChangeStage())
 	{
