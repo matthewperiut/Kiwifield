@@ -7,10 +7,10 @@ void Editor::chooseSprite()
     if (g->GetMouse(0).bPressed)
     {
         int loops = 0;
-        for (int i = chosenSprite; i < stage->images.size(); i++)
+        for (int i = chosenSprite; i < stage->imgs.size(); i++)
         {
-            vi2d pos = stage->images[i].position + cam;
-            vi2d size = vi2d(stage->images[i].sprite->width, stage->images[i].sprite->height);
+            vi2d pos = stage->imgs[i].position + cam;
+            vi2d size = vi2d(stage->imgs[i].GetSprPtr()->width, stage->imgs[i].GetSprPtr()->height);
             vi2d corner = pos + size;
 
             if (g->GetMousePos().x > pos.x && g->GetMousePos().y > pos.y && !(chosenSprite == i))
@@ -22,7 +22,7 @@ void Editor::chooseSprite()
                     break;
                 }
             }
-            if (i == stage->images.size() - 1)
+            if (i == stage->imgs.size() - 1)
             {
                 i = -1;
                 loops++;
@@ -38,10 +38,10 @@ void Editor::chooseSprite()
 
 void Editor::drawSelectedSprite()
 {
-    if (stage->images.size() > 0)
+    if (stage->imgs.size() > 0)
     {
-        vi2d pos = stage->images[chosenSprite].position + vi2d(g->cam.getX(), g->cam.getY());
-        vi2d size = vi2d(stage->images[chosenSprite].sprite->width, stage->images[chosenSprite].sprite->height);
+        vi2d pos = stage->imgs[chosenSprite].position + vi2d(g->cam.getX(), g->cam.getY());
+        vi2d size = vi2d(stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height);
         g->SetPixelMode(olc::Pixel::ALPHA);
         g->DrawRect(pos - vi2d(1, 1), size + vi2d(1, 1), Pixel(255, 255, 255, 128));
         g->SetPixelMode(olc::Pixel::NORMAL);
@@ -145,14 +145,16 @@ void Editor::editSprite()
         }
     if (mode != E && prevmode == E)
     {
-        saveSprite(stage->images[chosenSprite].sprite, stage->images[chosenSprite].filepath);
-        for (int i = 0; i < stage->images.size(); i++)
+        saveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
+        for (int i = 0; i < stage->imgs.size(); i++)
         {
             if (i == chosenSprite)
                 continue;
-            if (stage->images[i].filepath == stage->images[chosenSprite].filepath)
+            if (stage->imgs[i].GetFilePath() == stage->imgs[chosenSprite].GetFilePath())
             {
-                stage->images[i] = Image(stage->images[chosenSprite].filepath, stage->images[i].position);
+                vi2d pos = stage->imgs[i].position;
+                stage->imgs[i].SetFilePath(stage->imgs[chosenSprite].GetFilePath());
+                stage->imgs[i].position = pos;
             }
         }
     }
@@ -162,21 +164,27 @@ void Editor::editSprite()
 
 void Editor::LayerSprite(bool up)
 {
-    if (!(chosenSprite < stage->images.size() && chosenSprite > -1))
+    if (!(chosenSprite < stage->imgs.size() && chosenSprite > -1))
         return;
 
-    std::cout << chosenSprite << '\n';
+    string currentPath = stage->imgs[chosenSprite].GetFilePath();
+    vi2d currentPos = stage->imgs[chosenSprite].position;
 
-    Image current = stage->images[chosenSprite];
-    Image flipper;
+    string flipperPath;
+    vi2d flipperPos;
+
     if (up)
     {
-        if (double(chosenSprite) + 1 < stage->images.size())
+        if (double(chosenSprite) + 1 < stage->imgs.size())
         {
-            flipper = stage->images[double(chosenSprite) + 1];
+            flipperPath = stage->imgs[double(chosenSprite) + 1].GetFilePath();
+            flipperPos = stage->imgs[double(chosenSprite) + 1].position;
 
-            stage->images[chosenSprite] = flipper;
-            stage->images[double(chosenSprite) + 1] = current;
+            stage->imgs[chosenSprite].SetFilePath(flipperPath);
+            stage->imgs[chosenSprite].position = flipperPos;
+
+            stage->imgs[double(chosenSprite) + 1].SetFilePath(currentPath);
+            stage->imgs[double(chosenSprite) + 1].position = currentPos;
 
             chosenSprite++;
         }
@@ -185,10 +193,14 @@ void Editor::LayerSprite(bool up)
     {
         if (double(chosenSprite) - 1 > -1)
         {
-            flipper = stage->images[double(chosenSprite) - 1];
+            flipperPath = stage->imgs[double(chosenSprite) - 1].GetFilePath();
+            flipperPos = stage->imgs[double(chosenSprite) - 1].position;
 
-            stage->images[chosenSprite] = flipper;
-            stage->images[double(chosenSprite) - 1] = current;
+            stage->imgs[chosenSprite].SetFilePath(flipperPath);
+            stage->imgs[chosenSprite].position = flipperPos;
+
+            stage->imgs[double(chosenSprite) - 1].SetFilePath(currentPath);
+            stage->imgs[double(chosenSprite) - 1].position = currentPos;
 
             chosenSprite--;
         }
@@ -199,56 +211,60 @@ void Editor::LayerSprite(bool up)
 
 void Editor::SaveAllSprites()
 {
-    for (int i = 0; i < stage->images.size(); i++)
+    // Untested
+    for (int i = 0; i < stage->imgs.size(); i++)
     {
-        saveSprite(stage->images[i].sprite, stage->images[i].filepath);
+        saveSprite(stage->imgs[i].GetSprPtr(), stage->imgs[i].GetFilePath());
     }
 }
 
 void Editor::CreateSprite()
 {
-    string sprName = "";
-    vi2d sprSize = { 0, 0 };
-    vi2d pos = { 50, 20 };
-    std::cout << "Input name:" << std::endl;
-    std::cin >> sprName;
+    string sprName = "default";
+    vi2d sprSize = { 8, 8 };
+    vi2d pos = vi2d(g->ScreenWidth(), g->ScreenHeight()) / 2;
+    
+    cout << "Input name:" << endl;
+    cin >> sprName;
 
     // Check if exists
-    string filepath = "./assets/" + sprName + ".png";
-    if (std::filesystem::exists(filepath))
+    string filePath = "./assets/" + sprName + ".png";
+    if (filesystem::exists(filePath))
     {
-        stage->images.push_back(Image(filepath, vi2d(g->ScreenWidth(), g->ScreenHeight()) / 2));
+        stage->imgs.push_back(Img(filePath));
+        stage->imgs[stage->imgs.size() - 1].position = pos;
         return;
     }
-
-    std::cout << "Input width:" << std::endl;
-    std::cin >> sprSize.x;
-    std::cout << "Input height:" << std::endl;
-    std::cin >> sprSize.y;
-
-    Image push = Image(sprSize, pos);
+    else
+    {
+        cout << "Input width:" << endl;
+        cin >> sprSize.x;
+        cout << "Input height:" << endl;
+        cin >> sprSize.y;
+    }
+    
+    stage->imgs.push_back(Img(sprSize));
+    int index = stage->imgs.size() - 1;
+    stage->imgs[index].position = pos;
+    stage->imgs[index].filePath = filePath;
     for (int x = 0; x < sprSize.x; x++)
     {
         for (int y = 0; y < sprSize.y; y++)
         {
-            push.sprite->SetPixel(x, y, olc::BLANK);
+            stage->imgs[index].GetSprPtr()->SetPixel(x, y, olc::BLANK);
         }
     }
-    push.filepath = filepath;
-    push.sprite->SetPixel(sprSize.x / 2, sprSize.y / 2, olc::RED);
-    push.update();
-
-    chosenSprite = stage->images.size();
-    stage->images.push_back(push);
-
-    saveSprite(stage->images[chosenSprite].sprite, stage->images[chosenSprite].filepath);
+    stage->imgs[index].GetDecPtr()->Update();
+    chosenSprite = index;
+    
+    saveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
 }
 void Editor::RemoveSprite()
 {
-    if (stage->images.size() > 0 && chosenSprite <= stage->images.size() - 1)
+    if (stage->imgs.size() > 0 && chosenSprite <= stage->imgs.size() - 1)
     {
-        stage->images.erase(stage->images.begin() + (chosenSprite));
-        if (chosenSprite > 1 && chosenSprite < stage->images.size())
+        stage->imgs.erase(stage->imgs.begin() + chosenSprite);
+        if (chosenSprite > 1 && chosenSprite < stage->imgs.size())
             chosenSprite--;
         else
             chosenSprite = 0;
@@ -257,14 +273,14 @@ void Editor::RemoveSprite()
 void Editor::EditSprite()
 {
     const static int colorpickerSize = 12;
-    const static Image eraserimg((string)"./assets/util/eraser.png", vi2d(g->ScreenWidth() - 16, g->ScreenHeight() - colorpickerSize - 16));
+    static Img eraserimg((string)"./assets/util/eraser.png", { g->ScreenWidth() - 16, g->ScreenHeight() - colorpickerSize - 16 });
     static bool eraser = false;
 
     vi2d m = g->GetMousePos();
     vi2d c = vi2d(g->cam.getX(), g->cam.getY());
     vi2d ic = -c;
-    vi2d pos = stage->images[chosenSprite].position;
-    vi2d size = { stage->images[chosenSprite].sprite->width, stage->images[chosenSprite].sprite->height };
+    vi2d &pos = stage->imgs[chosenSprite].position;
+    vi2d size = { stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height };
 
     // Change brush size
     static int radius = 0;
@@ -313,7 +329,7 @@ void Editor::EditSprite()
     if (g->GetMouse(1).bPressed)
         if (m.x + ic.x > pos.x - 1 && m.y + ic.y > pos.y - 1 && m.x + ic.x < pos.x + size.x && m.y + ic.y < pos.y + size.y)
         {
-            Pixel buffer = stage->images[chosenSprite].sprite->GetPixel(m.x - pos.x + ic.x, m.y - pos.y + ic.y);
+            Pixel buffer = stage->imgs[chosenSprite].GetSprPtr()->GetPixel(m.x - pos.x + ic.x, m.y - pos.y + ic.y);
             if (buffer.a == WHITE.a)
                 color = buffer;
         }
@@ -323,13 +339,13 @@ void Editor::EditSprite()
     g->FillRect(vi2d(0, g->ScreenHeight() - colorShowSize - colorpickerSize), vi2d(colorShowSize, colorShowSize), color);
 
     // Draw eraser
-    g->DrawDecal(eraserimg.position, eraserimg.decal);
+    g->DrawDecal(eraserimg.position, eraserimg.GetDecPtr());
 
     enum { none, red, green, blue };
     static int colorpickermode = 0;
     if (g->GetMouse(0).bPressed)
     {
-        if (m.x > eraserimg.position.x && m.y > eraserimg.position.y && m.x < eraserimg.position.x + eraserimg.sprite->width && m.y < eraserimg.position.y + eraserimg.sprite->height)
+        if (m.x > eraserimg.position.x && m.y > eraserimg.position.y && m.x < eraserimg.position.x + eraserimg.GetSprPtr()->width && m.y < eraserimg.position.y + eraserimg.GetSprPtr()->height)
             eraser = !eraser;
 
         if (m.y > g->ScreenHeight() - (colorpickerSize + 1))
@@ -354,7 +370,7 @@ void Editor::EditSprite()
     }
     if (eraser)
     {
-        g->DrawRect(eraserimg.position, vi2d(eraserimg.sprite->width - 1, eraserimg.sprite->height - 1));
+        g->DrawRect(eraserimg.position, vi2d(eraserimg.GetSprPtr()->width - 1, eraserimg.GetSprPtr()->height - 1));
     }
 
     if (colorpickermode != 0)
@@ -383,33 +399,33 @@ void Editor::EditSprite()
     if (g->GetMouse(0).bHeld)
     {
         if (eraser)
-            FillCircleInSpr(m.x - pos.x + ic.x, m.y - pos.y + ic.y, radius, olc::BLANK, *(stage->images[chosenSprite].sprite));
+            FillCircleInSpr(m.x - pos.x + ic.x, m.y - pos.y + ic.y, radius, olc::BLANK, *(stage->imgs[chosenSprite].GetSprPtr()));
         else
-            FillCircleInSpr(m.x - pos.x + ic.x, m.y - pos.y + ic.y, radius, color, *(stage->images[chosenSprite].sprite));
+            FillCircleInSpr(m.x - pos.x + ic.x, m.y - pos.y + ic.y, radius, color, *(stage->imgs[chosenSprite].GetSprPtr()));
 
-        stage->images[chosenSprite].update();
+        stage->imgs[chosenSprite].GetDecPtr()->Update();
     }
 
 }
 void Editor::RenameSprite()
 {
-    if (stage->images.size() > 0 && chosenSprite <= stage->images.size() - 1)
+    if (stage->imgs.size() > 0 && chosenSprite <= stage->imgs.size() - 1)
     {
         string sprName = "";
         std::cout << "This will make the sprite into a new file" << std::endl;
-        std::cout << "Previous path: " << stage->images[chosenSprite].filepath << std::endl;
+        std::cout << "Previous path: " << stage->imgs[chosenSprite].filePath << std::endl;
         std::cout << "make sure to exclude the ./assets/ and .png, only need the name" << std::endl;
         std::cout << "Input new name:" << std::endl;
         std::cin >> sprName;
 
-        stage->images[chosenSprite].filepath = "./assets/" + sprName + ".png";
-        saveSprite(stage->images[chosenSprite].sprite, stage->images[chosenSprite].filepath);
+        stage->imgs[chosenSprite].filePath = "./assets/" + sprName + ".png";
+        saveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
     }
 }
 bool Editor::MoveSprite()
 {
-    vi2d sprSize = { stage->images[chosenSprite].sprite->width, stage->images[chosenSprite].sprite->height };
-    stage->images[chosenSprite].position = g->GetMousePos() - sprSize / 2 - vi2d(g->cam.getX(), g->cam.getY());
+    vi2d sprSize = { stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height };
+    stage->imgs[chosenSprite].position = g->GetMousePos() - sprSize / 2 - vi2d(g->cam.getX(), g->cam.getY());
 
     if (g->GetMouse(0).bPressed)
     {
@@ -421,14 +437,19 @@ bool Editor::MoveSprite()
 
 void Editor::DuplicateSprite()
 {
-    if (stage->images.size() > 0 && chosenSprite <= stage->images.size() - 1)
+    if (stage->imgs.size() > 0 && chosenSprite <= stage->imgs.size() - 1)
     {
-        stage->images.push_back(Image());
-        for (int i = stage->images.size() - 1; i > chosenSprite; i--)
+        stage->imgs.push_back(Img());
+        for (double i = stage->imgs.size() - 1; i > chosenSprite; i--)
         {
-            stage->images[i] = stage->images[i - 1];
+            vi2d pos = stage->imgs[i - 1].position;
+            stage->imgs[i].SetFilePath(stage->imgs[i - 1].filePath);
+            stage->imgs[i].position = pos;
         }
-        stage->images[chosenSprite] = stage->images[chosenSprite + 1];
+        int index = chosenSprite + 1;
+        vi2d pos = stage->imgs[index].position;
+        stage->imgs[chosenSprite].SetFilePath(stage->imgs[index].filePath);
+        stage->imgs[chosenSprite].position = pos;
         LayerSprite(1);
     }
 }

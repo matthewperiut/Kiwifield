@@ -57,9 +57,6 @@
     <ClCompile Include="stage.cpp">
       <Filter>Source Files\Stages</Filter>
     </ClCompile>
-    <ClCompile Include="image.cpp">
-      <Filter>Source Files\Stages\Components</Filter>
-    </ClCompile>
     <ClCompile Include="files.cpp">
       <Filter>Source Files\Utilities\filesystem</Filter>
     </ClCompile>
@@ -84,6 +81,9 @@
     <ClCompile Include="editorPortal.cpp">
       <Filter>Source Files\Utilities\editor</Filter>
     </ClCompile>
+    <ClCompile Include="img.cpp">
+      <Filter>Source Files\Stages\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">
@@ -104,9 +104,6 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files\bases</Filter>
     </ClInclude>
-    <ClInclude Include="image.h">
-      <Filter>Header Files\bases</Filter>
-    </ClInclude>
     <ClInclude Include="const.h">
       <Filter>Header Files\bases</Filter>
     </ClInclude>
@@ -121,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="world.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="img.h">
+      <Filter>Header Files\bases</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

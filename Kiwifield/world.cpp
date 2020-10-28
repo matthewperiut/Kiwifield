@@ -69,13 +69,13 @@ bool World::ChangeStage()
 {
 	if (loadStage)
 	{
+		delete stage;
 		stage = new Stage(wantedStage, *g);
-		player->pos = wantedPos;
-		loadStage = false;
-
 		delete editor;
 		editor = new Editor(*stage, *g);
 
+		player->pos = wantedPos;
+		loadStage = false;
 		return true;
 	}
 	return false;

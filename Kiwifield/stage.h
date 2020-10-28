@@ -1,8 +1,8 @@
 #pragma once
 #include "olcPixelGameEngine.h"
-#include "image.h"
 #include "files.h"
 #include "portal.h"
+#include "img.h"
 #include <ostream>
 #include <fstream>
 #include <Vector>
@@ -22,7 +22,7 @@ public:
 	string backgroundpath{ "" };
 
 	vector<vector<bool>> collision;
-	vector<Image> images{};
+	vector<Img> imgs{};
 	vector<Portal> portals{};
 
 	//Game Reference

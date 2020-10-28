@@ -153,7 +153,7 @@
     <ClCompile Include="editorPortal.cpp" />
     <ClCompile Include="editorSprite.cpp" />
     <ClCompile Include="files.cpp" />
-    <ClCompile Include="image.cpp" />
+    <ClCompile Include="img.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
@@ -167,7 +167,7 @@
     <ClInclude Include="editor.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="const.h" />
-    <ClInclude Include="image.h" />
+    <ClInclude Include="img.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
     <ClInclude Include="player.h" />

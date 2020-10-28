@@ -20,8 +20,6 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 	int leftx = pos.x - (size.x / 2);
 	int rightx = leftx + size.x;
 
-	//std::cout << leftx << ',' << boty << "-" << rightx << "," << topy << '\n';
-
 	const static int speed = 20;
 	for (int x = leftx; x < rightx; x++)
 	{
@@ -46,17 +44,11 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 		}
 	}
 	
-
-	//animation
-	//g.DrawRect(vi2d(pos.x - (size.x / 2), pos.y - size.y), size, GREY);
-	//g.Draw(pos, RED);
-	//check to teleport
 	if (g.GetKey(W).bPressed)
 	{
 		if (p.x > pos.x - (size.x / 2) && p.x < pos.x + (size.x / 2))
 			if (p.y < pos.y + size.y && p.y > pos.y - 1)
 			{
-				std::cout << "Teleport";
 				return true;
 				// I need to implement 'world' for this to work
 			}
