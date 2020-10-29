@@ -60,7 +60,7 @@ void World::Keyboard()
 				editor = new Editor(*stage, *g);
 				delete player;
 				player = new Player(vi2d(1, 1), *g);
-				player->velocity = vi2d(0, 0);
+				player->vel = vi2d(0, 0);
 			}
 		}
 		if (g->GetKey(Key::R).bPressed)
@@ -102,35 +102,38 @@ void World::Portals(float fElapsedTime)
 void World::Update(float fElapsedTime)
 {
 	g->Clear(olc::BLANK);
-
-	static DynamicPoint* dpPtr;// (*stage);
-	static bool init = false;
+	
 	if (ChangeStage())
 	{
 		fElapsedTime = 0;
-		delete dpPtr;
-		dpPtr = new DynamicPoint(*stage);
-		init = false;
 	}
-	DynamicPoint& dp = *dpPtr;
-	if (!init)
+	static vector<DynamicPoint> dps;
+	static float timer = 0;
+	timer += fElapsedTime;
+	if (g->GetMouse(1).bHeld && timer > 0.1)
 	{
-		dp.vel = vf2d(40, 40);
-		dp.pos = vf2d(30, 30);
-		init = true;
+		timer = 0;
+		dps.push_back(DynamicPoint());
+		dps[dps.size() - 1].pos = g->GetMousePos() - vi2d(g->cam.getX(), g->cam.getY());
+		dps[dps.size() - 1].vel = vf2d(40, 40);
 	}
-	if (dp.Left() || dp.Right())
+	for (int i = 0; i < dps.size(); i++)
 	{
-		dp.vel.x = -dp.vel.x;
-	}
-	if (dp.Up() || dp.Down())
-	{
-		dp.vel.y = -dp.vel.y;
+		if (dps[i].Left() || dps[i].Right())
+		{
+			dps[i].vel.x = -dps[i].vel.x;
+		}
+		if (dps[i].Up() || dps[i].Down())
+		{
+			dps[i].vel.y = -dps[i].vel.y;
+		}
+
+		dps[i].Move(fElapsedTime, *stage);
+		//g->Draw(dps[i].pos + vi2d(g->cam.getX(), g->cam.getY()), RED);
+		g->FillCircle(dps[i].pos + vi2d(g->cam.getX(), g->cam.getY()), 1, WHITE);
 	}
 
-	dp.Update(fElapsedTime);
-
-	g->Draw(dp.pos + vi2d(g->cam.getX(), g->cam.getY()), RED);
+	
 	Portals(fElapsedTime);
 	Keyboard();
 

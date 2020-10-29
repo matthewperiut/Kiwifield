@@ -51,35 +51,40 @@ void Player::keyboardInput(float time, Stage& stage)
 
 	//Firstly the player can move sideways
 	if (g->GetKey(Key::A).bHeld)
-		velocity.x = -speed;
+		vel.x = -speed;
 		
 	else if (g->GetKey(Key::D).bHeld)
-		velocity.x = speed;
+		vel.x = speed;
 	else
 		//Still in horizontal
-		velocity.x = 0;
+		vel.x = 0;
 	
 	static bool canJump = true;
 	static float power = 300;
 	static float airTime = 0;
 	static float maxAir = 0.5;
-	if ((g->GetKey(Key::SPACE).bHeld && (!gravity || jump) && airTime < maxAir))
+	if (Down())
 	{
-		airTime += time;
-		if (velocity.y > -100)
-			velocity.y = (-(1+maxAir) * power + (1+airTime) * power);
 		jump = true;
 	}
-	if (g->GetKey(Key::SPACE).bReleased && jump)
+	if ((g->GetKey(Key::SPACE).bHeld && (!gravity || jump) && airTime < maxAir))
+	{
+		jump = true;
+		airTime += time;
+		if (vel.y > -100)
+			vel.y = (-(1+maxAir) * power + (1+airTime) * power);
+	}
+	if (g->GetKey(Key::SPACE).bReleased)
 	{
 		airTime = 0;
 		jump = false;
-		if(velocity.y < -80)
-			velocity.y = -80;
+		if(vel.y < -80)
+			vel.y = -80;
 	}
-	if (!g->GetKey(Key::SPACE).bHeld && !gravity)
+	if (Up())
 	{
-
+		vel.y = 0;
+		airTime = maxAir;
 	}
 
 	logic(time, stage);
@@ -103,127 +108,56 @@ void Player::logic(float time, Stage& stage)
 
 	
 	//Vertical movement
-	if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && velocity.y >= 0)
+	if (Down() && vel.y >= 0)
 		gravity = false;
 	else
 		gravity = true;
 
-	if (velocity.x < 0)
+	if (vel.x < 0)
 	{
 		//left
 		scale.x = -1;
 		
 	}
-	else if (velocity.x > 0)
+	else if (vel.x > 0)
 	{
 		//right
 		scale.x = 1;
 	}
 	if (gravity)
 	{
-		if (velocity.y < maximumVel)
-			velocity.y += time * 400;
+		if (vel.y < maximumVel)
+			vel.y += time * 400;
 	}
 	else
-		velocity.y = 0;
+		vel.y = 0;
 
-	if (!stage.getCollision(vi2d(pos.x, pos.y - 1)))
+	if (!Up())
 	{
 		if (!stage.getCollision(vi2d(pos.x, pos.y + 2)))
 		{
-			if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x - 1, pos.y + 2)) && velocity.x < 0)
+			if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x - 1, pos.y + 2)) && vel.x < 0)
 			{
-				velocity.y = 100;
+				vel.y = 100;
 				gravity = false;
 			}
-			if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x + 1, pos.y + 2)) && velocity.x > 0)
+			if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x + 1, pos.y + 2)) && vel.x > 0)
 			{
-				velocity.y = 100;
+				vel.y = 100;
 				gravity = false;
 			}
 		}
-		if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && velocity.x > 0)
+		if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && vel.x > 0)
 		{
 			pos.y -= 1;
 			gravity = false;
 		}
-		if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && velocity.x < 0)
+		if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && vel.x < 0)
 		{
 			pos.y -= 1;
 			gravity = false;
 		}
 	}
 
-	move(time, stage);
-}
-
-void Player::move(float time, Stage& stage)
-{
-	vf2d timedVelocity = velocity * time;
-
-	vf2d newpos = pos + timedVelocity;
-	//Horizontal
-	if (velocity.x > 0)
-	{
-		bool canmove = true;
-		for (int x = (int)pos.x; x < ceil(newpos.x) + 1; x++)
-		{
-
-			//g->Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
-			if (stage.getCollision(vi2d(x, (int)pos.y)))
-			{
-				canmove = false;
-				pos.x = x - 1;
-			}
-		}
-		if (canmove)
-			pos.x += timedVelocity.x;
-	}
-	if (velocity.x < 0)
-	{
-		bool canmove = true;
-		for (int x = (int)pos.x; x > floor(newpos.x) - 1; x--)
-		{
-			//g->Draw(vi2d(x, (int)pos.y), Pixel(0, 0, 255, 125));
-			if (stage.getCollision(vi2d(x, (int)pos.y)))
-			{
-				canmove = false;
-				pos.x = x + 1;
-			}
-		}
-		if (canmove)
-			pos.x += timedVelocity.x;
-	}
-
-	//Vertical
-	if (velocity.y > 0)
-	{
-		bool canmove = true;
-		for (int y = (int)pos.y; y < ceil(newpos.y) + 1; y++)
-		{
-			//g->Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
-			if (stage.getCollision(vi2d((int)pos.x, y)))
-			{
-				canmove = false;
-				pos.y = y - 1;
-			}
-		}
-		if (canmove)
-			pos.y += timedVelocity.y;
-	}
-	if (velocity.y < 0)
-	{
-		bool canmove = true;
-		for (int y = (int)pos.y; y > floor(newpos.y) - 1; y--)
-		{
-			//g->Draw(vi2d((int)pos.x, y), Pixel(0, 0, 255, 125));
-			if (stage.getCollision(vi2d((int)pos.x, y)))
-			{
-				pos.y -= 2;
-			}
-		}
-		if (canmove)
-			pos.y += timedVelocity.y;
-	}
-
+	Move(time, stage);
 }

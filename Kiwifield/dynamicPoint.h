@@ -11,8 +11,6 @@ class DynamicPoint
 public:
 	vf2d pos = { 1, 1 };
 	vf2d vel = { 0, 0 };
-protected:
-	Stage* stage;
 private:
 	enum { up, down, left, right };
 	bool directions[4]{ false };
@@ -22,6 +20,8 @@ public:
 	bool Left();
 	bool Right();
 
-	DynamicPoint(Stage& s);
-	void Update(float time);
+	
+
+	DynamicPoint();
+	void Move(float time, Stage& stage);
 };

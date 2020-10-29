@@ -1,15 +1,14 @@
 #pragma once
 #include "stage.h"
+#include "dynamicPoint.h"
 #include <vector>
 
 using namespace olc;
 using namespace std;
 
-class Player
+class Player : public DynamicPoint
 {
 public:
-	vf2d pos = { 0, 0 };
-	vf2d velocity = { 0, 0 };
 	vi2d size = { 8, 8 };
 	vf2d scale = { 1, 1 };
 
@@ -28,8 +27,5 @@ public:
 	~Player();
 
 	void keyboardInput(float time, Stage& stage);
-
 	void logic(float time, Stage& stage);
-
-	void move(float time, Stage& stage);
 };
