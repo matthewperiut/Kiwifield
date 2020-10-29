@@ -67,17 +67,28 @@ void Stage::save()
 	if (backgroundpath != "")
 	{
 		myfile << 'b' << ' ';
-		myfile << backgroundpath;
+		myfile << backgroundpath << ' ';
 	}
 
 	for (int i = 0; i < imgs.size(); i++)
 	{
 		// i = image
 		myfile << 'i' << ' ';
-		myfile << imgs[i].position.x << " ";
-		myfile << imgs[i].position.y << " ";
-		myfile << imgs[i].filePath << " ";
+		myfile << imgs[i].position.x << ' ';
+		myfile << imgs[i].position.y << ' ';
+		myfile << imgs[i].filePath << ' ';
 	}
+
+	for (int p = 0; p < portals.size(); p++)
+	{
+		myfile << "p ";
+		myfile << portals[p].pos.x << ' ';
+		myfile << portals[p].pos.y << ' ';
+		myfile << portals[p].destination << ' ';
+		myfile << portals[p].desPos.x << ' ';
+		myfile << portals[p].desPos.y << ' ';
+	}
+
 	myfile.close();
 
 	ofstream file;
