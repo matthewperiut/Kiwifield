@@ -25,14 +25,14 @@ bool DynamicPoint::Right()
 void DynamicPoint::Move(float time, Stage& stage)
 {
 	vf2d timedVelocity = vel * time;
-	vf2d newpos = pos + timedVelocity;
+	vf2d newPos = timedVelocity + pos;
 
 	// Right check
 	directions[right] = false;
-	for (int x = (int)pos.x; x < ceil(newpos.x) + 1; x++)
+	for (int x = (int)pos.x; x < ceil(newPos.x) + 1; x++)
 	{
 
-		if (stage.getCollision(vi2d(x, (int)pos.y)))
+		if (stage.GetCollision(vi2d(x, (int)pos.y)))
 		{
 			directions[right] = true;
 			if (vel.x > 0)
@@ -44,9 +44,9 @@ void DynamicPoint::Move(float time, Stage& stage)
 	
 	// Left check
 	directions[left] = false;
-	for (int x = (int)pos.x; x > floor(newpos.x) - 1; x--)
+	for (int x = (int)pos.x; x > floor(newPos.x) - 1; x--)
 	{
-		if (stage.getCollision(vi2d(x, (int)pos.y)))
+		if (stage.GetCollision(vi2d(x, (int)pos.y)))
 		{
 			directions[left] = true;
 			if(vel.x < 0)
@@ -58,9 +58,9 @@ void DynamicPoint::Move(float time, Stage& stage)
 
 	// Down check
 	directions[down] = false;
-	for (int y = (int)pos.y; y < ceil(newpos.y) + 1; y++)
+	for (int y = (int)pos.y; y < ceil(newPos.y) + 1; y++)
 	{
-		if (stage.getCollision(vi2d((int)pos.x, y)))
+		if (stage.GetCollision(vi2d((int)pos.x, y)))
 		{
 			directions[down] = true;
 			if(vel.y > 0)
@@ -72,9 +72,9 @@ void DynamicPoint::Move(float time, Stage& stage)
 
 	// Up check
 	directions[up] = false;
-	for (int y = (int)pos.y; y > floor(newpos.y) - 1; y--)
+	for (int y = (int)pos.y; y > floor(newPos.y) - 1; y--)
 	{
-		if (stage.getCollision(vi2d((int)pos.x, y)))
+		if (stage.GetCollision(vi2d((int)pos.x, y)))
 		{
 			directions[up] = true;
 			if (vel.y < 0)

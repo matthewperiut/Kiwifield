@@ -8,6 +8,6 @@ public:
 	Camera();
 	Camera(int x, int y); 
 
-	int getX();
-	int getY();
+	int GetX();
+	int GetY();
 };

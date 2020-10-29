@@ -31,7 +31,7 @@ void World::Keyboard()
 	{
 		if (g->GetKey(Key::S).bPressed)
 		{
-			stage->save();
+			stage->Save();
 		}
 		if (g->GetKey(Key::N).bPressed)
 		{
@@ -109,10 +109,10 @@ void World::AttackDemo(float fElapsedTime, float frequency = 0.2, float velocity
 	timer += fElapsedTime;
 	if (g->GetKey(Key::SHIFT).bHeld && timer > frequency)
 	{
-		vi2d localplayer = player->pos + vi2d(g->cam.getX(), g->cam.getY() - player->size.y / 2);
-		vi2d localmouse = g->GetMousePos();
-		double y = (localplayer.y - localmouse.y);
-		double x = (localplayer.x - localmouse.x);
+		vi2d localPlayer = player->pos + vi2d(g->cam.GetX(), g->cam.GetY() - player->size.y / 2);
+		vi2d localMouse = g->GetMousePos();
+		double y = (localPlayer.y - localMouse.y);
+		double x = (localPlayer.x - localMouse.x);
 		double greater;
 		if (abs(x) > abs(y))
 			greater = x;
@@ -122,10 +122,10 @@ void World::AttackDemo(float fElapsedTime, float frequency = 0.2, float velocity
 		normalized = -normalized;
 
 		timer = 0;
-		dps.push_back(DynamicPoint());
-		dtimers.push_back(0.f);
-		bounces.push_back(0);
-		dps[dps.size() - 1].pos = localplayer - vi2d(g->cam.getX(), g->cam.getY());
+		dps.emplace_back(DynamicPoint());
+		dtimers.emplace_back(0.f);
+		bounces.emplace_back(0);
+		dps[dps.size() - 1].pos = localPlayer - vi2d(g->cam.GetX(), g->cam.GetY());
 		dps[dps.size() - 1].vel = normalized * velocityMultiplier;
 	}
 
@@ -157,7 +157,7 @@ void World::AttackDemo(float fElapsedTime, float frequency = 0.2, float velocity
 		}
 
 		dps[i].Move(fElapsedTime, *stage);
-		g->DrawDecal(dps[i].pos + vi2d(g->cam.getX(), g->cam.getY()), dp.GetDecPtr(), vf2d(1, 1));
+		g->DrawDecal(dps[i].pos + vi2d(g->cam.GetX(), g->cam.GetY()), dp.GetDecPtr(), vf2d(1, 1));
 	}
 	if (g->GetKey(Key::ESCAPE).bPressed)
 	{
@@ -181,10 +181,7 @@ void World::Update(float fElapsedTime)
 	Portals(fElapsedTime);
 	Keyboard();
 
-	editor->manager();
+	editor->Manager();
 	stage->Update(fElapsedTime, player->pos);
-
-	
-
-	player->keyboardInput(fElapsedTime, *stage);
+	player->KeyboardInput(fElapsedTime, *stage);
 }

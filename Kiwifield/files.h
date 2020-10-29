@@ -9,6 +9,6 @@ using namespace std;
 
 struct Files
 {
-	static void save(vector<vector<bool>>& collision, string filepath);
-	static bool load(vector<vector<bool>>& collision, string filepath);
+	static void Save(vector<vector<bool>>& collision, string filepath);
+	static bool Load(vector<vector<bool>>& collision, string filepath);
 };

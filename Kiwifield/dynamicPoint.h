@@ -19,9 +19,7 @@ public:
 	bool Down();
 	bool Left();
 	bool Right();
-
 	
-
 	DynamicPoint();
 	void Move(float time, Stage& stage);
 };

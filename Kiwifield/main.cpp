@@ -28,14 +28,14 @@ public:
 		return true;
 	}
 
-	bool OnUserUpdate(float fElapsedTime) override
+	bool OnUserUpdate(const float fElapsedTime) override
 	{
-		static bool showfps = false;
+		static bool showFps = false;
 		if (GetKey(Key::F3).bPressed)
 		{
-			showfps = !showfps;
+			showFps = !showFps;
 		}
-		if (showfps)
+		if (showFps)
 		{
 			string fps = to_string(GetFPS());
 			DrawStringDecal(vf2d(ScreenWidth()-fps.size()*8, 0), fps, GREEN);

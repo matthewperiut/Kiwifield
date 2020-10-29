@@ -1,6 +1,6 @@
 #include "stage.h"
 
-void inline Stage::createCollisionVector()
+void inline Stage::CreateCollisionVector()
 {
 	for (int y = 0; y < stageSize.y; y++)
 	{
@@ -10,15 +10,15 @@ void inline Stage::createCollisionVector()
 			collision[y].push_back(0);
 		}
 	}
-	for (int x = 0; x < getWidth(); x++)
+	for (int x = 0; x < GetWidth(); x++)
 	{
-		setCollision(vi2d(x, getHeight() - 1), true);
-		setCollision(vi2d(x, 0), true);
+		SetCollision(vi2d(x, GetHeight() - 1), true);
+		SetCollision(vi2d(x, 0), true);
 	}
-	for (int y = 0; y < getHeight(); y++)
+	for (int y = 0; y < GetHeight(); y++)
 	{
-		setCollision(vi2d(getWidth() - 1, y), true);
-		setCollision(vi2d(0, y), true);
+		SetCollision(vi2d(GetWidth() - 1, y), true);
+		SetCollision(vi2d(0, y), true);
 	}
 }
 
@@ -26,7 +26,7 @@ Stage::Stage(string name, vi2d size, PixelGameEngine& g)
 {
 	this->name = name;
 	stageSize = vi2d(size.y,size.x);
-	createCollisionVector();
+	CreateCollisionVector();
 	this->g = &g;
 }
 
@@ -34,11 +34,11 @@ Stage::Stage(string name, vi2d size, PixelGameEngine& g)
 Stage::Stage(string name, PixelGameEngine& g)
 {
 	this->name = name;
-	load(name);
+	Load(name);
 	this->g = &g;
 }
 
-void Stage::save()
+void Stage::Save()
 {
 	string filename = name;
 	const static string folder = "./stages/";
@@ -60,14 +60,14 @@ void Stage::save()
 
 	//s for size
 	myfile << 's' << ' ';
-	myfile << getWidth() << ' ';
-	myfile << getHeight() << ' ';
+	myfile << GetWidth() << ' ';
+	myfile << GetHeight() << ' ';
 
 	//b for background
-	if (backgroundpath != "")
+	if (backgroundPath != "")
 	{
 		myfile << 'b' << ' ';
-		myfile << backgroundpath << ' ';
+		myfile << backgroundPath << ' ';
 	}
 
 	for (int i = 0; i < imgs.size(); i++)
@@ -103,7 +103,7 @@ void Stage::save()
 	file.close();
 }
 
-void Stage::load(string filename)
+void Stage::Load(string filename)
 {
 	fstream myfile;
 	
@@ -132,7 +132,7 @@ void Stage::load(string filename)
 			stageSize.y = sx; 
 			break;
 		case 'b':
-			myfile >> backgroundpath;
+			myfile >> backgroundPath;
 			break;
 		case 'p':
 			int desx, desy;;
@@ -175,54 +175,54 @@ void Stage::load(string filename)
 			{
 				x = 0;
 				y++;
-				collision.push_back({});
+				collision.emplace_back();
 			}
 		}
 	}
 	input_file.close();
 }
 
-bool Stage::inbound(vi2d pos)
+bool Stage::Inbound(vi2d pos)
 {
-	if (pos.x >= 0 && pos.x < getWidth())
+	if (pos.x >= 0 && pos.x < GetWidth())
 		return true;
 	else
 		return false;
 }
-void Stage::setCollision(vi2d pos, bool boolean)
+void Stage::SetCollision(vi2d pos, bool boolean)
 {
-	if (pos.x >= 0 && pos.x < getWidth())
-		if (pos.y >= 0 && pos.y < getHeight())
+	if (pos.x >= 0 && pos.x < GetWidth())
+		if (pos.y >= 0 && pos.y < GetHeight())
 			collision[pos.x][pos.y] = boolean;
 }
-bool Stage::getCollision(vi2d pos)
+bool Stage::GetCollision(vi2d pos)
 {
-	if(pos.x >= 0 && pos.x < getWidth())
-		if (pos.y >= 0 && pos.y < getHeight())
+	if(pos.x >= 0 && pos.x < GetWidth())
+		if (pos.y >= 0 && pos.y < GetHeight())
 			return collision[pos.x][pos.y];
 
 	return false;
 }
-int Stage::getWidth()
+int Stage::GetWidth()
 {
 	return stageSize.y;
 }
-int Stage::getHeight()
+int Stage::GetHeight()
 {
 	return stageSize.x;
 }
 
-void Stage::cameraFollow(vi2d pos)
+void Stage::CameraFollow(vi2d pos)
 {
 	static bool init = false;
 	static bool small[2] = { false, false };
 
 	if (!init)
 	{
-		if (getWidth() < g->ScreenWidth())
+		if (GetWidth() < g->ScreenWidth())
 			small[0] = true;
 
-		if (getHeight() < g->ScreenHeight())
+		if (GetHeight() < g->ScreenHeight())
 			small[1] = true;
 
 		init = true;
@@ -236,7 +236,7 @@ void Stage::cameraFollow(vi2d pos)
 	{
 		int expectedCamXLeft = pos.x - (g->ScreenWidth() / 2);
 		int expectedCamXRight = expectedCamXLeft + g->ScreenWidth();
-		if (expectedCamXLeft >= 0 && expectedCamXRight < getWidth() + 1)
+		if (expectedCamXLeft >= 0 && expectedCamXRight < GetWidth() + 1)
 		{
 			g->cam.x = expectedCamXLeft;
 		}
@@ -244,13 +244,13 @@ void Stage::cameraFollow(vi2d pos)
 		{
 			if (expectedCamXLeft < 0)
 				g->cam.x = 0;
-			if (expectedCamXRight > getWidth())
-				g->cam.x = getWidth() - g->ScreenWidth();
+			if (expectedCamXRight > GetWidth())
+				g->cam.x = GetWidth() - g->ScreenWidth();
 		}
 	}
 	else
 	{
-		int midstage = getWidth() / 2;
+		int midstage = GetWidth() / 2;
 		int differenceToCamera = g->ScreenWidth() / 2;
 
 		g->cam.x = midstage - differenceToCamera;
@@ -260,7 +260,7 @@ void Stage::cameraFollow(vi2d pos)
 	{
 		int expectedCamYTop = pos.y - (g->ScreenHeight() / 2);
 		int expectedCamYBottom = expectedCamYTop + g->ScreenHeight();
-		if (expectedCamYTop >= 0 && expectedCamYBottom < getHeight() + 1)
+		if (expectedCamYTop >= 0 && expectedCamYBottom < GetHeight() + 1)
 		{
 			g->cam.y = expectedCamYTop;
 		}
@@ -268,19 +268,19 @@ void Stage::cameraFollow(vi2d pos)
 		{
 			if (expectedCamYTop < 0)
 				g->cam.y = 0;
-			if (expectedCamYBottom > getHeight())
-				g->cam.y = getHeight() - g->ScreenHeight();
+			if (expectedCamYBottom > GetHeight())
+				g->cam.y = GetHeight() - g->ScreenHeight();
 		}
 	}
 	else
 	{
-		int midstage = getHeight() / 2;
+		int midstage = GetHeight() / 2;
 		int differenceToCamera = g->ScreenHeight() / 2;
 
 		g->cam.y = midstage - differenceToCamera;
 	}
 }
-void Stage::drawBackground(string img)
+void Stage::DrawBackground(string img)
 {
 	if (img == "")
 		return;
@@ -299,10 +299,10 @@ void Stage::drawBackground(string img)
 	static bool small[2] = { false, false };
 	if (!init)
 	{
-		if (getWidth() < g->ScreenWidth())
+		if (GetWidth() < g->ScreenWidth())
 			small[0] = true;
 
-		if (getHeight() < g->ScreenHeight())
+		if (GetHeight() < g->ScreenHeight())
 			small[1] = true;
 		init = true;
 	}
@@ -311,8 +311,6 @@ void Stage::drawBackground(string img)
 
 	g->SetPixelMode(Pixel::ALPHA);
 	g->Clear(olc::BLANK);
-
-	
 	
 	if (small[0])
 	{
@@ -325,10 +323,10 @@ void Stage::drawBackground(string img)
 	if(!small[0] && !small[1])
 	{
 		const static double changeRate = 1.25;
-		int x = bg.position.x + (g->cam.getX() / changeRate);
+		int x = bg.position.x + (g->cam.GetX() / changeRate);
 		//int y = bg.position.y + (g->cam.getY() / changeRate);
 
-		int reps = int(getWidth() / bg.GetSprPtr()->width) + 1;
+		int reps = int(GetWidth() / bg.GetSprPtr()->width) + 1;
 
 		// Drawing decals aren't expensive so I found this as the best method
 		for (int i = 0; i < reps; i += 1)
@@ -342,8 +340,8 @@ void Stage::drawBackground(string img)
 
 void Stage::Update(float fElapsedTime, vf2d& p)
 {
-	cameraFollow(p);
-	drawBackground(backgroundpath);
+	CameraFollow(p);
+	DrawBackground(backgroundPath);
 
 	g->EnableLayer(1, true);
 	g->SetDrawTarget(1);
@@ -354,15 +352,15 @@ void Stage::Update(float fElapsedTime, vf2d& p)
 
 	for (int i = 0; i < imgs.size(); i++)
 	{
-		g->DrawDecal(vi2d(imgs[i].position.x + g->cam.getX(), imgs[i].position.y + g->cam.getY()), imgs[i].GetDecPtr());
+		g->DrawDecal(vi2d(imgs[i].position.x + g->cam.GetX(), imgs[i].position.y + g->cam.GetY()), imgs[i].GetDecPtr());
 	}
 	g->EnableLayer(1, true);
 	g->SetDrawTarget(nullptr);
 }
 
-void Stage::drawCollider()
+void Stage::DrawCollider()
 {
-	vi2d ic = { -g->cam.getY(),-g->cam.getX() };
+	vi2d ic = { -g->cam.GetY(),-g->cam.GetX() };
 	for (int x = 0; x < g->ScreenHeight(); x++)
 	{
 		for (int y = 0; y < g->ScreenWidth(); y++)

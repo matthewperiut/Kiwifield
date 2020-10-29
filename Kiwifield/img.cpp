@@ -1,7 +1,4 @@
 #include "img.h"
-//string filePath
-//unique_ptr<Sprite> spr
-//unique_ptr<Decal> dec
 void Img::SetFilePath(string path)
 {
 	filePath = path;

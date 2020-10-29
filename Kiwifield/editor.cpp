@@ -6,7 +6,7 @@ Editor::Editor(Stage& s, PixelGameEngine& g)
     this->g = &g;
 }
 
-void Editor::manager()
+void Editor::Manager()
 {
     static int mode = 0;
     if (g->GetKey(Key::TAB).bPressed)
@@ -25,14 +25,14 @@ void Editor::manager()
             break;
         case 1:
             //Edit collision mode
-            editCollision();
+            EditCollision();
             break;
         case 2:
             //Choose Sprite mode
-            editSprite();
+            EditSprite();
             break;
         case 3:
             //Place portal
-            editPortal();
+            EditPortal();
     }
 }

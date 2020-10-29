@@ -1,8 +1,8 @@
 #include "editor.h"
 
-void Editor::chooseSprite()
+void Editor::ChooseSprite()
 {
-    vi2d cam = { g->cam.getX(), g->cam.getY() };
+    vi2d cam = { g->cam.GetX(), g->cam.GetY() };
 
     if (g->GetMouse(0).bPressed)
     {
@@ -36,11 +36,11 @@ void Editor::chooseSprite()
     }
 }
 
-void Editor::drawSelectedSprite()
+void Editor::DrawSelectedSprite()
 {
     if (stage->imgs.size() > 0)
     {
-        vi2d pos = stage->imgs[chosenSprite].position + vi2d(g->cam.getX(), g->cam.getY());
+        vi2d pos = stage->imgs[chosenSprite].position + vi2d(g->cam.GetX(), g->cam.GetY());
         vi2d size = vi2d(stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height);
         g->SetPixelMode(olc::Pixel::ALPHA);
         g->DrawRect(pos - vi2d(1, 1), size + vi2d(1, 1), Pixel(255, 255, 255, 128));
@@ -49,9 +49,9 @@ void Editor::drawSelectedSprite()
     }
 }
 
-void Editor::editSprite()
+void Editor::EditSprite()
 {
-    drawSelectedSprite();
+    DrawSelectedSprite();
 
     const static int size = 9;
     static int prevmode = 0;
@@ -60,7 +60,7 @@ void Editor::editSprite()
 
     if (mode != M && mode != E)
     {
-        chooseSprite();
+        ChooseSprite();
     }
 
     string instructions[size] =
@@ -145,7 +145,7 @@ void Editor::editSprite()
         }
     if (mode != E && prevmode == E)
     {
-        saveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
+        SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
         for (int i = 0; i < stage->imgs.size(); i++)
         {
             if (i == chosenSprite)
@@ -214,7 +214,7 @@ void Editor::SaveAllSprites()
     // Untested
     for (int i = 0; i < stage->imgs.size(); i++)
     {
-        saveSprite(stage->imgs[i].GetSprPtr(), stage->imgs[i].GetFilePath());
+        SaveSprite(stage->imgs[i].GetSprPtr(), stage->imgs[i].GetFilePath());
     }
 }
 
@@ -231,7 +231,7 @@ void Editor::CreateSprite()
     string filePath = "./assets/" + sprName + ".png";
     if (filesystem::exists(filePath))
     {
-        stage->imgs.push_back(Img(filePath));
+        stage->imgs.emplace_back(Img(filePath));
         stage->imgs[stage->imgs.size() - 1].position = pos;
         return;
     }
@@ -243,7 +243,7 @@ void Editor::CreateSprite()
         cin >> sprSize.y;
     }
     
-    stage->imgs.push_back(Img(sprSize));
+    stage->imgs.emplace_back(Img(sprSize));
     int index = stage->imgs.size() - 1;
     stage->imgs[index].position = pos;
     stage->imgs[index].filePath = filePath;
@@ -257,7 +257,7 @@ void Editor::CreateSprite()
     stage->imgs[index].GetDecPtr()->Update();
     chosenSprite = index;
     
-    saveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
+    SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
 }
 void Editor::RemoveSprite()
 {
@@ -270,14 +270,14 @@ void Editor::RemoveSprite()
             chosenSprite = 0;
     }
 }
-void Editor::EditSprite()
+void Editor::DrawSprite()
 {
-    const static int colorpickerSize = 12;
-    static Img eraserimg((string)"./assets/util/eraser.png", { g->ScreenWidth() - 16, g->ScreenHeight() - colorpickerSize - 16 });
+    const static int colorPickerSize = 12;
+    static Img eraserImg((string)"./assets/util/eraser.png", { g->ScreenWidth() - 16, g->ScreenHeight() - colorPickerSize - 16 });
     static bool eraser = false;
 
     vi2d m = g->GetMousePos();
-    vi2d c = vi2d(g->cam.getX(), g->cam.getY());
+    vi2d c = vi2d(g->cam.GetX(), g->cam.GetY());
     vi2d ic = -c;
     vi2d &pos = stage->imgs[chosenSprite].position;
     vi2d size = { stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height };
@@ -294,9 +294,9 @@ void Editor::EditSprite()
 
     // Color Picker
     static Pixel color = olc::GREY;
-    for (int i = 0; i < colorpickerSize + 1; i += colorpickerSize / 3)
+    for (int i = 0; i < colorPickerSize + 1; i += colorPickerSize / 3)
     {
-        vi2d topleft = { 0, g->ScreenHeight() - i };
+        vi2d topLeft = { 0, g->ScreenHeight() - i };
 
         for (int x = 0; x < g->ScreenWidth(); x++)
         {
@@ -304,24 +304,26 @@ void Editor::EditSprite()
             Pixel show = olc::BLACK;
             switch (i)
             {
-            case colorpickerSize / 3:
+            case colorPickerSize / 3:
                 show.r = variance;
                 if (show.r == color.r && !eraser)
                     show = olc::WHITE;
                 break;
-            case colorpickerSize / 3 * 2:
+            case colorPickerSize / 3 * 2:
                 show.g = variance;
                 if (show.g == color.g && !eraser)
                     show = olc::WHITE;
                 break;
-            case colorpickerSize / 3 * 3:
+            case colorPickerSize / 3 * 3:
                 show.b = variance;
                 if (show.b == color.b && !eraser)
                     show = olc::WHITE;
                 break;
+            default:
+                break;
             }
 
-            g->DrawRect(vi2d(x, topleft.y), vi2d(1, colorpickerSize / 3 - 1), show);
+            g->DrawRect(vi2d(x, topLeft.y), vi2d(1, colorPickerSize / 3 - 1), show);
         }
     }
 
@@ -336,46 +338,46 @@ void Editor::EditSprite()
 
     // Draw color
     const static int colorShowSize = 16;
-    g->FillRect(vi2d(0, g->ScreenHeight() - colorShowSize - colorpickerSize), vi2d(colorShowSize, colorShowSize), color);
+    g->FillRect(vi2d(0, g->ScreenHeight() - colorShowSize - colorPickerSize), vi2d(colorShowSize, colorShowSize), color);
 
     // Draw eraser
-    g->DrawDecal(eraserimg.position, eraserimg.GetDecPtr());
+    g->DrawDecal(eraserImg.position, eraserImg.GetDecPtr());
 
     enum { none, red, green, blue };
-    static int colorpickermode = 0;
+    static int colorPickerMode = 0;
     if (g->GetMouse(0).bPressed)
     {
-        if (m.x > eraserimg.position.x && m.y > eraserimg.position.y && m.x < eraserimg.position.x + eraserimg.GetSprPtr()->width && m.y < eraserimg.position.y + eraserimg.GetSprPtr()->height)
+        if (m.x > eraserImg.position.x && m.y > eraserImg.position.y && m.x < eraserImg.position.x + eraserImg.GetSprPtr()->width && m.y < eraserImg.position.y + eraserImg.GetSprPtr()->height)
             eraser = !eraser;
 
-        if (m.y > g->ScreenHeight() - (colorpickerSize + 1))
+        if (m.y > g->ScreenHeight() - (colorPickerSize + 1))
         {
             eraser = false;
 
-            int slidersize = colorpickerSize / 3;
+            int slidersize = colorPickerSize / 3;
             int h = g->ScreenHeight();
             if (m.y > h - slidersize - 1)
             {
-                colorpickermode = red;
+                colorPickerMode = red;
             }
             else if (m.y > h - slidersize * 2 - 1)
             {
-                colorpickermode = green;
+                colorPickerMode = green;
             }
             else if (m.y > h - slidersize * 3 - 1)
             {
-                colorpickermode = blue;
+                colorPickerMode = blue;
             }
         }
     }
     if (eraser)
     {
-        g->DrawRect(eraserimg.position, vi2d(eraserimg.GetSprPtr()->width - 1, eraserimg.GetSprPtr()->height - 1));
+        g->DrawRect(eraserImg.position, vi2d(eraserImg.GetSprPtr()->width - 1, eraserImg.GetSprPtr()->height - 1));
     }
 
-    if (colorpickermode != 0)
+    if (colorPickerMode != 0)
     {
-        switch (colorpickermode)
+        switch (colorPickerMode)
         {
         case red:
             color.r = m.x;
@@ -390,9 +392,9 @@ void Editor::EditSprite()
     }
 
     if (g->GetMouse(0).bReleased)
-        if (colorpickermode != 0)
+        if (colorPickerMode != 0)
         {
-            colorpickermode = 0;
+            colorPickerMode = 0;
         }
 
     // Drawing
@@ -409,7 +411,7 @@ void Editor::EditSprite()
 }
 void Editor::RenameSprite()
 {
-    if (stage->imgs.size() > 0 && chosenSprite <= stage->imgs.size() - 1)
+    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
     {
         string sprName = "";
         std::cout << "This will make the sprite into a new file" << std::endl;
@@ -419,13 +421,13 @@ void Editor::RenameSprite()
         std::cin >> sprName;
 
         stage->imgs[chosenSprite].filePath = "./assets/" + sprName + ".png";
-        saveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
+        SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
     }
 }
 bool Editor::MoveSprite()
 {
     vi2d sprSize = { stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height };
-    stage->imgs[chosenSprite].position = g->GetMousePos() - sprSize / 2 - vi2d(g->cam.getX(), g->cam.getY());
+    stage->imgs[chosenSprite].position = g->GetMousePos() - sprSize / 2 - vi2d(g->cam.GetX(), g->cam.GetY());
 
     if (g->GetMouse(0).bPressed)
     {
@@ -437,9 +439,9 @@ bool Editor::MoveSprite()
 
 void Editor::DuplicateSprite()
 {
-    if (stage->imgs.size() > 0 && chosenSprite <= stage->imgs.size() - 1)
+    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
     {
-        stage->imgs.push_back(Img());
+        stage->imgs.emplace_back();
         for (double i = stage->imgs.size() - 1; i > chosenSprite; i--)
         {
             vi2d pos = stage->imgs[i - 1].position;

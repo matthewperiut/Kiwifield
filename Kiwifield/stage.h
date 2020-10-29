@@ -19,7 +19,7 @@ class Stage
 {
 public:
 	string name{ "" };
-	string backgroundpath{ "" };
+	string backgroundPath{ "" };
 
 	vector<vector<bool>> collision;
 	vector<Img> imgs{};
@@ -33,19 +33,19 @@ public:
 	vi2d stageSize = vi2d(0,0);
 
 public:
-	void inline createCollisionVector();
+	void inline CreateCollisionVector();
 	Stage(string name, vi2d size, PixelGameEngine& g);
 	Stage(string name, PixelGameEngine& g);
-	void save();
-	void load(string file);
-	bool inbound(vi2d pos);
-	void drawCollider();
+	void Save();
+	void Load(string file);
+	bool Inbound(vi2d pos);
+	void DrawCollider();
 
-	void setCollision(vi2d pos, bool boolean);
-	bool getCollision(vi2d pos);
-	int getWidth();
-	int getHeight();
-	void cameraFollow(vi2d pos);
-	void drawBackground(string img);
+	void SetCollision(vi2d pos, bool boolean);
+	bool GetCollision(vi2d pos);
+	int GetWidth();
+	int GetHeight();
+	void CameraFollow(vi2d pos);
+	void DrawBackground(string img);
 	void Update(float fElapsedTime, vf2d& p);
 };

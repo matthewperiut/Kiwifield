@@ -26,6 +26,6 @@ public:
 	Player(vf2d p, PixelGameEngine& g);
 	~Player();
 
-	void keyboardInput(float time, Stage& stage);
-	void logic(float time, Stage& stage);
+	void KeyboardInput(float time, Stage& stage);
+	void Logic(float time, Stage& stage);
 };

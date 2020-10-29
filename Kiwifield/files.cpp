@@ -75,7 +75,7 @@ void compress(std::string filepath) {
     lodepng::save_file(buffer, filepath);
 }
 
-void saveSprite(Sprite* spr, std::string filepath) {
+void SaveSprite(Sprite* spr, std::string filepath) {
     std::vector<unsigned char>* v = new std::vector<unsigned char>;
     v->reserve(spr->width * spr->height * 4);
 
@@ -112,7 +112,7 @@ void saveSprite(Sprite* spr, std::string filepath) {
     delete v;
 }
 
-void Files::save(vector<vector<bool>>& collision, string filepath)
+void Files::Save(vector<vector<bool>>& collision, string filepath)
 {
 	ofstream file;
 	file.open(filepath);
@@ -131,7 +131,7 @@ void Files::save(vector<vector<bool>>& collision, string filepath)
 	file.close();
 }
 
-bool Files::load(vector<vector<bool>>& collision, string filepath)
+bool Files::Load(vector<vector<bool>>& collision, string filepath)
 {
 	ifstream input_file(filepath);
 	if (input_file.fail()) {
@@ -140,7 +140,7 @@ bool Files::load(vector<vector<bool>>& collision, string filepath)
 	char val;
 	int x = 0;
 	int y = 0;
-	collision.push_back({});
+	collision.emplace_back();
 	while (input_file >> val)
 	{
 		if (val == '0')
@@ -157,7 +157,7 @@ bool Files::load(vector<vector<bool>>& collision, string filepath)
 		{
 			x = 0;
 			y++;
-			collision.push_back({});
+			collision.emplace_back();
 		}
 	}
 	return true;

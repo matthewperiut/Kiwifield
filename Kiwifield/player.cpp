@@ -23,7 +23,7 @@ Player::~Player()
 	delete decal;
 }
 
-void Player::keyboardInput(float time, Stage& stage)
+void Player::KeyboardInput(float time, Stage& stage)
 {
 	constexpr int speed = 50;
 
@@ -87,22 +87,22 @@ void Player::keyboardInput(float time, Stage& stage)
 		airTime = maxAir;
 	}
 
-	logic(time, stage);
+	Logic(time, stage);
 }
 
-void Player::logic(float time, Stage& stage)
+void Player::Logic(float time, Stage& stage)
 {
 	if(drawSprite)
 		if (scale.x > 0)
 		{
-			g->DrawDecal(vi2d(pos.x - size.x/2 + g->cam.getX(), pos.y - size.y + 1 + g->cam.getY()), decal, scale);
+			g->DrawDecal(vi2d(pos.x - size.x/2 + g->cam.GetX(), pos.y - size.y + 1 + g->cam.GetY()), decal, scale);
 		}
 		else
 		{
-			g->DrawDecal(vi2d(pos.x + size.x/2 + g->cam.getX(), pos.y - size.y + 1 + g->cam.getY()), decal, scale);
+			g->DrawDecal(vi2d(pos.x + size.x/2 + g->cam.GetX(), pos.y - size.y + 1 + g->cam.GetY()), decal, scale);
 		}
 	else
-		g->DrawRect(pos.x - (size.x / 2) + g->cam.getX(), pos.y - size.y + g->cam.getY(), size.x, size.y);
+		g->DrawRect(pos.x - (size.x / 2) + g->cam.GetX(), pos.y - size.y + g->cam.GetY(), size.x, size.y);
 
 	constexpr int maximumVel = 150;
 
@@ -134,25 +134,25 @@ void Player::logic(float time, Stage& stage)
 
 	if (!Up())
 	{
-		if (!stage.getCollision(vi2d(pos.x, pos.y + 2)))
+		if (!stage.GetCollision(vi2d(pos.x, pos.y + 2)))
 		{
-			if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x - 1, pos.y + 2)) && vel.x < 0)
+			if (stage.GetCollision(vi2d(pos.x, pos.y + 1)) && stage.GetCollision(vi2d(pos.x - 1, pos.y + 2)) && vel.x < 0)
 			{
 				vel.y = 100;
 				gravity = false;
 			}
-			if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x + 1, pos.y + 2)) && vel.x > 0)
+			if (stage.GetCollision(vi2d(pos.x, pos.y + 1)) && stage.GetCollision(vi2d(pos.x + 1, pos.y + 2)) && vel.x > 0)
 			{
 				vel.y = 100;
 				gravity = false;
 			}
 		}
-		if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && vel.x > 0)
+		if (stage.GetCollision(vi2d(pos.x + 1, pos.y)) && !stage.GetCollision(vi2d(pos.x + 1, pos.y - 1)) && vel.x > 0)
 		{
 			pos.y -= 1;
 			gravity = false;
 		}
-		if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && vel.x < 0)
+		if (stage.GetCollision(vi2d(pos.x - 1, pos.y)) && !stage.GetCollision(vi2d(pos.x - 1, pos.y - 1)) && vel.x < 0)
 		{
 			pos.y -= 1;
 			gravity = false;

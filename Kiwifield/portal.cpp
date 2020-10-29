@@ -33,13 +33,13 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 		color *= (sin(x)+1)/2;
 		color /= 2;
 
-		g.DrawLine(x + g.cam.getX(), boty + g.cam.getY(), x + g.cam.getX(), newy + g.cam.getY(), Pixel( 80 + (20*sin((elapsed + x) * speed) ), 80 + (20 * sin((elapsed + x) * speed)), 200));
+		g.DrawLine(x + g.cam.GetX(), boty + g.cam.GetY(), x + g.cam.GetX(), newy + g.cam.GetY(), Pixel( 80 + (20*sin((elapsed + x) * speed) ), 80 + (20 * sin((elapsed + x) * speed)), 200));
 		for (int y = boty; y > newy; y--)
 		{
 			int truy = y-newy;
 			float opacity = 255 / (y*y);
 			g.SetPixelMode(Pixel::ALPHA);
-			g.Draw(vi2d(x + g.cam.getX(), y + g.cam.getY()), Pixel(80, 60, 240, opacity));
+			g.Draw(vi2d(x + g.cam.GetX(), y + g.cam.GetY()), Pixel(80, 60, 240, opacity));
 			g.SetPixelMode(Pixel::NORMAL);
 		}
 	}
