@@ -99,6 +99,74 @@ void World::Portals(float fElapsedTime)
 	}
 }
 
+void World::AttackDemo(float fElapsedTime, float frequency = 0.2, float velocityMultiplier = 100, float maxTime = 5, int maxBounces = 0)
+{
+	static vector<DynamicPoint> dps;
+	static vector<float> dtimers;
+	static vector<int> bounces;
+	static float timer = 0;
+	static Img dp("./assets/pellet.png");
+	timer += fElapsedTime;
+	if (g->GetKey(Key::SHIFT).bHeld && timer > frequency)
+	{
+		vi2d localplayer = player->pos + vi2d(g->cam.getX(), g->cam.getY() - player->size.y / 2);
+		vi2d localmouse = g->GetMousePos();
+		double y = (localplayer.y - localmouse.y);
+		double x = (localplayer.x - localmouse.x);
+		double greater;
+		if (abs(x) > abs(y))
+			greater = x;
+		else
+			greater = y;
+		vf2d normalized = vf2d(x / abs(greater), y / abs(greater));
+		normalized = -normalized;
+
+		timer = 0;
+		dps.push_back(DynamicPoint());
+		dtimers.push_back(0.f);
+		bounces.push_back(0);
+		dps[dps.size() - 1].pos = localplayer - vi2d(g->cam.getX(), g->cam.getY());
+		dps[dps.size() - 1].vel = normalized * velocityMultiplier;
+	}
+
+	for (int i = 0; i < dps.size(); i++)
+	{
+		if (dps[i].Left() || dps[i].Right())
+		{
+			dps[i].vel.x = -dps[i].vel.x;
+			bounces[i]++;
+		}
+		if (dps[i].Up() || dps[i].Down())
+		{
+			dps[i].vel.y = -dps[i].vel.y;
+			bounces[i]++;
+		}
+		
+		dtimers[i] += fElapsedTime;
+		if (dtimers[i] > maxTime)
+		{
+			bounces[i] = maxBounces + 1;
+		}
+
+		if (bounces[i] > maxBounces)
+		{
+			dps.erase(dps.begin() + i);
+			dtimers.erase(dtimers.begin() + i);
+			bounces.erase(bounces.begin() + i);
+			continue;
+		}
+
+		dps[i].Move(fElapsedTime, *stage);
+		g->DrawDecal(dps[i].pos + vi2d(g->cam.getX(), g->cam.getY()), dp.GetDecPtr(), vf2d(1, 1));
+	}
+	if (g->GetKey(Key::ESCAPE).bPressed)
+	{
+		dps.clear();
+		dtimers.clear();
+		bounces.clear();
+	}
+}
+
 void World::Update(float fElapsedTime)
 {
 	g->Clear(olc::BLANK);
@@ -107,33 +175,9 @@ void World::Update(float fElapsedTime)
 	{
 		fElapsedTime = 0;
 	}
-	static vector<DynamicPoint> dps;
-	static float timer = 0;
-	timer += fElapsedTime;
-	if (g->GetMouse(1).bHeld && timer > 0.1)
-	{
-		timer = 0;
-		dps.push_back(DynamicPoint());
-		dps[dps.size() - 1].pos = g->GetMousePos() - vi2d(g->cam.getX(), g->cam.getY());
-		dps[dps.size() - 1].vel = vf2d(40, 40);
-	}
-	for (int i = 0; i < dps.size(); i++)
-	{
-		if (dps[i].Left() || dps[i].Right())
-		{
-			dps[i].vel.x = -dps[i].vel.x;
-		}
-		if (dps[i].Up() || dps[i].Down())
-		{
-			dps[i].vel.y = -dps[i].vel.y;
-		}
-
-		dps[i].Move(fElapsedTime, *stage);
-		//g->Draw(dps[i].pos + vi2d(g->cam.getX(), g->cam.getY()), RED);
-		g->FillCircle(dps[i].pos + vi2d(g->cam.getX(), g->cam.getY()), 1, WHITE);
-	}
-
 	
+	AttackDemo(fElapsedTime);
+
 	Portals(fElapsedTime);
 	Keyboard();
 

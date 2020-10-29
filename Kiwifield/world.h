@@ -23,6 +23,9 @@ private:
 	void Keyboard();
 
 public:
+	// Temporary
+	void AttackDemo(float fElapsedTime, float frequency, float velocityMultiplier, float maxTime, int maxBounces);
+
 	void Construct();
 	bool ChangeStage();
 	void Portals(float fElapsedTime);
