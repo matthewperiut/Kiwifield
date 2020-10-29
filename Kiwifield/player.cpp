@@ -58,40 +58,28 @@ void Player::keyboardInput(float time, Stage& stage)
 	else
 		//Still in horizontal
 		velocity.x = 0;
-
-	if (g->GetKey(Key::SPACE).bPressed)
+	
+	static bool canJump = true;
+	static float power = 300;
+	static float airTime = 0;
+	static float maxAir = 0.5;
+	if ((g->GetKey(Key::SPACE).bHeld && (!gravity || jump) && airTime < maxAir))
 	{
-		if (g->GetKey(Key::S).bHeld && !gravity)
-		{
-			if(pos.y < stage.getHeight()-4)
-				pos.y += 2;
-		}
-		else if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x - 1, pos.y + 2)) && velocity.x < 0)
-		{
-			jump = true;
-			pos.y -= 1;
-		}
-		else if (stage.getCollision(vi2d(pos.x, pos.y + 1)) && stage.getCollision(vi2d(pos.x + 1, pos.y + 2)) && velocity.x > 0)
-		{
-			jump = true;
-			pos.y -= 1;
-		}
-		else if (stage.getCollision(vi2d(pos.x + 1, pos.y)) && !stage.getCollision(vi2d(pos.x + 1, pos.y - 1)) && velocity.x > 0)
-		{
-			jump = true;
-			pos.y -= 1;
-		}
-		else if (stage.getCollision(vi2d(pos.x - 1, pos.y)) && !stage.getCollision(vi2d(pos.x - 1, pos.y - 1)) && velocity.x < 0)
-		{
-			jump = true;
-			pos.y -= 1;
-		}
-		else if (!gravity)
-		{
-			jump = true;
-			pos.y -= 1;
-		}
-		
+		airTime += time;
+		if (velocity.y > -100)
+			velocity.y = (-(1+maxAir) * power + (1+airTime) * power);
+		jump = true;
+	}
+	if (g->GetKey(Key::SPACE).bReleased && jump)
+	{
+		airTime = 0;
+		jump = false;
+		if(velocity.y < -80)
+			velocity.y = -80;
+	}
+	if (!g->GetKey(Key::SPACE).bHeld && !gravity)
+	{
+
 	}
 
 	logic(time, stage);
@@ -164,15 +152,6 @@ void Player::logic(float time, Stage& stage)
 			pos.y -= 1;
 			gravity = false;
 		}
-	}
-	
-	
-
-	if (jump)
-	{
-		gravity = true;
-		velocity.y = -maximumVel;
-		jump = false;
 	}
 
 	move(time, stage);

@@ -103,33 +103,34 @@ void World::Update(float fElapsedTime)
 {
 	g->Clear(olc::BLANK);
 
-	static DynamicPoint dp(*stage);
+	static DynamicPoint* dpPtr;// (*stage);
 	static bool init = false;
 	if (ChangeStage())
 	{
 		fElapsedTime = 0;
-		dp = DynamicPoint(*stage);
+		delete dpPtr;
+		dpPtr = new DynamicPoint(*stage);
 		init = false;
 	}
-	
+	DynamicPoint& dp = *dpPtr;
 	if (!init)
 	{
 		dp.vel = vf2d(40, 40);
 		dp.pos = vf2d(30, 30);
 		init = true;
 	}
-	if (stage->getCollision(dp.pos + vi2d(1, 0)) || stage->getCollision(dp.pos - vi2d(1, 0)))
+	if (dp.Left() || dp.Right())
 	{
 		dp.vel.x = -dp.vel.x;
 	}
-	if (stage->getCollision(dp.pos + vi2d(0, 1)) || stage->getCollision(dp.pos - vi2d(0, 1)))
+	if (dp.Up() || dp.Down())
 	{
 		dp.vel.y = -dp.vel.y;
 	}
 
 	dp.Update(fElapsedTime);
 
-	g->Draw(dp.pos + vi2d(g->cam.getX(), g->cam.getY()));
+	g->Draw(dp.pos + vi2d(g->cam.getX(), g->cam.getY()), RED);
 	Portals(fElapsedTime);
 	Keyboard();
 

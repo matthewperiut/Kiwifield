@@ -271,6 +271,9 @@ void Stage::cameraFollow(vi2d pos)
 }
 void Stage::drawBackground(string img)
 {
+	if (img == "")
+		return;
+
 	static string imgpath;
 	static Img bg;
 

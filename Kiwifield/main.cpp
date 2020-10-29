@@ -37,7 +37,8 @@ public:
 		}
 		if (showfps)
 		{
-			DrawStringDecal(vf2d(ScreenWidth()-30,8), to_string(GetFPS()));
+			string fps = to_string(GetFPS());
+			DrawStringDecal(vf2d(ScreenWidth()-fps.size()*8, 0), fps, GREEN);
 		}
 
 		world.Update(fElapsedTime);
