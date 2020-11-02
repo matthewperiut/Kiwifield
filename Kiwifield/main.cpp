@@ -17,9 +17,21 @@ public:
 	{
 		world.g = this;
 		world.Construct(); 
-		// Layer 0 is default starting
-		CreateLayer(); // Layer 1
-		CreateLayer(); // Layer 2
+		
+		const static int layerCount = 5;
+
+		// Layers
+		// 0) Debug
+		// 1) UI
+		// 2) Players, enemies, and pellets
+		// 3) Stage elements (portals sprites)
+		// 4) background
+
+		for(int i = 0; i < layerCount; i++)
+		{
+			CreateLayer();
+		}
+		
 		return true;
 	}
 
@@ -38,7 +50,7 @@ public:
 		if (showFps)
 		{
 			string fps = to_string(GetFPS());
-			DrawStringDecal(vf2d(ScreenWidth()-fps.size()*8, 0), fps, GREEN);
+			DrawStringDecal(vf2d(ScreenWidth() - fps.size()*8, 0), fps, GREEN);
 		}
 
 		world.Update(fElapsedTime);

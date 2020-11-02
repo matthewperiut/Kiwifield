@@ -92,6 +92,10 @@ void Player::KeyboardInput(float time, Stage& stage)
 
 void Player::Logic(float time, Stage& stage)
 {
+	g->EnableLayer(dynamics, true);
+	g->SetDrawTarget(dynamics);
+	g->Clear(olc::BLANK);
+
 	if(drawSprite)
 		if (scale.x > 0)
 		{
@@ -104,9 +108,10 @@ void Player::Logic(float time, Stage& stage)
 	else
 		g->DrawRect(pos.x - (size.x / 2) + g->cam.GetX(), pos.y - size.y + g->cam.GetY(), size.x, size.y);
 
-	constexpr int maximumVel = 150;
-
+	g->EnableLayer(dynamics, true);
+	g->SetDrawTarget(nullptr);
 	
+	constexpr int maximumVel = 150;
 	//Vertical movement
 	if (Down() && vel.y >= 0)
 		gravity = false;

@@ -181,7 +181,10 @@ void World::Update(float fElapsedTime)
 	Portals(fElapsedTime);
 	Keyboard();
 
+	editor->changeStageBoolPtr = &loadStage;
+	editor->changeStageNamePtr = &wantedStage;
 	editor->Manager();
+	
 	stage->Update(fElapsedTime, player->pos);
 	player->KeyboardInput(fElapsedTime, *stage);
 }

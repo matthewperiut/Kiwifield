@@ -1,13 +1,11 @@
 #pragma once
-#include "olcPixelGameEngine.h"
-#include "files.h"
-#include "portal.h"
-#include "img.h"
-#include <ostream>
-#include <fstream>
-#include <Vector>
-#include <string>
 #include <filesystem>
+#include <string>
+#include <Vector>
+#include "img.h"
+#include "const.h"
+#include "olcPixelGameEngine.h"
+#include "portal.h"
 
 // Use C++17
 namespace fs = std::filesystem;
@@ -21,14 +19,14 @@ public:
 	string name{ "" };
 	string backgroundPath{ "" };
 
+	bool smallx{ false };
+	bool smally{ false };
 	vector<vector<bool>> collision;
 	vector<Img> imgs{};
 	vector<Portal> portals{};
 
 	//Game Reference
 	PixelGameEngine* g;
-
-	vector<int>* layers;
 
 	vi2d stageSize = vi2d(0,0);
 

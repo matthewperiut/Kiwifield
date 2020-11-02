@@ -1,4 +1,5 @@
 #pragma once
+#include "const.h"
 #include "stage.h"
 #include "dynamicPoint.h"
 #include <vector>

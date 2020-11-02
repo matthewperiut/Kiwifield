@@ -20,6 +20,12 @@ void inline Stage::CreateCollisionVector()
 		SetCollision(vi2d(GetWidth() - 1, y), true);
 		SetCollision(vi2d(0, y), true);
 	}
+	
+	if (GetWidth() < wWidth)
+		smallx = true;
+
+	if (GetHeight() < wHeight)
+		smally = true;
 }
 
 Stage::Stage(string name, vi2d size, PixelGameEngine& g)
@@ -214,25 +220,10 @@ int Stage::GetHeight()
 
 void Stage::CameraFollow(vi2d pos)
 {
-	static bool init = false;
-	static bool small[2] = { false, false };
-
-	if (!init)
-	{
-		if (GetWidth() < g->ScreenWidth())
-			small[0] = true;
-
-		if (GetHeight() < g->ScreenHeight())
-			small[1] = true;
-
-		init = true;
-	}
-
-
 	const vi2d boundingSize = { 100, 50 };
 	vi2d middle = { pos.x - (g->ScreenWidth() / 2), pos.y - (g->ScreenHeight() / 2) };
 
-	if (!small[0])
+	if (!smallx)
 	{
 		int expectedCamXLeft = pos.x - (g->ScreenWidth() / 2);
 		int expectedCamXRight = expectedCamXLeft + g->ScreenWidth();
@@ -256,7 +247,7 @@ void Stage::CameraFollow(vi2d pos)
 		g->cam.x = midstage - differenceToCamera;
 	}
 
-	if (!small[1])
+	if (!smally)
 	{
 		int expectedCamYTop = pos.y - (g->ScreenHeight() / 2);
 		int expectedCamYBottom = expectedCamYTop + g->ScreenHeight();
@@ -282,7 +273,7 @@ void Stage::CameraFollow(vi2d pos)
 }
 void Stage::DrawBackground(string img)
 {
-	if (img == "")
+	if (img.empty())
 		return;
 
 	static string imgpath;
@@ -293,34 +284,22 @@ void Stage::DrawBackground(string img)
 		imgpath = img;
 		bg = Img(img, vi2d(0, 0));
 	}
-		
-
-	static bool init = false;
-	static bool small[2] = { false, false };
-	if (!init)
-	{
-		if (GetWidth() < g->ScreenWidth())
-			small[0] = true;
-
-		if (GetHeight() < g->ScreenHeight())
-			small[1] = true;
-		init = true;
-	}
-	g->EnableLayer(2, true);
-	g->SetDrawTarget(2);
+	
+	g->EnableLayer(background, true);
+	g->SetDrawTarget(background);
 
 	g->SetPixelMode(Pixel::ALPHA);
 	g->Clear(olc::BLANK);
 	
-	if (small[0])
+	if (smallx)
 	{
 		
 	}
-	if (small[1])
+	if (smally)
 	{
 
 	}
-	if(!small[0] && !small[1])
+	if(!smallx && !smally)
 	{
 		const static double changeRate = 1.25;
 		int x = bg.position.x + (g->cam.GetX() / changeRate);
@@ -334,7 +313,7 @@ void Stage::DrawBackground(string img)
 			g->DrawDecal(vi2d(x + (bg.GetSprPtr()->width) * i, 0), bg.GetDecPtr());
 		}
 	}
-	g->EnableLayer(2, true);
+	g->EnableLayer(background, true);
 	g->SetDrawTarget(nullptr);
 }
 
@@ -342,9 +321,8 @@ void Stage::Update(float fElapsedTime, vf2d& p)
 {
 	CameraFollow(p);
 	DrawBackground(backgroundPath);
-
-	g->EnableLayer(1, true);
-	g->SetDrawTarget(1);
+	g->EnableLayer(stage, true);
+	g->SetDrawTarget(stage);
 	
 	//DrawDecal(vi2d(0, 0), d.decal);
 	g->SetPixelMode(Pixel::ALPHA);
@@ -354,32 +332,38 @@ void Stage::Update(float fElapsedTime, vf2d& p)
 	{
 		g->DrawDecal(vi2d(imgs[i].position.x + g->cam.GetX(), imgs[i].position.y + g->cam.GetY()), imgs[i].GetDecPtr());
 	}
-	g->EnableLayer(1, true);
+	g->SetPixelMode(Pixel::NORMAL);
+	
+	g->EnableLayer(stage, true);
 	g->SetDrawTarget(nullptr);
 }
 
 void Stage::DrawCollider()
 {
-	vi2d ic = { -g->cam.GetY(),-g->cam.GetX() };
-	for (int x = 0; x < g->ScreenHeight(); x++)
+	if(smallx || smally)
 	{
-		for (int y = 0; y < g->ScreenWidth(); y++)
+		for (int y = 0; y < collision.size(); y++)
 		{
-			int first = y + ic.y;
-			int second = x + ic.x;
-			if ((first > -1 && first < collision.size()) && (second > -1 && second < collision[y].size()))
-				if (collision[first][second])
-					g->Draw(vi2d(y, x), Pixel(255, 0, 0));
-			
+			for (int x = 0; x < collision[y].size(); x++)
+			{
+				g->Draw(vi2d(y + g->cam.GetX(), x + g->cam.GetY()), Pixel(255 * collision[y][x], 0, 0, 255 * collision[y][x]));
+			}
 		}
 	}
-	/*
-	for (int y = 0; y < collision.size(); y++)
+	else
 	{
-		for (int x = 0; x < collision[y].size(); x++)
+		vi2d ic = { -g->cam.GetY(),-g->cam.GetX() };
+		for (int x = 0; x < g->ScreenHeight(); x++)
 		{
-			g->Draw(vi2d(y + g->cam.getX(), x + g->cam.getY()), Pixel(255 * collision[y][x], 0, 0));
+			for (int y = 0; y < g->ScreenWidth(); y++)
+			{
+				int first = y + ic.y;
+				int second = x + ic.x;
+				if ((first > -1 && first < collision.size()) && (second > -1 && second < collision[y].size()))
+					if (collision[first][second])
+						g->Draw(vi2d(y, x), Pixel(255, 0, 0));
+
+			}
 		}
 	}
-	*/
 }

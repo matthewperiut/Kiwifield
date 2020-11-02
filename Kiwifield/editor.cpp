@@ -34,5 +34,6 @@ void Editor::Manager()
         case 3:
             //Place portal
             EditPortal();
+            break;
     }
 }

@@ -11,6 +11,9 @@ public:
     Stage* stage;
     PixelGameEngine* g;
     int chosenSprite = 0;
+
+    bool* changeStageBoolPtr;
+    string* changeStageNamePtr;
 public:
     Editor(Stage& s, PixelGameEngine& g);
     
@@ -31,7 +34,11 @@ public:
     void LayerSprite(bool up);
 
     // Portal
+    int chosenPortal = 0;
     void EditPortal();
+    bool CreatePortal();
+    bool MovePortal(Portal& p);
+    void RemovePortal();
 };
 
 void FillCircleInSpr(int x, int y, int radius, Pixel p, Sprite& sprite);

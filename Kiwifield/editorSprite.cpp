@@ -261,7 +261,7 @@ void Editor::CreateSprite()
 }
 void Editor::RemoveSprite()
 {
-    if (stage->imgs.size() > 0 && chosenSprite <= stage->imgs.size() - 1)
+    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
     {
         stage->imgs.erase(stage->imgs.begin() + chosenSprite);
         if (chosenSprite > 1 && chosenSprite < stage->imgs.size())
@@ -272,6 +272,8 @@ void Editor::RemoveSprite()
 }
 void Editor::DrawSprite()
 {
+    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
+        return;
     const static int colorPickerSize = 12;
     static Img eraserImg((string)"./assets/util/eraser.png", { g->ScreenWidth() - 16, g->ScreenHeight() - colorPickerSize - 16 });
     static bool eraser = false;
@@ -426,14 +428,20 @@ void Editor::RenameSprite()
 }
 bool Editor::MoveSprite()
 {
-    vi2d sprSize = { stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height };
-    stage->imgs[chosenSprite].position = g->GetMousePos() - sprSize / 2 - vi2d(g->cam.GetX(), g->cam.GetY());
+    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
+    {
+        vi2d sprSize = { stage->imgs[chosenSprite].GetSprPtr()->width, stage->imgs[chosenSprite].GetSprPtr()->height };
+        stage->imgs[chosenSprite].position = g->GetMousePos() - sprSize / 2 - vi2d(g->cam.GetX(), g->cam.GetY());
 
-    if (g->GetMouse(0).bPressed)
+        if (g->GetMouse(0).bPressed)
+        {
+            return true;
+        }
+    }
+    else
     {
         return true;
     }
-
     return false;
 }
 
