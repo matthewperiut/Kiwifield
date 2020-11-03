@@ -13,13 +13,11 @@ public:
 public:
 	World world;
 
+	const static int layerCount = 5;
 	bool OnUserCreate() override
 	{
 		world.g = this;
-		world.Construct(); 
-		
-		const static int layerCount = 5;
-
+		world.Construct();
 		// Layers
 		// 0) Debug
 		// 1) UI
@@ -42,6 +40,15 @@ public:
 
 	bool OnUserUpdate(const float fElapsedTime) override
 	{
+		for (int i = 0; i < layerCount; i++)
+		{
+			EnableLayer(i, true);
+			SetDrawTarget(i);
+			EnableLayer(i, true);
+			Clear(BLANK);
+			SetDrawTarget(nullptr);
+		}
+		
 		static bool showFps = false;
 		if (GetKey(Key::F3).bPressed)
 		{

@@ -287,9 +287,6 @@ void Stage::DrawBackground(string img)
 	
 	g->EnableLayer(background, true);
 	g->SetDrawTarget(background);
-
-	g->SetPixelMode(Pixel::ALPHA);
-	g->Clear(olc::BLANK);
 	
 	if (smallx)
 	{
@@ -323,10 +320,6 @@ void Stage::Update(float fElapsedTime, vf2d& p)
 	DrawBackground(backgroundPath);
 	g->EnableLayer(stage, true);
 	g->SetDrawTarget(stage);
-	
-	//DrawDecal(vi2d(0, 0), d.decal);
-	g->SetPixelMode(Pixel::ALPHA);
-	g->Clear(olc::BLANK);
 
 	for (int i = 0; i < imgs.size(); i++)
 	{
