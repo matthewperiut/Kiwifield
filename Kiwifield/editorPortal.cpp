@@ -3,25 +3,24 @@
 void Editor::EditPortal()
 {
 	g->DrawStringDecal(vi2d(0, 0), "EditPortal");
-	g->DrawStringDecal(vi2d(0, 16), "Create C");
-	g->DrawStringDecal(vi2d(0, 24), "Delete X");
-	g->DrawStringDecal(vi2d(0, 32), "Cycle >");
-
-	if (stage->portals.empty())
-		return;
+	g->DrawStringDecal(vi2d(0, 8), "Create C");
+	
+	if (!stage->portals.empty())
+	{
+		g->DrawStringDecal(vi2d(0, 16), "Delete X");
+		g->DrawStringDecal(vi2d(0, 24), "Cycle >");
+	}
 
 	static int mode = 0;
 	enum modes { create = 1, remove, move, cycle };
-	if (chosenPortal >= 0 && chosenPortal < stage->portals.size())
+
+	if (g->GetKey(Key::C).bPressed)
 	{
-		if(g->GetKey(Key::C).bPressed)
-		{
-			mode = create;
-		}
-		if (g->GetKey(Key::M).bPressed)
-		{
-			mode = move;
-		}
+		mode = create;
+	}
+	
+	if (chosenPortal >= 0 && chosenPortal < stage->portals.size() && !stage->portals.empty())
+	{
 		if (g->GetKey(Key::X).bPressed)
 		{
 			RemovePortal();
@@ -40,11 +39,6 @@ void Editor::EditPortal()
 	{
 		chosenPortal = 0;
 	}
-	if(mode == move)
-	{
-		if(MovePortal(stage->portals[chosenPortal]))
-			mode = 0;
-	}
 	if (mode == create)
 	{
 		if (CreatePortal())
@@ -59,6 +53,13 @@ bool Editor::CreatePortal()
 	std::ofstream current;
 	std::ofstream second;
 	static int part = 0;
+
+	if(g->GetKey(Key::ESCAPE).bPressed)
+	{
+		part = 0;
+		return true;
+	}
+	
 	switch(part)
 	{
 	case 0:

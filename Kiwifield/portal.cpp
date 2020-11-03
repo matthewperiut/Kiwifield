@@ -31,7 +31,7 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 		return false;
 	
 	int topy = pos.y - size.y;
-	int boty = pos.y - g.cam.y;
+	int boty = pos.y;
 	int leftx = pos.x - (size.x / 2);
 	int rightx = leftx + size.x;
 

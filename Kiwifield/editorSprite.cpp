@@ -64,7 +64,7 @@ void Editor::EditSprite()
     }
 
     string instructions[size] =
-    { "EditSprite", "ESC-stop", "C-create", "X-delete", "E-edit", "R-rename", "M-move", "<>-layer", "Q-Duplicate" };
+    { "EditSprite", "Duplicate Q", "Create C", "Delete X", "Rename R", "Layer <>", "Stop ESC", "Edit E", "Move M" };
 
     for (int i = 0; i < size; i++)
     {
@@ -223,6 +223,7 @@ void Editor::CreateSprite()
     string sprName = "default";
     vi2d sprSize = { 8, 8 };
     vi2d pos = vi2d(g->ScreenWidth(), g->ScreenHeight()) / 2;
+    pos -= vi2d(g->cam.GetX(), g->cam.GetY());
     
     cout << "Input name:" << endl;
     cin >> sprName;
@@ -231,7 +232,7 @@ void Editor::CreateSprite()
     string filePath = "./assets/" + sprName + ".png";
     if (filesystem::exists(filePath))
     {
-        stage->imgs.emplace_back(Img(filePath));
+        stage->imgs.push_back(Img(filePath));
         stage->imgs[stage->imgs.size() - 1].position = pos;
         return;
     }
@@ -243,7 +244,7 @@ void Editor::CreateSprite()
         cin >> sprSize.y;
     }
     
-    stage->imgs.emplace_back(Img(sprSize));
+    stage->imgs.push_back(Img(sprSize));
     int index = stage->imgs.size() - 1;
     stage->imgs[index].position = pos;
     stage->imgs[index].filePath = filePath;

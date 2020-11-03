@@ -8,7 +8,6 @@ Editor::Editor(Stage& s, PixelGameEngine& g)
 
 void Editor::Manager()
 {
-    static int mode = 0;
     if (g->GetKey(Key::TAB).bPressed)
     {
         mode++;

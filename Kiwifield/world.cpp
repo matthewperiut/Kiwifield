@@ -65,7 +65,7 @@ void World::Keyboard()
 		}
 		if (g->GetKey(Key::R).bPressed)
 		{
-			player->pos = { 1, 1 };
+			loadStage = true;
 		}
 	}
 }
@@ -74,12 +74,15 @@ bool World::ChangeStage()
 {
 	if (loadStage)
 	{
+		
+		
 		delete stage;
 		stage = new Stage(wantedStage, *g);
 		delete editor;
 		editor = new Editor(*stage, *g);
 
 		player->pos = wantedPos;
+		player->vel = { 0,0 };
 		loadStage = false;
 		return true;
 	}

@@ -11,6 +11,7 @@ public:
     Stage* stage;
     PixelGameEngine* g;
     int chosenSprite = 0;
+    int mode = 0;
 
     bool* changeStageBoolPtr;
     string* changeStageNamePtr;
