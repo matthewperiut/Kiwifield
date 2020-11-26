@@ -14,6 +14,9 @@ public:
 private:
 	enum { up, down, left, right };
 	bool directions[4]{ false };
+
+	vf2d timedVelocity;
+	vf2d newPos;
 public:
 	bool Up();
 	bool Down();
@@ -21,5 +24,9 @@ public:
 	bool Right();
 	
 	DynamicPoint();
+	void MoveUp(Stage& stage);
+	void MoveDown(Stage& stage);
+	void MoveLeft(Stage& stage);
+	void MoveRight(Stage& stage);
 	void Move(float time, Stage& stage);
 };
