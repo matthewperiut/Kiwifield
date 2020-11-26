@@ -25,10 +25,10 @@ public:
     void ChooseSprite();
     void DrawSelectedSprite();
     void EditSprite();
-    void DrawSprite();
     void SaveAllSprites();
     void CreateSprite();
     void RemoveSprite();
+    void ModifySprite();
     void RenameSprite();
     bool MoveSprite();
     void DuplicateSprite();

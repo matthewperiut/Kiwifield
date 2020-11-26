@@ -120,7 +120,7 @@ void Editor::EditSprite()
             mode = ESC;
             break;
         case E:
-            EditSprite();
+            ModifySprite();
             break;
         case R:
             RenameSprite();
@@ -271,10 +271,8 @@ void Editor::RemoveSprite()
             chosenSprite = 0;
     }
 }
-void Editor::DrawSprite()
+void Editor::ModifySprite()
 {
-    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
-        return;
     const static int colorPickerSize = 12;
     static Img eraserImg((string)"./assets/util/eraser.png", { g->ScreenWidth() - 16, g->ScreenHeight() - colorPickerSize - 16 });
     static bool eraser = false;
@@ -410,8 +408,8 @@ void Editor::DrawSprite()
 
         stage->imgs[chosenSprite].GetDecPtr()->Update();
     }
-
 }
+
 void Editor::RenameSprite()
 {
     if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)

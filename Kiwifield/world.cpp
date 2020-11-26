@@ -179,7 +179,7 @@ void World::Update(float fElapsedTime)
 		fElapsedTime = 0;
 	}
 	
-	AttackDemo(fElapsedTime);
+	AttackDemo(fElapsedTime, 0.2, 100, 100, 10);
 
 	Portals(fElapsedTime);
 	Keyboard();
