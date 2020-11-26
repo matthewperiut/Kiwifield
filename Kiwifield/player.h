@@ -29,4 +29,6 @@ public:
 
 	void KeyboardInput(float time, Stage& stage);
 	void Logic(float time, Stage& stage);
+
+	void MoveUp(Stage& stage) override;
 };

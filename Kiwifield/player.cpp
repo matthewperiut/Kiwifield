@@ -59,13 +59,16 @@ void Player::KeyboardInput(float time, Stage& stage)
 		//Still in horizontal
 		vel.x = 0;
 	
-	static bool canJump = true;
 	static float power = 300;
 	static float airTime = 0;
 	static float maxAir = 0.5;
 	if (Down())
 	{
 		jump = true;
+	}
+	else
+	{
+		jump = false;
 	}
 	if ((g->GetKey(Key::SPACE).bHeld && (!gravity || jump) && airTime < maxAir))
 	{
@@ -88,6 +91,14 @@ void Player::KeyboardInput(float time, Stage& stage)
 	}
 
 	Logic(time, stage);
+}
+
+void Player::MoveUp(Stage& stage)
+{
+	// Up check
+	directions[DynamicPoint::up] = false;
+	if (!directions[DynamicPoint::up] && vel.y < 0)
+		pos.y += timedVelocity.y;
 }
 
 void Player::Logic(float time, Stage& stage)

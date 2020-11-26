@@ -5,6 +5,11 @@ DynamicPoint::DynamicPoint()
 	
 }
 
+DynamicPoint::~DynamicPoint()
+{
+	
+}
+
 bool DynamicPoint::Up()
 {
 	return directions[up];
