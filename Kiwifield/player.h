@@ -13,6 +13,7 @@ public:
 	vi2d size = { 8, 8 };
 	vf2d scale = { 1, 1 };
 
+	bool canJump = false;
 	bool jump = false;
 	bool drawSprite = false;
 	bool gravity = true;

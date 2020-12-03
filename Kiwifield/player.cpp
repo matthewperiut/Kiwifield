@@ -25,79 +25,96 @@ Player::~Player()
 
 void Player::KeyboardInput(float time, Stage& stage)
 {
-	constexpr int speed = 50;
-
-	if (g->GetKey(Key::SHIFT).bHeld)
+	const static int speed = 50;
+	if (g->GetKey(A).bHeld)
 	{
-		/* Future slope work
-		
-		vi2d localplayer = pos + vi2d(g->cam.getX(), g->cam.getY() - size.y / 2);
-		vi2d localmouse = g->GetMousePos();
-		g->DrawLine(localplayer, localmouse);
-		if ((localplayer.x - localmouse.x) != 0)
-		{
-			double slope = (double)(localplayer.y - localmouse.y) / (double)(localplayer.x - localmouse.x) * -1;
-			if (slope > 0)
-				cout << "pos" << '\n';
-			else
-				cout << "neg" << '\n';
-			
-		}
-			
-		else
-			cout << "infinity" << '\n';
-			*/
+		vel.x = -speed;
+	}
+	else if (g->GetKey(D).bHeld)
+	{
+		vel.x = speed;
+	}
+	else
+	{
+		vel.x = 0;
 	}
 
-	//Firstly the player can move sideways
-	if (g->GetKey(Key::A).bHeld)
-		vel.x = -speed;
-		
-	else if (g->GetKey(Key::D).bHeld)
-		vel.x = speed;
+	static const double maxJumpTime = 0.2;
+	static double elapsedJumpTime = 0;
+	static const double power = 20;
+
+	// Gravity must come first
+	if (!Down())
+	{
+		vel.y += time * speed * 5;
+	}
 	else
-		//Still in horizontal
-		vel.x = 0;
-	
-	static float power = 300;
-	static float airTime = 0;
-	static float maxAir = 0.5;
+	{
+		if (vel.y > 0)
+			vel.y = 0;
+	}
+
+	/**/
+	// Press space
+	static int downCount = 0;
 	if (Down())
 	{
-		jump = true;
+		downCount = 3;
+	}
+	else
+	{
+		downCount--;
+	}
+	if (g->GetKey(SPACE).bPressed && !g->GetKey(S).bHeld)
+	{
+		if (downCount > 0 || canJump)
+		{
+			jump = true;
+			vel.y = -100;
+		}
+	}
+	if (g->GetKey(SPACE).bReleased && jump)
+	{
+		jump = false;
+		vel.y /= 2;
+	}
+
+	if(g->GetKey(SPACE).bPressed && g->GetKey(S).bHeld && canJump)
+	{
+		if(!stage.GetCollision(vi2d(pos.x, pos.y + 2)) && pos.y + 2 < stage.GetHeight())
+		{
+			pos.y += 2;
+		}
+	}
+	
+	/*
+	if(jump && elapsedJumpTime < maxJumpTime)
+	{
+		elapsedJumpTime += time;
+		// = -(1+elapsedJumpTime) * power;
 	}
 	else
 	{
 		jump = false;
+		elapsedJumpTime = 0;
 	}
-	if ((g->GetKey(Key::SPACE).bHeld && (!gravity || jump) && airTime < maxAir))
-	{
-		jump = true;
-		airTime += time;
-		if (vel.y > -100)
-			vel.y = (-(1+maxAir) * power + (1+airTime) * power);
-	}
-	if (g->GetKey(Key::SPACE).bReleased)
-	{
-		airTime = 0;
-		jump = false;
-		if(vel.y < -80)
-			vel.y = -80;
-	}
-	if (Up())
-	{
-		vel.y = 0;
-		airTime = maxAir;
-	}
-
+	std::cout << vel.y << endl;
+	*/
 	Logic(time, stage);
 }
 
 void Player::MoveUp(Stage& stage)
 {
 	// Up check
-	directions[DynamicPoint::up] = false;
-	if (!directions[DynamicPoint::up] && vel.y < 0)
+	directions[up] = false;
+	for (int y = (int)pos.y; y > floor(newPos.y) - 1; y--)
+	{
+		if (stage.GetCollision(vi2d((int)newPos.x, y)))
+		{
+			directions[up] = false;
+		}
+	}
+	if (!directions[up] && vel.y < 0)
 		pos.y += timedVelocity.y;
 }
 
@@ -118,17 +135,13 @@ void Player::Logic(float time, Stage& stage)
 	else
 		g->DrawRect(pos.x - (size.x / 2) + g->cam.GetX(), pos.y - size.y + g->cam.GetY(), size.x, size.y);
 
-	g->EnableLayer(dynamics, true);
-
-	(dynamics, true);
+	g->EnableLayer(dynamics, true); 
 	g->SetDrawTarget(nullptr);
 	
 	constexpr int maximumVel = 150;
 	//Vertical movement
-	if (Down() && vel.y >= 0)
-		gravity = false;
-	else
-		gravity = true;
+	//if (Down())
+		
 
 	if (vel.x < 0)
 	{
@@ -141,39 +154,67 @@ void Player::Logic(float time, Stage& stage)
 		//right
 		scale.x = 1;
 	}
-	if (gravity)
-	{
-		if (vel.y < maximumVel)
-			vel.y += time * 400;
-	}
-	else
-		vel.y = 0;
 
-	if (!Up())
+	canJump = false;
+	bool up = false;
+	bool down = false;
+	bool left = false;
+	bool right = false;
+	bool topright = false;
+	bool topleft = false;
+	for(int i = 1; i < 2; i++)
 	{
-		if (!stage.GetCollision(vi2d(pos.x, pos.y + 2)))
+		if (stage.GetCollision(vi2d(pos.x, pos.y - i)))
+			up = true;
+		if (stage.GetCollision(vi2d(pos.x, pos.y + i)))
+			down = true;
+		if (stage.GetCollision(vi2d(pos.x - i, pos.y)))
+			left = true;
+		if (stage.GetCollision(vi2d(pos.x + i, pos.y)))
+			right = true;
+		if (stage.GetCollision(vi2d(pos.x + i, pos.y - i)))
+			topright = true;
+		if (stage.GetCollision(vi2d(pos.x - i, pos.y - i)))
+			topleft = true;
+	}
+
+	
+	if(down && right)
+	{
+		if(!topright)
 		{
-			if (stage.GetCollision(vi2d(pos.x, pos.y + 1)) && stage.GetCollision(vi2d(pos.x - 1, pos.y + 2)) && vel.x < 0)
-			{
-				vel.y = 100;
-				gravity = false;
-			}
-			if (stage.GetCollision(vi2d(pos.x, pos.y + 1)) && stage.GetCollision(vi2d(pos.x + 1, pos.y + 2)) && vel.x > 0)
-			{
-				vel.y = 100;
-				gravity = false;
-			}
+			if(g->GetKey(D).bHeld)
+				pos.y -= 1;
+			
+			canJump = true;
 		}
-		if (stage.GetCollision(vi2d(pos.x + 1, pos.y)) && !stage.GetCollision(vi2d(pos.x + 1, pos.y - 1)) && vel.x > 0)
+	}
+	if (down && left)
+	{
+		if (!topleft)
 		{
-			pos.y -= 1;
-			gravity = false;
+			if(g->GetKey(A).bHeld)
+				pos.y -= 1;
+			canJump = true;
 		}
-		if (stage.GetCollision(vi2d(pos.x - 1, pos.y)) && !stage.GetCollision(vi2d(pos.x - 1, pos.y - 1)) && vel.x < 0)
-		{
-			pos.y -= 1;
-			gravity = false;
-		}
+	}
+	for(int i = 1; i < 4; i++)
+	{
+		if (stage.GetCollision(vi2d(pos.x, pos.y + i)))
+			canJump = true;
+	}
+
+	if(left && up && g->GetKey(A).bHeld)
+	{
+		vel.x = 0;
+		pos.y -= 1;
+		pos.x -= 1;
+	}
+	if (right && up && g->GetKey(D).bHeld)
+	{
+		vel.x = 0;
+		pos.y -= 1;
+		pos.x += 1;
 	}
 
 	Move(time, stage);
