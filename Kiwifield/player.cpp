@@ -44,15 +44,7 @@ void Player::KeyboardInput(float time, Stage& stage)
 	static const double power = 20;
 
 	// Gravity must come first
-	if (!Down())
-	{
-		vel.y += time * speed * 5;
-	}
-	else
-	{
-		if (vel.y > 0)
-			vel.y = 0;
-	}
+	
 
 	/**/
 	// Press space
@@ -65,12 +57,21 @@ void Player::KeyboardInput(float time, Stage& stage)
 	{
 		downCount--;
 	}
+	if (downCount < 0)
+	{
+		vel.y += time * speed * 7;
+	}
+	else
+	{
+		if (vel.y > 0)
+			vel.y = 0;
+	}
 	if (g->GetKey(SPACE).bPressed && !g->GetKey(S).bHeld)
 	{
 		if (downCount > 0 || canJump)
 		{
 			jump = true;
-			vel.y = -100;
+			vel.y = -125;
 		}
 	}
 	if (g->GetKey(SPACE).bReleased && jump)
@@ -203,7 +204,6 @@ void Player::Logic(float time, Stage& stage)
 		if (stage.GetCollision(vi2d(pos.x, pos.y + i)))
 			canJump = true;
 	}
-
 	if(left && up && g->GetKey(A).bHeld)
 	{
 		vel.x = 0;
@@ -216,6 +216,5 @@ void Player::Logic(float time, Stage& stage)
 		pos.y -= 1;
 		pos.x += 1;
 	}
-
 	Move(time, stage);
 }
