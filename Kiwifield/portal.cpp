@@ -25,6 +25,9 @@ void Portal::DebugDraw(PixelGameEngine& g)
 
 bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 {
+	g.EnableLayer(stage, true);
+	g.SetDrawTarget(stage);
+	
 	elapsed += time;
 
 	if (pos.x < 4 || pos.y < 4)
@@ -68,7 +71,10 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 			{
 				return true;
 				// I need to implement 'world' for this to work
+				// I did it!!
 			}
 	}
+	g.EnableLayer(stage, true);
+	g.SetDrawTarget(nullptr);
 	return false;
 }
