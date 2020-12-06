@@ -69,7 +69,7 @@ public:
 int main()
 {
 	Game game;
-	if (game.Construct(wWidth, wHeight, 5, 5, false, false))
+	if (game.Construct(wWidth, wHeight, 5, 5, true, true))
 		game.Start();
 
 	return 0;

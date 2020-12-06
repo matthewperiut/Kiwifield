@@ -1,1 +1,1 @@
-s 256 400 b ./assets/skies/space.png i 128 72 ./assets/asteroid.png i 47 338 ./assets/asteroid2.png i 128 328 ./assets/asteroid1.png 
+s 256 400 b ./assets/skies/space.png i 128 72 ./assets/asteroid.png i 47 338 ./assets/asteroid2.png i 128 328 ./assets/asteroid1.png  p 71 340 tp 106 119 

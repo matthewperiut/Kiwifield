@@ -195,7 +195,6 @@ void Player::Logic(float time, Stage& stage)
 	//Vertical movement
 	//if (Down())
 		
-
 	if (vel.x < 0)
 	{
 		//left
@@ -259,17 +258,36 @@ void Player::Logic(float time, Stage& stage)
 		if (stage.GetCollision(vi2d(pos.x, pos.y + i)))
 			canJump = true;
 	}
-	if(left && up && g->GetKey(A).bHeld)
+	if(!stage.GetCollision(vi2d(pos.x, pos.y - 2)))
 	{
-		vel.x = 0;
-		pos.y -= 1;
-		pos.x -= 1;
+		if (left && up && g->GetKey(A).bHeld)
+		{
+			vel.x = 0;
+			pos.y -= 1;
+			pos.x -= 1;
+		}
+		if (right && up && g->GetKey(D).bHeld)
+		{
+			vel.x = 0;
+			pos.y -= 1;
+			pos.x += 1;
+		}
 	}
-	if (right && up && g->GetKey(D).bHeld)
-	{
-		vel.x = 0;
-		pos.y -= 1;
-		pos.x += 1;
-	}
+	
 	Move(time, stage);
+
+	//Addition movement in player
+	int ct = 0;
+	if(vel.y < 0)
+		for (int y = pos.y - size.y; y > floor(newPos.y - size.y - 2); y--)
+		{
+			if(stage.GetCollision(vi2d(pos.x, y)))
+				ct++;
+		}
+	if(ct > 1)
+	{
+		vel.y = 0;
+	}
+	
+	
 }
