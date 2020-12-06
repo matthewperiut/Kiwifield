@@ -4,7 +4,7 @@ Player::Player(vf2d p, PixelGameEngine& g)
 {
 	pos = p;
 	this->g = &g;
-	sprite = new olc::Sprite("./assets/player.png");
+	sprite = new olc::Sprite("./assets/localplayer/still.png");
 	decal = new olc::Decal(sprite);
 
 	if (sprite->width == size.x && sprite->height == size.y)
@@ -15,6 +15,63 @@ Player::Player(vf2d p, PixelGameEngine& g)
 	{
 		drawSprite = false;
 	}
+}
+
+void Player::Animate(float time)
+{
+	static bool init = false;
+	static vector<unique_ptr<Sprite>> walk;
+	static vector<unique_ptr<Sprite>> idle;
+	static vector<unique_ptr<Sprite>> jump;
+	if(!init)
+	{
+		string localplayer ="./assets/localplayer/";
+		for(int i = 0; i < 8; i++)
+		{
+			if (!fs::exists(localplayer + "walk" + to_string(i) + ".png"))
+				break;
+			else
+				walk.push_back(std::make_unique<olc::Sprite>(localplayer + "walk" + to_string(i) + ".png"));
+		}
+		for (int i = 0; i < 8; i++)
+		{
+			if (!fs::exists(localplayer + "idle" + to_string(i) + ".png"))
+				break;
+			else
+				idle.push_back(std::make_unique<olc::Sprite>(localplayer + "idle" + to_string(i) + ".png"));
+		}
+		for (int i = 0; i < 8; i++)
+		{
+			if (!fs::exists(localplayer + "jump" + to_string(i) + ".png"))
+				break;
+			else
+				jump.push_back(std::make_unique<olc::Sprite>(localplayer + "jump" + to_string(i) + ".png"));
+		}
+	}
+
+	static float counter = 0;
+	static bool walking = false;
+	static bool idling = false;
+	static bool jumping = false;
+	if(vel.x != 0)
+	{
+		walking = true;
+		idling = false;
+		jumping = false;
+	}
+	if(vel.y != 0)
+	{
+		walking = false;
+		idling = false;
+		jumping = true;
+	}
+	if(vel.x == 0 && vel.y == 0)
+	{
+		walking = false;
+		jumping = false;
+		idling = true;
+	}
+	
 }
 
 Player::~Player()
@@ -74,7 +131,7 @@ void Player::KeyboardInput(float time, Stage& stage)
 			vel.y = -125;
 		}
 	}
-	if (g->GetKey(SPACE).bReleased && jump)
+	if (g->GetKey(SPACE).bReleased && jump && vel.y < 0)
 	{
 		jump = false;
 		vel.y /= 2;
@@ -82,25 +139,20 @@ void Player::KeyboardInput(float time, Stage& stage)
 
 	if(g->GetKey(SPACE).bPressed && g->GetKey(S).bHeld && canJump)
 	{
-		if(!stage.GetCollision(vi2d(pos.x, pos.y + 2)) && pos.y + 2 < stage.GetHeight())
+		bool canFall = false;
+		for(int i = pos.y+2; i < stage.GetHeight(); i++)
+		{
+			if (stage.GetCollision(vi2d(pos.x, i)))
+			{
+				canFall = true;
+				break;
+			}
+		}
+		if (!stage.GetCollision(vi2d(pos.x, pos.y + 2)) && canFall)
 		{
 			pos.y += 2;
 		}
 	}
-	
-	/*
-	if(jump && elapsedJumpTime < maxJumpTime)
-	{
-		elapsedJumpTime += time;
-		// = -(1+elapsedJumpTime) * power;
-	}
-	else
-	{
-		jump = false;
-		elapsedJumpTime = 0;
-	}
-	std::cout << vel.y << endl;
-	*/
 	Logic(time, stage);
 }
 
@@ -182,16 +234,19 @@ void Player::Logic(float time, Stage& stage)
 	
 	if(down && right)
 	{
+		if (g->GetKey(A).bHeld)
+			vel.y = 100;
 		if(!topright)
 		{
 			if(g->GetKey(D).bHeld)
 				pos.y -= 1;
-			
 			canJump = true;
 		}
 	}
 	if (down && left)
 	{
+		if (g->GetKey(D).bHeld)
+			vel.y = 100;
 		if (!topleft)
 		{
 			if(g->GetKey(A).bHeld)

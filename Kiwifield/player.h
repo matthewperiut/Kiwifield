@@ -26,6 +26,7 @@ public:
     
 public:
 	Player(vf2d p, PixelGameEngine& g);
+	void Animate(float time);
 	~Player();
 
 	void KeyboardInput(float time, Stage& stage);
