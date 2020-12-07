@@ -14,6 +14,7 @@ public:
 	string wantedStage = "examplelevel";
 	vi2d wantedPos = { 1, 1 };
 	bool loadStage = true;
+	bool constructed = false;
 
 	World(PixelGameEngine& engine);
 	World();

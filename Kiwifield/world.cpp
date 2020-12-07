@@ -7,6 +7,8 @@ void World::Construct()
 {
 	player = new Player(vi2d(1, 1), *g);
 	editor = new Editor(*stage, *g);
+	stage = new Stage(wantedStage, *g);
+	constructed = true;
 }
 
 World::World(PixelGameEngine& engine)
@@ -21,9 +23,12 @@ World::World()
 
 World::~World()
 {
-	delete stage;
-	delete editor;
-	delete player;
+	if(constructed)
+	{
+		delete stage;
+		delete editor;
+		delete player;
+	}
 }
 void World::Keyboard()
 {
@@ -74,8 +79,6 @@ bool World::ChangeStage()
 {
 	if (loadStage)
 	{
-		
-		
 		delete stage;
 		stage = new Stage(wantedStage, *g);
 		delete editor;
