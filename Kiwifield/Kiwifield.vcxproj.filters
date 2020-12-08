@@ -87,6 +87,9 @@
     <ClCompile Include="dynamicPoint.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>Source Files\Stages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="player.h">
@@ -119,14 +122,17 @@
     <ClInclude Include="stage.h">
       <Filter>Header Files\stage</Filter>
     </ClInclude>
-    <ClInclude Include="world.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="img.h">
       <Filter>Header Files\bases</Filter>
     </ClInclude>
     <ClInclude Include="dynamicPoint.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Header Files\stage</Filter>
+    </ClInclude>
+    <ClInclude Include="manager.h">
+      <Filter>Header Files\stage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

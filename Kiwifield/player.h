@@ -10,6 +10,7 @@ using namespace std;
 class Player : public DynamicPoint
 {
 public:
+	// Movement
 	vi2d size = { 8, 8 };
 	vf2d scale = { 1, 1 };
 
@@ -18,11 +19,14 @@ public:
 	bool drawSprite = false;
 	bool gravity = true;
 
-	vi2d collisionPixel;
+	// Appearance
 	PixelGameEngine* g;
-	
+
 	Sprite* sprite;
 	Decal* decal;
+
+	// Location
+	string stageString;
     
 public:
 	Player(vf2d p, PixelGameEngine& g);
