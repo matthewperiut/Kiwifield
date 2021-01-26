@@ -220,6 +220,18 @@ int Stage::GetHeight()
 
 void Stage::CameraFollow(vi2d pos)
 {
+	static bool DebugFollow = false;
+	if (g->GetKey(M).bPressed)
+	{
+		DebugFollow = !DebugFollow;
+	}
+	if (DebugFollow)
+	{
+		g->cam.x = pos.x - g->ScreenWidth()/2;
+		g->cam.y = pos.y - g->ScreenHeight()/2;
+		return;
+	}
+
 	const vi2d boundingSize = { 100, 50 };
 	vi2d middle = { pos.x - (g->ScreenWidth() / 2), pos.y - (g->ScreenHeight() / 2) };
 

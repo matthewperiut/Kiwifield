@@ -18,6 +18,7 @@ public:
 	bool jump = false;
 	bool drawSprite = false;
 	bool gravity = true;
+	bool noClip = false;
 
 	// Appearance
 	PixelGameEngine* g;

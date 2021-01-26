@@ -82,7 +82,43 @@ Player::~Player()
 
 void Player::KeyboardInput(float time, Stage& stage)
 {
+	if (g->GetKey(N).bPressed)
+	{
+		noClip = !noClip;
+		vel = { 0,0 };
+	}
+
 	const static int speed = 50;
+	if (noClip)
+	{
+		if (g->GetKey(A).bHeld)
+		{
+			vel.x = -speed;
+		}
+		else if (g->GetKey(D).bHeld)
+		{
+			vel.x = speed;
+		}
+		else
+		{
+			vel.x = 0;
+		}
+		if (g->GetKey(W).bHeld)
+		{
+			vel.y = -speed;
+		}
+		else if (g->GetKey(S).bHeld)
+		{
+			vel.y = speed;
+		}
+		else
+		{
+			vel.y = 0;
+		}
+		Logic(time, stage);
+		return;
+	}
+
 	if (g->GetKey(A).bHeld)
 	{
 		vel.x = -speed;
@@ -205,6 +241,13 @@ void Player::Logic(float time, Stage& stage)
 	{
 		//right
 		scale.x = 1;
+	}
+
+	if (noClip)
+	{
+		timedVelocity = vel * time;
+		pos = timedVelocity + pos;
+		return;
 	}
 
 	canJump = false;
