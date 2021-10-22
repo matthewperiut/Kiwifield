@@ -47,7 +47,7 @@ Stage::Stage(string name, PixelGameEngine& g)
 void Stage::Save()
 {
 	string filename = name;
-	const static string folder = "./stages/";
+	const static string folder = "./assets/stages/";
 	string mkdir = (folder + filename + "/");
 
 	if(!fs::exists(folder))
@@ -114,7 +114,7 @@ void Stage::Load(string filename)
 	fstream myfile;
 	
 	char code;
-	myfile.open("./stages/" + filename + "/" + filename + ".scn");
+	myfile.open("./assets/stages/" + filename + "/" + filename + ".scn");
 
 	string path;
 	while (myfile >> code)
@@ -156,7 +156,7 @@ void Stage::Load(string filename)
 	}
 	myfile.close();
 
-	ifstream input_file("./stages/" + filename + "/" + filename + ".col");
+	ifstream input_file("./assets/stages/" + filename + "/" + filename + ".col");
 	if (!input_file.fail())
 	{
 		char val;
