@@ -221,7 +221,7 @@ int Stage::GetHeight()
 void Stage::CameraFollow(vi2d pos)
 {
 	static bool DebugFollow = false;
-	if (g->GetKey(M).bPressed)
+	if (g->GetKey(SHIFT).bPressed && g->GetKey(M).bPressed)
 	{
 		DebugFollow = !DebugFollow;
 	}

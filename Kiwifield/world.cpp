@@ -32,7 +32,7 @@ World::~World()
 }
 void World::Keyboard()
 {
-	if (g->GetKey(Key::CTRL).bHeld)
+	if (g->GetKey(Key::SHIFT).bHeld)
 	{
 		if (g->GetKey(Key::S).bPressed)
 		{
@@ -113,7 +113,7 @@ void World::AttackDemo(float fElapsedTime, float frequency = 0.2, float velocity
 	static float timer = 0;
 	static Img dp("./assets/pellet.png");
 	timer += fElapsedTime;
-	if (g->GetKey(Key::SHIFT).bHeld && timer > frequency)
+	if (g->GetKey(Key::F).bHeld && timer > frequency)
 	{
 		vi2d localPlayer = player->pos + vi2d(g->cam.GetX(), g->cam.GetY() - player->size.y / 2);
 		vi2d localMouse = g->GetMousePos();
