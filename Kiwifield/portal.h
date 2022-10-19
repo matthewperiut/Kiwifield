@@ -10,7 +10,7 @@ class Portal
 	float elapsed = 0;
 public:
 	vi2d pos{ 0, 0 };
-	std::string destination{ "./stages/" };
+	std::string destination{ "./assets/stages/" };
 	vi2d desPos{ 0, 0 };
 
 	Portal(vi2d pos);

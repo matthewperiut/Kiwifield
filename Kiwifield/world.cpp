@@ -43,7 +43,7 @@ void World::Keyboard()
 			string stagename;
 			std::cout << "Stage name:\n";
 			std::cin >> stagename;
-			if (fs::exists("./stages/" + stagename + "/"))
+			if (fs::exists("./assets/stages/" + stagename + "/"))
 			{
 				delete stage;
 				stage = new Stage(stagename, *g);

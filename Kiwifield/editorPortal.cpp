@@ -83,7 +83,7 @@ bool Editor::CreatePortal()
 			cout << "Input a stage for the portal to lead to:";
 			cin >> *changeStageNamePtr;
 
-			if (fs::exists("./stages/" + *changeStageNamePtr))
+			if (fs::exists("./assets/stages/" + *changeStageNamePtr))
 				break;
 		}
 		part++;
@@ -100,7 +100,7 @@ bool Editor::CreatePortal()
 		}
 		break;
 	case 4:
-		current.open("./stages/" + end.destination + "/" + end.destination + ".scn", std::ios_base::app); // append instead of overwrite
+		current.open("./assets/stages/" + end.destination + "/" + end.destination + ".scn", std::ios_base::app); // append instead of overwrite
 		current << " p ";
 		current << start.pos.x << ' ';
 		current << start.pos.y << ' ';
@@ -109,7 +109,7 @@ bool Editor::CreatePortal()
 		current << start.desPos.y << ' ';
 		current.close();
 		
-		second.open("./stages/" + start.destination + "/" + start.destination + ".scn", std::ios_base::app); // append instead of overwrite
+		second.open("./assets/stages/" + start.destination + "/" + start.destination + ".scn", std::ios_base::app); // append instead of overwrite
 		second << " p ";
 		second << end.pos.x << ' ';
 		second << end.pos.y << ' ';
@@ -153,7 +153,7 @@ void Editor::RemovePortal()
 	
 	string buffer;
 
-	string first = "./stages/" + stage->name + "/" + stage->name + ".scn";
+	string first = "./assets/stages/" + stage->name + "/" + stage->name + ".scn";
 	if (!fs::exists(first))
 		return;
 	std::ofstream firstWrite(first + 't', ios::out);
@@ -188,7 +188,7 @@ void Editor::RemovePortal()
 	firstWrite.close();
 	firstRead.close();
 	
-	string second = "./stages/" + stage->portals[chosenPortal].destination + "/" + stage->portals[chosenPortal].destination + ".scn";
+	string second = "./assets/stages/" + stage->portals[chosenPortal].destination + "/" + stage->portals[chosenPortal].destination + ".scn";
 	if (!fs::exists(second))
 		return;
 	std::ofstream secondWrite(second + 't', ios::out);
