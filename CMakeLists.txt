@@ -12,14 +12,19 @@ if(${CMAKE_SYSTEM} MATCHES "Linux")
     set(LINUX 1)
 endif(${CMAKE_SYSTEM} MATCHES "Linux")
 
-file (GLOB MY_SRC "Kiwifield/*")
+file (GLOB MY_SRC "src/*"
+        "src/entities/*"
+        "src/utility/*"
+        "src/editor/*"
+        "src/world/*"
+        "src/lib/*")
 
 if (APPLE)
     add_compile_options(-stdlib=libc++)
 endif(APPLE)
 
 add_executable(Kiwifield ${MY_SRC})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Kiwifield/assets/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/assets/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/assets/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/assets/)
 
 if (UNIX)
     # X11

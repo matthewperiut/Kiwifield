@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+.idea/
+cmake-build-release/
+cmake-build-debug/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -353,3 +357,4 @@ MigrationBackup/
 .ionide/
 .DS_Store
 Kiwifield/output
+/cmake-build-release/
