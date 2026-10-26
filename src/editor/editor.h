@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../lib/olcPixelGameEngine.h"
 #include "../world/stage.h"
+#include "../utility/textprompt.h"
 
 using namespace olc;
 
@@ -10,14 +11,19 @@ class Editor
 public:
     Stage* stage;
     PixelGameEngine* g;
+    TextPrompt& prompt;
     int chosenSprite = 0;
     int mode = 0;
 
-    bool* changeStageBoolPtr;
-    string* changeStageNamePtr;
+    // Set by World: the portal tool asks World to switch stages through these
+    bool* changeStageBoolPtr = nullptr;
+    string* changeStageNamePtr = nullptr;
 public:
-    Editor(Stage& s, PixelGameEngine& g);
-    
+    Editor(Stage& s, PixelGameEngine& engine, TextPrompt& textPrompt);
+
+    // Called when World loads a different stage. Editor state that belongs to the old stage is reset.
+    void SetStage(Stage& s);
+
     void Manager();
     void EditCollision();
 
@@ -36,8 +42,15 @@ public:
 
     // Portal
     int chosenPortal = 0;
+    bool creatingPortal = false;
+    int portalPart = 0;
+    Portal portalStart{ vi2d(10, 10) };
+    Portal portalEnd{ vi2d(10, 10) };
+
     void EditPortal();
     bool CreatePortal();
+    void AskPortalStage();
+    void CancelPortal();
     bool MovePortal(Portal& p);
     void RemovePortal();
 };

@@ -6,7 +6,7 @@
 using namespace olc;
 class Portal
 {
-	const vi2d size{ 9,16 };
+	vi2d size{ 9,16 };
 	float elapsed = 0;
 public:
 	vi2d pos{ 0, 0 };

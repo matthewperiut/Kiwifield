@@ -1,5 +1,10 @@
 #include "editor.h"
 
+namespace
+{
+    constexpr int kMaxSpriteSize = 4096;
+}
+
 void Editor::ChooseSprite()
 {
     vi2d cam = { g->cam.GetX(), g->cam.GetY() };
@@ -51,6 +56,9 @@ void Editor::DrawSelectedSprite()
 
 void Editor::EditSprite()
 {
+    if (chosenSprite >= int(stage->imgs.size()))
+        chosenSprite = 0;
+
     DrawSelectedSprite();
 
     const static int size = 9;
@@ -71,24 +79,16 @@ void Editor::EditSprite()
         g->DrawStringDecal(vi2d(0, i * 8), instructions[i]);
     }
 
-    static bool usingConsole = false;
-
     if (g->GetKey(olc::ESCAPE).bPressed)
         mode = ESC;
     else if (g->GetKey(olc::C).bPressed)
-    {
         mode = C;
-        usingConsole = true;
-    }
     else if (g->GetKey(olc::X).bPressed)
         mode = X;
     else if (g->GetKey(olc::E).bPressed)
         mode = E;
     else if (g->GetKey(olc::R).bPressed)
-    {
         mode = R;
-        usingConsole = true;
-    }
     else if (g->GetKey(olc::M).bPressed)
         mode = M;
     else if (g->GetKey(olc::LEFT).bPressed)
@@ -98,52 +98,47 @@ void Editor::EditSprite()
     else if (g->GetKey(olc::Q).bPressed)
         mode = Q;
 
-    // For mode A
-
-    if (usingConsole)
+    switch (mode)
     {
-        usingConsole = false;
-        g->DrawStringDecal(vf2d(0, float(g->ScreenHeight()) - 8), "CHECK CONSOLE");
-    }
-    else
-        switch (mode)
-        {
-        case ESC:
-            // Nothing
-            break;
-        case C:
-            CreateSprite();
-            mode = ESC;
-            break;
-        case X:
-            RemoveSprite();
-            mode = ESC;
-            break;
-        case E:
+    case ESC:
+        // Nothing
+        break;
+    case C:
+        CreateSprite();
+        mode = ESC;
+        break;
+    case X:
+        RemoveSprite();
+        mode = ESC;
+        break;
+    case E:
+        if (!stage->imgs.empty())
             ModifySprite();
-            break;
-        case R:
-            RenameSprite();
+        break;
+    case R:
+        RenameSprite();
+        mode = ESC;
+        break;
+    case M:
+        if (MoveSprite())
             mode = ESC;
-            break;
-        case M:
-            if (MoveSprite())
-                mode = ESC;
-            break;
-        case Left:
-            LayerSprite(0);
-            mode = ESC;
-            break;
-        case Right:
-            LayerSprite(1);
-            mode = ESC;
-            break;
-        case Q:
-            DuplicateSprite();
-            mode = M;
-            break;
-        }
-    if (mode != E && prevmode == E)
+        break;
+    case Left:
+        LayerSprite(0);
+        mode = ESC;
+        break;
+    case Right:
+        LayerSprite(1);
+        mode = ESC;
+        break;
+    case Q:
+        DuplicateSprite();
+        mode = M;
+        break;
+    }
+
+    // Leaving edit mode: save the sprite and point any other instances of its file at the new pixels
+    if (mode != E && prevmode == E && chosenSprite < int(stage->imgs.size()))
     {
         SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
         for (int i = 0; i < stage->imgs.size(); i++)
@@ -205,7 +200,6 @@ void Editor::LayerSprite(bool up)
             chosenSprite--;
         }
     }
-    std::cout << chosenSprite << '\n';
 }
 
 
@@ -218,48 +212,49 @@ void Editor::SaveAllSprites()
     }
 }
 
+// Asks for a sprite name. Existing file: place it. New name: ask for a size and make a blank sprite.
 void Editor::CreateSprite()
 {
-    string sprName = "default";
-    vi2d sprSize = { 8, 8 };
-    vi2d pos = vi2d(g->ScreenWidth(), g->ScreenHeight()) / 2;
-    pos -= vi2d(g->cam.GetX(), g->cam.GetY());
-    
-    cout << "Input name:" << endl;
-    cin >> sprName;
+    prompt.AskText("Sprite name:", [this](const string& sprName)
+    {
+        if (sprName.empty())
+            return;
 
-    // Check if exists
-    string filePath = "./assets/" + sprName + ".png";
-    if (filesystem::exists(filePath))
-    {
-        stage->imgs.push_back(Img(filePath));
-        stage->imgs[stage->imgs.size() - 1].position = pos;
-        return;
-    }
-    else
-    {
-        cout << "Input width:" << endl;
-        cin >> sprSize.x;
-        cout << "Input height:" << endl;
-        cin >> sprSize.y;
-    }
-    
-    stage->imgs.push_back(Img(sprSize));
-    int index = stage->imgs.size() - 1;
-    stage->imgs[index].position = pos;
-    stage->imgs[index].filePath = filePath;
-    for (int x = 0; x < sprSize.x; x++)
-    {
-        for (int y = 0; y < sprSize.y; y++)
+        string filePath = "./assets/" + sprName + ".png";
+        if (filesystem::exists(filePath))
         {
-            stage->imgs[index].GetSprPtr()->SetPixel(x, y, olc::BLANK);
+            stage->imgs.push_back(Img(filePath));
+            stage->imgs.back().position = vi2d(g->ScreenWidth(), g->ScreenHeight()) / 2 - vi2d(g->cam.GetX(), g->cam.GetY());
+            return;
         }
-    }
-    stage->imgs[index].GetDecPtr()->Update();
-    chosenSprite = index;
-    
-    SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
+
+        prompt.AskInt("Width:", [this, filePath](int width)
+        {
+            prompt.AskInt("Height:", [this, filePath, width](int height)
+            {
+                if (width > kMaxSpriteSize || height > kMaxSpriteSize)
+                    return;
+
+                Img img(vi2d(width, height));
+                img.position = vi2d(g->ScreenWidth(), g->ScreenHeight()) / 2 - vi2d(g->cam.GetX(), g->cam.GetY());
+                img.filePath = filePath;
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        img.GetSprPtr()->SetPixel(x, y, olc::BLANK);
+                    }
+                }
+                img.GetDecPtr()->Update();
+
+                stage->imgs.push_back(std::move(img));
+                chosenSprite = int(stage->imgs.size()) - 1;
+                SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
+            });
+        });
+    });
 }
+
 void Editor::RemoveSprite()
 {
     if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
@@ -412,19 +407,21 @@ void Editor::ModifySprite()
 
 void Editor::RenameSprite()
 {
-    if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)
-    {
-        string sprName = "";
-        std::cout << "This will make the sprite into a new file" << std::endl;
-        std::cout << "Previous path: " << stage->imgs[chosenSprite].filePath << std::endl;
-        std::cout << "make sure to exclude the ./assets/ and .png, only need the name" << std::endl;
-        std::cout << "Input new name:" << std::endl;
-        std::cin >> sprName;
+    if (stage->imgs.empty() || chosenSprite >= int(stage->imgs.size()))
+        return;
 
-        stage->imgs[chosenSprite].filePath = "./assets/" + sprName + ".png";
-        SaveSprite(stage->imgs[chosenSprite].GetSprPtr(), stage->imgs[chosenSprite].GetFilePath());
-    }
+    const int index = chosenSprite;
+    prompt.AskText("New name:", [this, index](const string& sprName)
+    {
+        if (sprName.empty() || index >= int(stage->imgs.size()))
+            return;
+
+        Img& img = stage->imgs[index];
+        img.filePath = "./assets/" + sprName + ".png";
+        SaveSprite(img.GetSprPtr(), img.GetFilePath());
+    });
 }
+
 bool Editor::MoveSprite()
 {
     if (!stage->imgs.empty() && chosenSprite <= stage->imgs.size() - 1)

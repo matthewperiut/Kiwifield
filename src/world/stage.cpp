@@ -55,11 +55,7 @@ void Stage::Save()
 	if (!fs::exists(mkdir))
 		fs::create_directory(mkdir);
 	string col = mkdir + filename + ".col";
-	if (!fs::exists(col))
-		fs::remove(col);
 	string scn = mkdir + filename + ".scn";
-	if (!fs::exists(scn))
-		fs::remove(scn);
 
 	ofstream myfile;
 	myfile.open(scn);
@@ -296,6 +292,9 @@ void Stage::DrawBackground(string img)
 		imgpath = img;
 		bg = Img(img, vi2d(0, 0));
 	}
+	// Missing background file gives a 0-width sprite; the tiling math below divides by it
+	if (bg.GetSprPtr()->width == 0)
+		return;
 	
 	g->EnableLayer(background, true);
 	g->SetDrawTarget(background);
@@ -364,7 +363,7 @@ void Stage::DrawCollider()
 			{
 				int first = y + ic.y;
 				int second = x + ic.x;
-				if ((first > -1 && first < collision.size()) && (second > -1 && second < collision[y].size()))
+				if ((first > -1 && first < collision.size()) && (second > -1 && second < collision[first].size()))
 					if (collision[first][second])
 						g->Draw(vi2d(y, x), Pixel(255, 0, 0));
 

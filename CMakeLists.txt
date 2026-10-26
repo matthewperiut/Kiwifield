@@ -8,6 +8,12 @@ project(Kiwifield)
 set(CMAKE_CXX_STANDARD 20)
 set(KIWIFIELD_VERSION 0.1)
 
+# Test weapon (pellets). Off by default: cmake -DKIWIFIELD_PELLETS=ON ..
+option(KIWIFIELD_PELLETS "Compile in pellet shooting" OFF)
+if (KIWIFIELD_PELLETS)
+    add_compile_definitions(KIWIFIELD_PELLETS)
+endif()
+
 if(${CMAKE_SYSTEM} MATCHES "Linux")
     set(LINUX 1)
 endif(${CMAKE_SYSTEM} MATCHES "Linux")
@@ -17,6 +23,7 @@ file (GLOB MY_SRC "src/*"
         "src/utility/*"
         "src/editor/*"
         "src/world/*"
+        "src/weapons/*"
         "src/lib/*")
 
 if (APPLE)

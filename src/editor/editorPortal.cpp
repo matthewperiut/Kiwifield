@@ -1,132 +1,175 @@
 #include "editor.h"
 
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+
+namespace
+{
+	string ScnPath(const string& stageName)
+	{
+		return "./assets/stages/" + stageName + "/" + stageName + ".scn";
+	}
+
+	// Appends a portal line to a stage's .scn. Save writes portals in the same format.
+	void AppendPortalLine(const string& stageName, const Portal& p)
+	{
+		ofstream file(ScnPath(stageName), ios::app);
+		file << " p " << p.pos.x << ' ' << p.pos.y << ' ' << p.destination << ' ' << p.desPos.x << ' ' << p.desPos.y << ' ';
+	}
+
+	// Rewrites a .scn without the portal line equal to `match`.
+	void RemovePortalLine(const string& path, const string& match)
+	{
+		ifstream in(path);
+		ostringstream out;
+		string word;
+		while (in >> word)
+		{
+			if (word == "p")
+			{
+				string x, y, dest, destX, destY;
+				in >> x >> y >> dest >> destX >> destY;
+				string line = "p " + x + " " + y + " " + dest + " " + destX + " " + destY;
+				if (line != match)
+					out << line << ' ';
+			}
+			else
+			{
+				out << word << ' ';
+			}
+		}
+		in.close();
+
+		ofstream file(path, ios::trunc);
+		file << out.str();
+	}
+}
+
 void Editor::EditPortal()
 {
 	g->DrawStringDecal(vi2d(0, 0), "EditPortal");
 	g->DrawStringDecal(vi2d(0, 8), "Create C");
-	
+
 	if (!stage->portals.empty())
 	{
 		g->DrawStringDecal(vi2d(0, 16), "Delete X");
 		g->DrawStringDecal(vi2d(0, 24), "Cycle >");
 	}
 
-	static int mode = 0;
-	enum modes { create = 1, remove, move, cycle };
-
 	if (g->GetKey(Key::C).bPressed)
 	{
-		mode = create;
+		creatingPortal = true;
+		portalPart = 0;
 	}
-	
-	if (chosenPortal >= 0 && chosenPortal < stage->portals.size() && !stage->portals.empty())
+
+	if (!stage->portals.empty())
 	{
+		chosenPortal = std::clamp(chosenPortal, 0, int(stage->portals.size()) - 1);
+
 		if (g->GetKey(Key::X).bPressed)
 		{
 			RemovePortal();
 		}
-		if (g->GetKey(Key::RIGHT).bPressed)
+		if (!stage->portals.empty())
 		{
-			chosenPortal++;
-			if(chosenPortal > stage->portals.size() - 1)
+			if (g->GetKey(Key::RIGHT).bPressed)
 			{
-				chosenPortal = 0;
+				chosenPortal = (chosenPortal + 1) % int(stage->portals.size());
 			}
+			stage->portals[chosenPortal].DebugDraw(*g);
 		}
-		stage->portals[chosenPortal].DebugDraw(*g);
 	}
 	else
 	{
 		chosenPortal = 0;
 	}
-	if (mode == create)
+
+	if (creatingPortal && CreatePortal())
 	{
-		if (CreatePortal())
-			mode = 0;
+		creatingPortal = false;
 	}
 }
 
+// Walks through the steps of placing a linked pair of portals. Returns true when finished or cancelled.
 bool Editor::CreatePortal()
 {
-	static Portal start(vi2d(10, 10));
-	static Portal end(vi2d(10, 10));
-	std::ofstream current;
-	std::ofstream second;
-	static int part = 0;
-
-	if(g->GetKey(Key::ESCAPE).bPressed)
+	if (g->GetKey(Key::ESCAPE).bPressed)
 	{
-		part = 0;
+		CancelPortal();
 		return true;
 	}
-	
-	switch(part)
+
+	switch (portalPart)
 	{
 	case 0:
-		start.Update(0, vi2d(100, 100), *g);
-		if (MovePortal(start))
+		// Place the portal in this stage
+		portalStart.Update(0, vi2d(100, 100), *g);
+		if (MovePortal(portalStart))
 		{
-			start.destination = stage->name;
-			start.desPos = vi2d(10, 10);
-			part++;
+			portalStart.destination = stage->name;
+			portalStart.desPos = vi2d(10, 10);
+			portalPart++;
 		}
 		break;
 	case 1:
-		start.Update(0, vi2d(100, -100), *g);
-		g->DrawStringDecal(vf2d(0, float(g->ScreenHeight()) - 8), "CHECK CONSOLE");
-		part++;
+		portalStart.Update(0, vi2d(100, -100), *g);
+		portalPart++;
 		break;
 	case 2:
-		*changeStageBoolPtr = true;
-		while (true)
-		{
-			cout << "Input a stage for the portal to lead to:";
-			cin >> *changeStageNamePtr;
-
-			if (fs::exists("./assets/stages/" + *changeStageNamePtr))
-				break;
-		}
-		part++;
+		// Stays on this step until a valid stage name is typed (callback advances the part) or cancelled
+		AskPortalStage();
 		break;
 	case 3:
-		end.Update(0, vi2d(100, -100), *g);
-		if (MovePortal(end))
+		// Place the return portal in the destination stage
+		portalEnd.Update(0, vi2d(100, -100), *g);
+		if (MovePortal(portalEnd))
 		{
-			end.desPos = start.pos;
-			start.desPos = end.pos;
-			end.destination = start.destination;
-			start.destination = stage->name;
-			part++;
+			portalEnd.desPos = portalStart.pos;
+			portalStart.desPos = portalEnd.pos;
+			portalEnd.destination = portalStart.destination;
+			portalStart.destination = stage->name;
+			portalPart++;
 		}
 		break;
 	case 4:
-		current.open("./assets/stages/" + end.destination + "/" + end.destination + ".scn", std::ios_base::app); // append instead of overwrite
-		current << " p ";
-		current << start.pos.x << ' ';
-		current << start.pos.y << ' ';
-		current << start.destination << ' ';
-		current << start.desPos.x << ' ';
-		current << start.desPos.y << ' ';
-		current.close();
-		
-		second.open("./assets/stages/" + start.destination + "/" + start.destination + ".scn", std::ios_base::app); // append instead of overwrite
-		second << " p ";
-		second << end.pos.x << ' ';
-		second << end.pos.y << ' ';
-		second << end.destination << ' ';
-		second << end.desPos.x << ' ';
-		second << end.desPos.y << ' ';
-		second.close();
-
-		part++;
+		AppendPortalLine(portalEnd.destination, portalStart);
+		AppendPortalLine(portalStart.destination, portalEnd);
+		portalPart++;
 		break;
 	case 5:
-		*changeStageBoolPtr = true;
-		*changeStageNamePtr = stage->name;
-		part = 0;
+		// Destination stage is the current one; add the return portal in memory instead of reloading
+		stage->portals.push_back(portalEnd);
+		portalPart = 0;
 		return true;
 	}
 	return false;
+}
+
+void Editor::AskPortalStage()
+{
+	prompt.AskText("Stage to lead to:", [this](const string& name)
+	{
+		if (name.empty() || !fs::exists("./assets/stages/" + name))
+		{
+			AskPortalStage();
+			return;
+		}
+		// Switching stages reloads from disk, so write this stage's edits first
+		stage->Save();
+		*changeStageNamePtr = name;
+		*changeStageBoolPtr = true;
+		portalPart = 3;
+	}, [this]()
+	{
+		CancelPortal();
+	});
+}
+
+void Editor::CancelPortal()
+{
+	portalPart = 0;
+	creatingPortal = false;
 }
 
 bool Editor::MovePortal(Portal& p)
@@ -137,103 +180,27 @@ bool Editor::MovePortal(Portal& p)
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 
 void Editor::RemovePortal()
 {
-	Portal& p = stage->portals[chosenPortal];
-
-	string posStr = to_string(p.pos.x) + " " + to_string(p.pos.y);
-	string desStr = to_string(p.desPos.x) + " " + to_string(p.desPos.y);
-	
-	string firstFind = "p " + posStr + " " + p.destination + " " + desStr;
-	string secondFind = "p " + desStr + " " + stage->name + " " + posStr;
-	
-	string buffer;
-
-	string first = "./assets/stages/" + stage->name + "/" + stage->name + ".scn";
-	if (!fs::exists(first))
+	if (chosenPortal < 0 || chosenPortal >= int(stage->portals.size()))
 		return;
-	std::ofstream firstWrite(first + 't', ios::out);
-	ifstream firstRead(first);
 
-	string word;
-	string tester;
-	while (firstRead >> word)
-	{
-		if(word == "p")
-		{
-			string x;
-			string y;
-			string s;
-			string desX;
-			string desY;
-			firstRead >> x;
-			firstRead >> y;
-			firstRead >> s;
-			firstRead >> desX;
-			firstRead >> desY;
-			tester += "p " + x + " " += y + " " += s + " " += desX + " " += desY;
-			if (tester != firstFind)
-				firstWrite << " " << tester << " ";
-			tester = "";
-		}
-		else
-		{
-			firstWrite << word << " ";
-		}
-	}
-	firstWrite.close();
-	firstRead.close();
-	
-	string second = "./assets/stages/" + stage->portals[chosenPortal].destination + "/" + stage->portals[chosenPortal].destination + ".scn";
-	if (!fs::exists(second))
+	const Portal p = stage->portals[chosenPortal];
+	const string posStr = to_string(p.pos.x) + " " + to_string(p.pos.y);
+	const string desStr = to_string(p.desPos.x) + " " + to_string(p.desPos.y);
+
+	const string here = ScnPath(stage->name);
+	const string there = ScnPath(p.destination);
+	if (!fs::exists(here) || !fs::exists(there))
 		return;
-	std::ofstream secondWrite(second + 't', ios::out);
-	ifstream secondRead(second);
 
-	while (secondRead >> word)
-	{
-		if (word == "p")
-		{
-			string x;
-			string y;
-			string s;
-			string desX;
-			string desY;
-			secondRead >> x;
-			secondRead >> y;
-			secondRead >> s;
-			secondRead >> desX;
-			secondRead >> desY;
-			tester += "p " + x + " " += y + " " += s + " " += desX + " " += desY;
-			if (tester != secondFind)
-				secondWrite << " " << tester << " ";
-			tester = "";
-		}
-		else
-		{
-			secondWrite << word << " ";
-		}
-	}
+	RemovePortalLine(here, "p " + posStr + " " + p.destination + " " + desStr);
+	RemovePortalLine(there, "p " + desStr + " " + stage->name + " " + posStr);
 
-	secondWrite.close();
-	secondRead.close();
-	
-	try
-	{
-		fs::remove(first);
-		fs::rename(first+'t', first);
-		fs::remove(second);
-		fs::rename(second + 't', second);
-	}
-	catch (const fs::filesystem_error& e)
-	{
-		std::cout << e.what() << '\n';
-	}
-
-	*changeStageBoolPtr = true;
-	*changeStageNamePtr = stage->name;
+	stage->portals.erase(stage->portals.begin() + chosenPortal);
+	chosenPortal = 0;
 }

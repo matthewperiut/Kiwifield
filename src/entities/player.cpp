@@ -4,8 +4,8 @@ Player::Player(vf2d p, PixelGameEngine& g)
 {
 	pos = p;
 	this->g = &g;
-	sprite = new olc::Sprite("./assets/localplayer/still.png");
-	decal = new olc::Decal(sprite);
+	sprite = make_unique<olc::Sprite>("./assets/localplayer/still.png");
+	decal = make_unique<olc::Decal>(sprite.get());
 
 	if (sprite->width == size.x && sprite->height == size.y)
 	{
@@ -72,12 +72,6 @@ void Player::Animate(float time)
 		idling = true;
 	}
 	
-}
-
-Player::~Player()
-{
-	delete sprite;
-	delete decal;
 }
 
 void Player::KeyboardInput(float time, Stage& stage)
@@ -215,11 +209,11 @@ void Player::Logic(float time, Stage& stage)
 	if(drawSprite)
 		if (scale.x > 0)
 		{
-			g->DrawDecal(vi2d(pos.x - size.x/2 + g->cam.GetX(), pos.y - size.y + 1 + g->cam.GetY()), decal, scale);
+			g->DrawDecal(vi2d(pos.x - size.x/2 + g->cam.GetX(), pos.y - size.y + 1 + g->cam.GetY()), decal.get(), scale);
 		}
 		else
 		{
-			g->DrawDecal(vi2d(pos.x + size.x/2 + g->cam.GetX(), pos.y - size.y + 1 + g->cam.GetY()), decal, scale);
+			g->DrawDecal(vi2d(pos.x + size.x/2 + g->cam.GetX(), pos.y - size.y + 1 + g->cam.GetY()), decal.get(), scale);
 		}
 	else
 		g->DrawRect(pos.x - (size.x / 2) + g->cam.GetX(), pos.y - size.y + g->cam.GetY(), size.x, size.y);

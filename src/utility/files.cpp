@@ -5,19 +5,20 @@
 
 #include <vector>
 #include <iostream>
-#include <thread>
 #include <string>
 
 using namespace olc;
 
-void compress(std::string filepath) {
+// Re-encodes a PNG with the smallest of several lodepng settings. Leaves the file alone on any error.
+static void CompressPng(std::string filepath) {
     std::vector<unsigned char> image;
     unsigned w, h;
     std::vector<unsigned char> buffer;
-    unsigned error;
 
-    lodepng::load_file(buffer, filepath);
-    lodepng::decode(image, w, h, buffer);
+    if (lodepng::load_file(buffer, filepath) != 0)
+        return;
+    if (lodepng::decode(image, w, h, buffer) != 0)
+        return;
     buffer.clear();
 
     //Now encode as hard as possible with several filter types and window sizes
@@ -33,19 +34,12 @@ void compress(std::string filepath) {
     size_t bestsize = 0;
     bool inited = false;
 
-    int beststrategy = 0;
     LodePNGFilterStrategy strategies[4] = { LFS_ZERO, LFS_MINSUM, LFS_ENTROPY, LFS_BRUTE_FORCE };
-    std::string strategynames[4] = { "LFS_ZERO", "LFS_MINSUM", "LFS_ENTROPY", "LFS_BRUTE_FORCE" };
 
     // min match 3 allows all deflate lengths. min match 6 is similar to "Z_FILTERED" of zlib.
     int minmatches[2] = { 3, 6 };
-    int bestminmatch = 0;
 
     int autoconverts[2] = { 0, 1 };
-    std::string autoconvertnames[2] = { "0", "1" };
-    int bestautoconvert = 0;
-
-    int bestblocktype = 0;
 
     // Try out all combinations of everything
     for (int i = 0; i < 4; i++)   //filter strategy
@@ -58,107 +52,43 @@ void compress(std::string filepath) {
                     state.encoder.zlibsettings.minmatch = minmatches[j];
                     state.encoder.zlibsettings.btype = k == 0 ? 2 : 1;
                     state.encoder.auto_convert = autoconverts[l];
-                    error = lodepng::encode(temp, image, w, h, state);
+                    if (lodepng::encode(temp, image, w, h, state) != 0)
+                        continue;
 
                     if (!inited || temp.size() < bestsize)
                     {
                         bestsize = temp.size();
-                        beststrategy = i;
-                        bestminmatch = state.encoder.zlibsettings.minmatch;
-                        bestautoconvert = l;
-                        bestblocktype = state.encoder.zlibsettings.btype;
                         temp.swap(buffer);
                         inited = true;
                     }
                 }
 
-    lodepng::save_file(buffer, filepath);
+    if (inited)
+        lodepng::save_file(buffer, filepath);
 }
 
 void SaveSprite(Sprite* spr, std::string filepath) {
-    std::vector<unsigned char>* v = new std::vector<unsigned char>;
-    v->reserve(spr->width * spr->height * 4);
-
     FILE* fp = fopen(filepath.c_str(), "wb");
+    if (!fp)
+        return;
+
+    // Pixels as RGBA bytes, row by row
+    std::vector<unsigned char> pixels;
+    pixels.reserve(spr->width * spr->height * 4);
     for (int y = 0; y < spr->height; y++)
         for (int x = 0; x < spr->width; x++)
         {
             Pixel color = spr->GetPixel(vi2d(x, y));
-            for (int c = 0; c < 4; c++)
-            {
-                switch (c)
-                {
-                case 0: //r
-                    v->push_back(color.r);
-                    break;
-                case 1: //g
-                    v->push_back(color.g);
-                    break;
-                case 2: //b
-                    v->push_back(color.b);
-                    break;
-                case 3: //a
-                    v->push_back(color.a);
-                    break;
-                }
-            }
+            pixels.push_back(color.r);
+            pixels.push_back(color.g);
+            pixels.push_back(color.b);
+            pixels.push_back(color.a);
         }
 
-    unsigned char* a = &(*v)[0];
-    svpng(fp, spr->width, spr->height, a, 1);
+    if (!pixels.empty())
+        svpng(fp, spr->width, spr->height, pixels.data(), 1);
     fclose(fp);
-    std::thread task(compress, filepath);
-    task.detach();
-    delete v;
-}
 
-void Files::Save(vector<vector<bool>>& collision, string filepath)
-{
-	ofstream file;
-	file.open(filepath);
-
-	int width = collision.size();
-	int height = collision[0].size();
-
-	for (int a = 0; a < width; a++)
-	{
-		for (int b = 0; b < height; b++)
-		{
-			file << collision[a][b];
-		}
-		file << "e\n";
-	}
-	file.close();
-}
-
-bool Files::Load(vector<vector<bool>>& collision, string filepath)
-{
-	ifstream input_file(filepath);
-	if (input_file.fail()) {
-		return false;
-	}
-	char val;
-	int x = 0;
-	int y = 0;
-	collision.emplace_back();
-	while (input_file >> val)
-	{
-		if (val == '0')
-		{
-			collision[y].push_back(false);
-			x++;
-		}
-		else if (val == '1')
-		{
-			collision[y].push_back(true);
-			x++;
-		}
-		else if (val == 'e')
-		{
-			x = 0;
-			y++;
-			collision.emplace_back();
-		}
-	}
-	return true;
+    // Synchronous on purpose: a background compress could overwrite a newer save of the same file
+    CompressPng(filepath);
 }

@@ -31,7 +31,10 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 	elapsed += time;
 
 	if (pos.x < 4 || pos.y < 4)
+	{
+		g.SetDrawTarget(nullptr);
 		return false;
+	}
 	
 	int topy = pos.y - size.y;
 	int boty = pos.y;
@@ -57,7 +60,7 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 			if (y == 0)
 				y = 1;
 			int truy = y-newy;
-			float opacity = 255 / (y*y);
+			float opacity = 255.0f / (y*y);
 			g.SetPixelMode(Pixel::ALPHA);
 			g.Draw(vi2d(x + g.cam.GetX(), y + g.cam.GetY()), Pixel(80, 60, 240, opacity));
 			g.SetPixelMode(Pixel::NORMAL);
@@ -69,9 +72,9 @@ bool Portal::Update(float time, vi2d p, PixelGameEngine& g)
 		if (p.x > pos.x - (size.x / 2) && p.x < pos.x + (size.x / 2))
 			if (p.y < pos.y + size.y && p.y > pos.y - 1)
 			{
+				// Reset target before returning or later draws land on the stage layer
+				g.SetDrawTarget(nullptr);
 				return true;
-				// I need to implement 'world' for this to work
-				// I did it!!
 			}
 	}
 	g.EnableLayer(stage, true);

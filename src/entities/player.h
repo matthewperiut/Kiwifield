@@ -2,6 +2,7 @@
 #include "../const.h"
 #include "../world/stage.h"
 #include "dynamicPoint.h"
+#include <memory>
 #include <vector>
 
 using namespace olc;
@@ -23,8 +24,8 @@ public:
 	// Appearance
 	PixelGameEngine* g;
 
-	Sprite* sprite;
-	Decal* decal;
+	unique_ptr<Sprite> sprite;
+	unique_ptr<Decal> decal;
 
 	// Location
 	string stageString;
@@ -32,7 +33,6 @@ public:
 public:
 	Player(vf2d p, PixelGameEngine& g);
 	void Animate(float time);
-	~Player();
 
 	void KeyboardInput(float time, Stage& stage);
 	void Logic(float time, Stage& stage);
